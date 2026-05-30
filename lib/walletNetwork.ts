@@ -17,7 +17,17 @@ export function getWalletErrorMessage(error: unknown, fallback = "Wallet request
   if (!error || typeof error !== "object") return fallback;
   const maybe = error as { code?: number; message?: string; shortMessage?: string; details?: string };
   if (getWalletErrorCode(error) === 4001 || maybe.message?.toLowerCase().includes("rejected")) {
-    return "Transaction rejected by user.";
+    return "Transaction cancelled.";
+  }
+  const raw = [maybe.shortMessage, maybe.details, maybe.message].filter(Boolean).join(" ").toLowerCase();
+  if (raw.includes("current chain") || raw.includes("chain of the wallet") || raw.includes("wrong network")) {
+    return "Switch to Arc Testnet to continue.";
+  }
+  if (raw.includes("insufficient") || raw.includes("exceeds the balance") || raw.includes("not enough")) {
+    return "Not enough USDC to fund this bounty.";
+  }
+  if (raw.includes("contract") && raw.includes("configured")) {
+    return "Contract address is not configured.";
   }
   return maybe.shortMessage || maybe.details || maybe.message || fallback;
 }

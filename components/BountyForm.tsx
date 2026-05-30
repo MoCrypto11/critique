@@ -65,7 +65,7 @@ export function BountyForm() {
     try {
       await switchToArcTestnet(switchChainAsync);
     } catch (caught) {
-      setError(getWalletErrorMessage(caught, "Could not switch to Arc Testnet."));
+      setError(getWalletErrorMessage(caught, "Switch to Arc Testnet to continue."));
     }
   }
 
@@ -90,9 +90,9 @@ export function BountyForm() {
     if (!deadline || new Date(deadline).getTime() <= Date.now()) return setError("Deadline must be in the future.");
     if (contractConfigured && !walletConnected) return setError("Connect wallet before creating an on-chain bounty.");
     if (contractConfigured && wrongNetwork) {
-      return setError("Wrong network. Switch to Arc Testnet to create and fund bounties.");
+      return setError("Switch to Arc Testnet to continue.");
     }
-    if (!contractConfigured && !ENABLE_MOCK_MODE) return setError("Contract not configured.");
+    if (!contractConfigured && !ENABLE_MOCK_MODE) return setError("Contract address is not configured.");
 
     setIsSubmitting(true);
 
@@ -112,7 +112,7 @@ export function BountyForm() {
           throw new Error("Connect wallet before creating an on-chain bounty.");
         }
         if (wrongNetwork) {
-          throw new Error("Wrong network. Switch to Arc Testnet to create and fund bounties.");
+          throw new Error("Switch to Arc Testnet to continue.");
         }
         if (!walletClient || !publicClient) {
           throw new Error("Wallet client is not ready. Reconnect your wallet and try again.");
@@ -188,7 +188,9 @@ export function BountyForm() {
           USDC not configured. Set NEXT_PUBLIC_USDC_ADDRESS to the Arc Testnet USDC ERC-20 address.
         </div>
       ) : null}
-      {error ? <div className="notice border-red-200 bg-red-50 font-semibold text-red-700">{error}</div> : null}
+      {error && !(wrongNetwork && error === "Switch to Arc Testnet to continue.") ? (
+        <div className="notice border-red-200 bg-red-50 font-semibold text-red-700">{error}</div>
+      ) : null}
       {status ? <div className="notice border-action/20 bg-action/10 font-semibold text-action">{status}</div> : null}
       {contractConfigured && !walletConnected ? (
         <div className="notice border-accent/25 bg-accent/10 font-semibold text-accent">
@@ -196,20 +198,20 @@ export function BountyForm() {
         </div>
       ) : null}
       {contractConfigured && wrongNetwork ? (
-        <div className="notice flex flex-col gap-3 border-accent/25 bg-accent/10 font-semibold text-accent sm:flex-row sm:items-center sm:justify-between">
-          <span>Wrong network. Switch to Arc Testnet to create and fund bounties.</span>
+        <div className="notice flex flex-col gap-3 border-line/80 bg-panel/70 font-semibold text-muted shadow-sm sm:flex-row sm:items-center sm:justify-between">
+          <span className="text-ink">Switch to Arc Testnet to create and fund this bounty.</span>
           <button
             type="button"
             onClick={onSwitchNetwork}
             disabled={isSwitching}
-            className="focus-ring inline-flex min-h-10 items-center justify-center rounded-lg border border-accent/40 bg-white px-4 py-2 text-sm font-bold text-accent disabled:cursor-not-allowed disabled:opacity-60"
+            className="focus-ring inline-flex min-h-10 items-center justify-center rounded-lg border border-action/25 bg-white px-4 py-2 text-sm font-bold text-action shadow-sm transition-colors hover:border-action/40 hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {isSwitching ? "Switching..." : "Switch to Arc Testnet"}
+            {isSwitching ? "Switching..." : "Switch network"}
           </button>
         </div>
       ) : null}
       {!contractConfigured && !ENABLE_MOCK_MODE ? (
-        <div className="notice border-red-200 bg-red-50 font-semibold text-red-700">Contract not configured.</div>
+        <div className="notice border-red-200 bg-red-50 font-semibold text-red-700">Contract address is not configured.</div>
       ) : null}
       {contractConfigured && walletConnected && isArcTestnet && !ENABLE_MOCK_MODE ? (
         <div className="notice border-action/20 bg-action/10 font-semibold text-action">

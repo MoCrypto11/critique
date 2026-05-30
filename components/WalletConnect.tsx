@@ -43,19 +43,28 @@ export function WalletConnect() {
   return (
     <div className="flex flex-col items-start gap-2 md:items-end">
       <div className="flex flex-wrap items-center gap-2">
-        {wrongNetwork ? (
-          <button
-            type="button"
-            onClick={onSwitchNetwork}
-            disabled={isSwitching}
-            className="focus-ring min-h-10 rounded-lg border border-accent/40 bg-accent/10 px-3 py-2 text-sm font-bold text-accent disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {isSwitching ? "Switching..." : "Switch to Arc Testnet"}
-          </button>
-        ) : null}
         <span className="min-h-10 rounded-lg border border-line bg-white px-3 py-2 text-sm font-bold text-ink shadow-sm">
           {address ? shortAddress(address) : "Wallet connected"}
         </span>
+        {wrongNetwork ? (
+          <>
+            <span className="inline-flex min-h-10 items-center rounded-lg border border-accent/25 bg-accent/10 px-3 py-2 text-sm font-bold text-accent">
+              Wrong network
+            </span>
+            <button
+              type="button"
+              onClick={onSwitchNetwork}
+              disabled={isSwitching}
+              className="focus-ring inline-flex min-h-10 items-center justify-center rounded-lg border border-action/25 bg-white px-3 py-2 text-sm font-bold text-action shadow-sm transition-colors hover:border-action/40 hover:bg-panel disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isSwitching ? "Switching..." : "Switch to Arc"}
+            </button>
+          </>
+        ) : (
+          <span className="inline-flex min-h-10 items-center rounded-lg border border-action/20 bg-action/10 px-3 py-2 text-sm font-bold text-action">
+            Arc Testnet
+          </span>
+        )}
         <button
           type="button"
           onClick={() => disconnect()}
@@ -64,7 +73,7 @@ export function WalletConnect() {
           Disconnect
         </button>
       </div>
-      {error ? <p className="max-w-sm text-xs font-semibold text-accent">{error}</p> : null}
+      {error ? <p className="max-w-sm text-xs font-semibold text-muted">{error}</p> : null}
     </div>
   );
 }
