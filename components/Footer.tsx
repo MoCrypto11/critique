@@ -12,8 +12,11 @@ export function Footer() {
     <footer className="mt-12 bg-[#071a18] text-white">
       <div className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[1.1fr_1fr_0.85fr] lg:px-8">
         <div>
-          <Link href="/" className="inline-flex text-lg font-black tracking-normal text-white">
-            CritiqueDrop
+          <Link href="/" className="inline-flex items-center gap-3 text-lg font-black tracking-normal text-white">
+            <span className="grid size-9 place-items-center rounded-lg bg-[#f8f5eb] text-sm font-black text-[#0b2f29]">
+              CQ
+            </span>
+            <span>Critique</span>
           </Link>
           <p className="mt-3 max-w-xs text-sm font-semibold leading-6 text-white/70">
             Useful feedback. Instant USDC rewards.
@@ -37,14 +40,14 @@ export function Footer() {
             Built on Arc
           </div>
           <p className="mt-3 text-xs leading-5 text-white/55">
-            CritiqueDrop is an independent demo project.
+            Critique is an independent demo project.
           </p>
         </div>
       </div>
 
       <div className="border-t border-white/10">
         <div className="mx-auto flex w-full max-w-6xl px-4 py-4 text-xs font-semibold text-white/55 sm:px-6 lg:px-8">
-          <p>&copy; 2026 CritiqueDrop. Built on Arc.</p>
+          <p>&copy; 2026 Critique. Built on Arc.</p>
         </div>
       </div>
     </footer>

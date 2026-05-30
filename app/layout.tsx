@@ -4,8 +4,8 @@ import { Footer } from "@/components/Footer";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: "CritiqueDrop",
-  description: "Pay people for useful feedback, not empty opinions."
+  title: "Critique",
+  description: "Pay real users for useful product feedback."
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

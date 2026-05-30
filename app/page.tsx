@@ -39,7 +39,7 @@ const faqs = [
   },
   {
     question: "Is this a survey marketplace?",
-    answer: "No. CritiqueDrop is focused on one product at a time: one bounty, one link, useful feedback, and approved rewards."
+    answer: "No. Critique is focused on one product at a time: one bounty, one link, useful feedback, and approved rewards."
   },
   {
     question: "Why use USDC?",
@@ -54,7 +54,7 @@ const faqs = [
     answer: "Not yet if mock mode is active. Mock mode proves the flow. Real USDC payouts require deploying the contract on Arc testnet and configuring the contract address."
   },
   {
-    question: "Who is CritiqueDrop for?",
+    question: "Who is Critique for?",
     answer: "Indie builders, hackathon teams, vibe coders, early founders, designers, and small teams that need useful feedback fast."
   }
 ];
@@ -74,16 +74,12 @@ export default function HomePage() {
         <section className="page-shell grid min-h-[calc(100vh-96px)] content-center md:min-h-[calc(100vh-65px)]">
           <div className="grid items-center gap-7 lg:grid-cols-[1.02fr_0.98fr]">
             <div className="max-w-3xl">
-              <p className="eyebrow">CritiqueDrop</p>
+              <p className="eyebrow">Useful feedback. Instant USDC rewards.</p>
               <h1 className="font-display mt-4 max-w-3xl text-4xl leading-tight tracking-normal text-ink sm:text-[3.25rem] lg:text-[3.75rem]">
-                Pay people for useful feedback, not empty opinions.
+                Pay real users for useful product feedback.
               </h1>
               <p className="mt-5 max-w-xl text-base font-bold leading-7 text-action">
-                A paid feedback link for founders testing products, landing pages, demos, and apps.
-              </p>
-              <p className="mt-4 max-w-2xl text-lg leading-8 text-muted">
-                Create a feedback bounty, fund it with USDC, share one link, and reward testers whose feedback actually
-                helps.
+                Create a feedback bounty, share one link, approve helpful responses, and reward contributors in USDC.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link href="/create" className="btn-primary">
@@ -134,7 +130,7 @@ export default function HomePage() {
         <section id="how-it-works" className="page-shell scroll-mt-24 py-14 sm:py-16">
           <div className="mb-8 max-w-3xl">
             <p className="eyebrow">How it works</p>
-            <h2 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">How CritiqueDrop works</h2>
+            <h2 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">How Critique works</h2>
             <p className="mt-4 text-lg leading-8 text-muted">
               Create a focused feedback bounty, share one link, and reward useful responses in USDC.
             </p>

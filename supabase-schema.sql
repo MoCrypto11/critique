@@ -1,4 +1,4 @@
--- CritiqueDrop MVP shared persistence schema.
+-- Critique MVP shared persistence schema.
 -- Run this in the Supabase SQL editor for the project used by the frontend anon key.
 
 create table if not exists bounties (
