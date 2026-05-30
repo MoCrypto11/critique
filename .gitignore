@@ -7,3 +7,5 @@ coverage
 .env.local
 .env.*.local
 typechain-types
+
+.vercel

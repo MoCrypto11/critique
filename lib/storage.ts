@@ -106,6 +106,34 @@ export function usesSharedPersistence() {
   return shouldUseSupabase();
 }
 
+function throwSupabaseResponseError(action: string, error: { message?: string } | null) {
+  if (!error) return;
+  console.error(`[Critique shared database] ${action}`, error);
+  throw new Error(error.message || "Shared database request failed.");
+}
+
+function normalizeSupabaseException(action: string, caught: unknown) {
+  console.error(`[Critique shared database] ${action}`, caught);
+  if (caught instanceof Error && caught.message === "Could not reach shared database.") {
+    return caught;
+  }
+  if (caught instanceof TypeError || (caught instanceof Error && /failed to fetch/i.test(caught.message))) {
+    return new Error("Could not reach shared database.");
+  }
+  if (caught instanceof Error) {
+    return new Error(caught.message || "Shared database request failed.");
+  }
+  return new Error("Shared database request failed.");
+}
+
+async function withSupabaseErrors<T>(action: string, task: () => Promise<T>) {
+  try {
+    return await task();
+  } catch (caught) {
+    throw normalizeSupabaseException(action, caught);
+  }
+}
+
 function read<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
   const raw = window.localStorage.getItem(key);
@@ -250,9 +278,12 @@ function toSubmissionRow(submission: FeedbackSubmission) {
 
 async function upsertSupabaseBounty(bounty: BountyMetadata) {
   if (!supabase) throw new Error("Supabase is not configured.");
-  const { error } = await supabase.from("bounties").upsert(toBountyRow(bounty));
-  if (error) throw new Error(error.message);
-  return bounty;
+  const client = supabase;
+  return withSupabaseErrors("upsert bounty", async () => {
+    const { error } = await client.from("bounties").upsert(toBountyRow(bounty));
+    throwSupabaseResponseError("upsert bounty", error);
+    return bounty;
+  });
 }
 
 export async function createLocalBounty(input: Omit<BountyMetadata, "id" | "status" | "createdAt" | "txHashes">) {
@@ -276,14 +307,17 @@ export async function getLocalBounty(id: string) {
   if (id === "demo") return ensureDemoBounty();
 
   if (shouldUseSupabase() && supabase) {
-    const { data, error } = await supabase.from("bounties").select("*").eq("id", id).maybeSingle();
-    if (error) throw new Error(error.message);
-    if (!data) return undefined;
-    const bounty = toBounty(data as BountyRow);
-    if (new Date(bounty.deadline).getTime() < Date.now() && bounty.status === "open") {
-      return updateLocalBounty(id, { status: "expired" });
-    }
-    return bounty;
+    const client = supabase;
+    return withSupabaseErrors("read bounty", async () => {
+      const { data, error } = await client.from("bounties").select("*").eq("id", id).maybeSingle();
+      throwSupabaseResponseError("read bounty", error);
+      if (!data) return undefined;
+      const bounty = toBounty(data as BountyRow);
+      if (new Date(bounty.deadline).getTime() < Date.now() && bounty.status === "open") {
+        return updateLocalBounty(id, { status: "expired" });
+      }
+      return bounty;
+    });
   }
 
   const bounty = getBounties().find((item) => item.id === id);
@@ -298,9 +332,12 @@ export async function listLocalBounties() {
   await ensureDemoBounty();
 
   if (shouldUseSupabase() && supabase) {
-    const { data, error } = await supabase.from("bounties").select("*").order("created_at", { ascending: false });
-    if (error) throw new Error(error.message);
-    return (data as BountyRow[]).map(toBounty);
+    const client = supabase;
+    return withSupabaseErrors("list bounties", async () => {
+      const { data, error } = await client.from("bounties").select("*").order("created_at", { ascending: false });
+      throwSupabaseResponseError("list bounties", error);
+      return (data as BountyRow[]).map(toBounty);
+    });
   }
 
   return getBounties();
@@ -308,22 +345,25 @@ export async function listLocalBounties() {
 
 export async function updateLocalBounty(id: string, updates: Partial<BountyMetadata>) {
   if (shouldUseSupabase() && supabase && id !== "demo") {
-    const dbUpdates: Record<string, unknown> = {};
-    if (updates.contractBountyId !== undefined) dbUpdates.contract_bounty_id = updates.contractBountyId;
-    if (updates.founderAddress !== undefined) dbUpdates.founder_address = updates.founderAddress;
-    if (updates.title !== undefined) dbUpdates.title = updates.title;
-    if (updates.productUrl !== undefined) dbUpdates.product_url = updates.productUrl;
-    if (updates.instructions !== undefined) dbUpdates.instructions = updates.instructions;
-    if (updates.rewardUSDC !== undefined) dbUpdates.reward_usdc = updates.rewardUSDC;
-    if (updates.maxSubmissions !== undefined) dbUpdates.max_submissions = updates.maxSubmissions;
-    if (updates.deadline !== undefined) dbUpdates.deadline = updates.deadline;
-    if (updates.status !== undefined) dbUpdates.status = updates.status;
-    if (updates.createdAt !== undefined) dbUpdates.created_at = updates.createdAt;
-    if (updates.txHashes !== undefined) dbUpdates.tx_hashes = updates.txHashes;
+    const client = supabase;
+    return withSupabaseErrors("update bounty", async () => {
+      const dbUpdates: Record<string, unknown> = {};
+      if (updates.contractBountyId !== undefined) dbUpdates.contract_bounty_id = updates.contractBountyId;
+      if (updates.founderAddress !== undefined) dbUpdates.founder_address = updates.founderAddress;
+      if (updates.title !== undefined) dbUpdates.title = updates.title;
+      if (updates.productUrl !== undefined) dbUpdates.product_url = updates.productUrl;
+      if (updates.instructions !== undefined) dbUpdates.instructions = updates.instructions;
+      if (updates.rewardUSDC !== undefined) dbUpdates.reward_usdc = updates.rewardUSDC;
+      if (updates.maxSubmissions !== undefined) dbUpdates.max_submissions = updates.maxSubmissions;
+      if (updates.deadline !== undefined) dbUpdates.deadline = updates.deadline;
+      if (updates.status !== undefined) dbUpdates.status = updates.status;
+      if (updates.createdAt !== undefined) dbUpdates.created_at = updates.createdAt;
+      if (updates.txHashes !== undefined) dbUpdates.tx_hashes = updates.txHashes;
 
-    const { data, error } = await supabase.from("bounties").update(dbUpdates).eq("id", id).select("*").maybeSingle();
-    if (error) throw new Error(error.message);
-    return data ? toBounty(data as BountyRow) : undefined;
+      const { data, error } = await client.from("bounties").update(dbUpdates).eq("id", id).select("*").maybeSingle();
+      throwSupabaseResponseError("update bounty", error);
+      return data ? toBounty(data as BountyRow) : undefined;
+    });
   }
 
   const bounties = getBounties();
@@ -344,9 +384,12 @@ export async function addSubmission(input: Omit<FeedbackSubmission, "id" | "stat
   };
 
   if (shouldUseSupabase() && supabase && input.bountyId !== "demo") {
-    const { error } = await supabase.from("submissions").insert(toSubmissionRow(submission));
-    if (error) throw new Error(error.message);
-    return submission;
+    const client = supabase;
+    return withSupabaseErrors("insert submission", async () => {
+      const { error } = await client.from("submissions").insert(toSubmissionRow(submission));
+      throwSupabaseResponseError("insert submission", error);
+      return submission;
+    });
   }
 
   saveSubmissions([submission, ...getSubmissions()]);
@@ -355,13 +398,16 @@ export async function addSubmission(input: Omit<FeedbackSubmission, "id" | "stat
 
 export async function listSubmissions(bountyId: string) {
   if (shouldUseSupabase() && supabase && bountyId !== "demo") {
-    const { data, error } = await supabase
-      .from("submissions")
-      .select("*")
-      .eq("bounty_id", bountyId)
-      .order("created_at", { ascending: false });
-    if (error) throw new Error(error.message);
-    return (data as SubmissionRow[]).map(toSubmission);
+    const client = supabase;
+    return withSupabaseErrors("list submissions", async () => {
+      const { data, error } = await client
+        .from("submissions")
+        .select("*")
+        .eq("bounty_id", bountyId)
+        .order("created_at", { ascending: false });
+      throwSupabaseResponseError("list submissions", error);
+      return (data as SubmissionRow[]).map(toSubmission);
+    });
   }
 
   return getSubmissions().filter((submission) => submission.bountyId === bountyId);
@@ -369,15 +415,18 @@ export async function listSubmissions(bountyId: string) {
 
 export async function approveLocalSubmission(bountyId: string, submissionId: string, payoutTxHash?: string) {
   if (shouldUseSupabase() && supabase && bountyId !== "demo") {
-    const { data, error } = await supabase
-      .from("submissions")
-      .update({ status: "approved", payout_tx_hash: payoutTxHash || null })
-      .eq("bounty_id", bountyId)
-      .eq("id", submissionId)
-      .select("*")
-      .maybeSingle();
-    if (error) throw new Error(error.message);
-    return data ? toSubmission(data as SubmissionRow) : undefined;
+    const client = supabase;
+    return withSupabaseErrors("approve submission", async () => {
+      const { data, error } = await client
+        .from("submissions")
+        .update({ status: "approved", payout_tx_hash: payoutTxHash || null })
+        .eq("bounty_id", bountyId)
+        .eq("id", submissionId)
+        .select("*")
+        .maybeSingle();
+      throwSupabaseResponseError("approve submission", error);
+      return data ? toSubmission(data as SubmissionRow) : undefined;
+    });
   }
 
   const submissions = getSubmissions();
@@ -392,15 +441,18 @@ export async function approveLocalSubmission(bountyId: string, submissionId: str
 
 export async function rejectLocalSubmission(bountyId: string, submissionId: string, rejectionReason: string) {
   if (shouldUseSupabase() && supabase && bountyId !== "demo") {
-    const { data, error } = await supabase
-      .from("submissions")
-      .update({ status: "rejected", rejection_reason: rejectionReason })
-      .eq("bounty_id", bountyId)
-      .eq("id", submissionId)
-      .select("*")
-      .maybeSingle();
-    if (error) throw new Error(error.message);
-    return data ? toSubmission(data as SubmissionRow) : undefined;
+    const client = supabase;
+    return withSupabaseErrors("reject submission", async () => {
+      const { data, error } = await client
+        .from("submissions")
+        .update({ status: "rejected", rejection_reason: rejectionReason })
+        .eq("bounty_id", bountyId)
+        .eq("id", submissionId)
+        .select("*")
+        .maybeSingle();
+      throwSupabaseResponseError("reject submission", error);
+      return data ? toSubmission(data as SubmissionRow) : undefined;
+    });
   }
 
   const submissions = getSubmissions();
