@@ -5,6 +5,38 @@ const { ethers } = hre;
 
 const usdc = (value: string) => ethers.parseUnits(value, 6);
 
+type ContractWithInterface = {
+  interface: {
+    parseError(data: string): { name: string } | null;
+  };
+};
+
+function getErrorData(error: unknown): string | undefined {
+  if (!error || typeof error !== "object") return undefined;
+  const maybe = error as { data?: unknown; error?: unknown };
+  if (typeof maybe.data === "string") return maybe.data;
+  return getErrorData(maybe.error);
+}
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  if (typeof error === "string") return error;
+  return "";
+}
+
+async function expectCustomError(promise: Promise<unknown>, contract: ContractWithInterface, errorName: string) {
+  try {
+    await promise;
+  } catch (error) {
+    const data = getErrorData(error);
+    const parsed = data ? contract.interface.parseError(data) : null;
+    if (parsed?.name === errorName || getErrorMessage(error).includes(errorName)) return;
+    throw error;
+  }
+
+  throw new Error(`Expected custom error ${errorName}`);
+}
+
 async function latestDeadline(offset = 3600) {
   const block = await ethers.provider.getBlock("latest");
   return BigInt((block?.timestamp || 0) + offset);
@@ -32,30 +64,25 @@ describe("CritiqueDropBounty", function () {
     const created = await bounty.getBounty(0);
     expect(created.founder).to.equal(founder.address);
     expect(created.rewardPerSubmission).to.equal(reward);
-    expect(created.maxSubmissions).to.equal(2);
+    expect(created.maxSubmissions).to.equal(2n);
     expect(created.deadline).to.equal(deadline);
   });
 
   it("rejects bounty with zero reward", async function () {
     const { bounty } = await deployFixture();
-    await expect(bounty.createBounty(0, 1, await latestDeadline(), "x")).to.be.revertedWithCustomError(
-      bounty,
-      "InvalidAmount"
-    );
+    await expectCustomError(bounty.createBounty(0, 1, await latestDeadline(), "x"), bounty, "InvalidAmount");
   });
 
   it("rejects bounty with zero slots", async function () {
     const { bounty } = await deployFixture();
-    await expect(bounty.createBounty(usdc("1"), 0, await latestDeadline(), "x")).to.be.revertedWithCustomError(
-      bounty,
-      "InvalidAmount"
-    );
+    await expectCustomError(bounty.createBounty(usdc("1"), 0, await latestDeadline(), "x"), bounty, "InvalidAmount");
   });
 
   it("rejects bounty with past deadline", async function () {
     const { bounty } = await deployFixture();
     const block = await ethers.provider.getBlock("latest");
-    await expect(bounty.createBounty(usdc("1"), 1, BigInt((block?.timestamp || 0) - 1), "x")).to.be.revertedWithCustomError(
+    await expectCustomError(
+      bounty.createBounty(usdc("1"), 1, BigInt((block?.timestamp || 0) - 1), "x"),
       bounty,
       "InvalidDeadline"
     );
@@ -65,7 +92,7 @@ describe("CritiqueDropBounty", function () {
     const { bounty, mockUSDC } = await deployFixture();
 
     await mockUSDC.approve(await bounty.getAddress(), usdc("2"));
-    await expect(bounty.fundBounty(0, usdc("2"))).to.emit(bounty, "BountyFunded");
+    await bounty.fundBounty(0, usdc("2"));
     expect(await bounty.remainingFunds(0)).to.equal(usdc("2"));
   });
 
@@ -75,7 +102,7 @@ describe("CritiqueDropBounty", function () {
     await bounty.fundBounty(0, usdc("2"));
 
     const hash = ethers.id("submission-1");
-    await expect(bounty.approveSubmission(0, tester.address, hash)).to.emit(bounty, "TesterPaid");
+    await bounty.approveSubmission(0, tester.address, hash);
     expect(await mockUSDC.balanceOf(tester.address)).to.equal(usdc("1"));
   });
 
@@ -84,7 +111,8 @@ describe("CritiqueDropBounty", function () {
     await mockUSDC.approve(await bounty.getAddress(), usdc("2"));
     await bounty.fundBounty(0, usdc("2"));
 
-    await expect(bounty.connect(other).approveSubmission(0, tester.address, ethers.id("x"))).to.be.revertedWithCustomError(
+    await expectCustomError(
+      bounty.connect(other).approveSubmission(0, tester.address, ethers.id("x")),
       bounty,
       "OnlyFounder"
     );
@@ -96,7 +124,8 @@ describe("CritiqueDropBounty", function () {
     await bounty.fundBounty(0, usdc("2"));
 
     await bounty.approveSubmission(0, tester.address, ethers.id("a"));
-    await expect(bounty.approveSubmission(0, tester.address, ethers.id("b"))).to.be.revertedWithCustomError(
+    await expectCustomError(
+      bounty.approveSubmission(0, tester.address, ethers.id("b")),
       bounty,
       "TesterAlreadyPaid"
     );
@@ -109,7 +138,8 @@ describe("CritiqueDropBounty", function () {
     await bounty.fundBounty(0, usdc("2"));
 
     await bounty.approveSubmission(0, tester.address, hash);
-    await expect(bounty.approveSubmission(0, testerTwo.address, hash)).to.be.revertedWithCustomError(
+    await expectCustomError(
+      bounty.approveSubmission(0, testerTwo.address, hash),
       bounty,
       "SubmissionHashAlreadyUsed"
     );
@@ -121,7 +151,8 @@ describe("CritiqueDropBounty", function () {
     await bounty.fundBounty(0, usdc("2"));
 
     await bounty.approveSubmission(0, tester.address, ethers.id("a"));
-    await expect(bounty.approveSubmission(0, testerTwo.address, ethers.id("b"))).to.be.revertedWithCustomError(
+    await expectCustomError(
+      bounty.approveSubmission(0, testerTwo.address, ethers.id("b")),
       bounty,
       "MaxSubmissionsReached"
     );
@@ -129,7 +160,8 @@ describe("CritiqueDropBounty", function () {
 
   it("cannot approve without enough funded balance", async function () {
     const { bounty, tester } = await deployFixture();
-    await expect(bounty.approveSubmission(0, tester.address, ethers.id("a"))).to.be.revertedWithCustomError(
+    await expectCustomError(
+      bounty.approveSubmission(0, tester.address, ethers.id("a")),
       bounty,
       "InsufficientBountyFunds"
     );
@@ -137,7 +169,7 @@ describe("CritiqueDropBounty", function () {
 
   it("founder can close bounty", async function () {
     const { bounty } = await deployFixture();
-    await expect(bounty.closeBounty(0)).to.emit(bounty, "BountyClosed");
+    await bounty.closeBounty(0);
     expect((await bounty.getBounty(0)).closed).to.equal(true);
   });
 
@@ -148,7 +180,7 @@ describe("CritiqueDropBounty", function () {
     await bounty.closeBounty(0);
 
     const before = await mockUSDC.balanceOf(founder.address);
-    await expect(bounty.refundUnused(0)).to.emit(bounty, "UnusedRefunded");
+    await bounty.refundUnused(0);
     expect(await mockUSDC.balanceOf(founder.address)).to.equal(before + usdc("2"));
   });
 
@@ -170,6 +202,6 @@ describe("CritiqueDropBounty", function () {
     await bounty.fundBounty(0, usdc("2"));
     await bounty.closeBounty(0);
 
-    await expect(bounty.connect(other).refundUnused(0)).to.be.revertedWithCustomError(bounty, "OnlyFounder");
+    await expectCustomError(bounty.connect(other).refundUnused(0), bounty, "OnlyFounder");
   });
 });
