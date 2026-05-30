@@ -29,14 +29,18 @@ export default function ReviewPage({ params }: { params: { id: string } }) {
   const [busyId, setBusyId] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const refresh = useCallback(() => {
-    setBounty(getLocalBounty(params.id));
-    setSubmissions(listSubmissions(params.id));
+  const refresh = useCallback(async () => {
+    const [nextBounty, nextSubmissions] = await Promise.all([getLocalBounty(params.id), listSubmissions(params.id)]);
+    setBounty(nextBounty);
+    setSubmissions(nextSubmissions);
     setIsLoaded(true);
   }, [params.id]);
 
   useEffect(() => {
-    refresh();
+    void refresh().catch((caught) => {
+      setError(caught instanceof Error ? caught.message : "Could not load submissions.");
+      setIsLoaded(true);
+    });
   }, [refresh]);
 
   async function approve(submission: FeedbackSubmission) {
@@ -62,14 +66,14 @@ export default function ReviewPage({ params }: { params: { id: string } }) {
           account: address
         });
         payoutTxHash = txHash;
-        addTxHashToBounty(bounty.id, txHash);
+        await addTxHashToBounty(bounty.id, txHash);
         await publicClient.waitForTransactionReceipt({ hash: txHash });
       } else if (!ENABLE_MOCK_MODE) {
         throw new Error("Contract is not configured and mock mode is disabled.");
       }
 
-      approveLocalSubmission(params.id, submission.id, payoutTxHash);
-      refresh();
+      await approveLocalSubmission(params.id, submission.id, payoutTxHash);
+      await refresh();
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Could not approve submission.");
     } finally {
@@ -77,11 +81,15 @@ export default function ReviewPage({ params }: { params: { id: string } }) {
     }
   }
 
-  function reject(submission: FeedbackSubmission) {
+  async function reject(submission: FeedbackSubmission) {
     const reason = window.prompt("Rejection reason");
     if (!reason) return;
-    rejectLocalSubmission(params.id, submission.id, reason);
-    refresh();
+    try {
+      await rejectLocalSubmission(params.id, submission.id, reason);
+      await refresh();
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Could not reject submission.");
+    }
   }
 
   const pendingCount = submissions.filter((submission) => submission.status === "pending").length;

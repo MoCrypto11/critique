@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getAddress } from "viem";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { AppHeader } from "@/components/AppHeader";
@@ -12,7 +12,14 @@ import { ReceiptCard } from "@/components/ReceiptCard";
 import { StatCard } from "@/components/StatCard";
 import { TxHashLink } from "@/components/TxHashLink";
 import { CRITIQUE_DROP_CONTRACT, ENABLE_MOCK_MODE, critiqueDropBountyAbi } from "@/lib/contracts";
-import { addTxHashToBounty, BountyMetadata, getLocalBounty, listSubmissions, updateLocalBounty } from "@/lib/storage";
+import {
+  addTxHashToBounty,
+  BountyMetadata,
+  FeedbackSubmission,
+  getLocalBounty,
+  listSubmissions,
+  updateLocalBounty
+} from "@/lib/storage";
 
 export default function DashboardPage({ params }: { params: { id: string } }) {
   const { address, isConnected } = useAccount();
@@ -23,8 +30,8 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
   const [status, setStatus] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
   const [publicLink, setPublicLink] = useState("");
+  const [submissions, setSubmissions] = useState<FeedbackSubmission[]>([]);
 
-  const submissions = useMemo(() => (bounty ? listSubmissions(bounty.id) : []), [bounty]);
   const approved = submissions.filter((submission) => submission.status === "approved");
   const pending = submissions.filter((submission) => submission.status === "pending");
   const rejected = submissions.filter((submission) => submission.status === "rejected");
@@ -34,14 +41,20 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
   const remaining = Math.max(0, totalFunded - totalPaid);
   const canRefund = bounty ? bounty.status === "closed" || new Date(bounty.deadline).getTime() <= Date.now() : false;
 
-  const refresh = useCallback(() => {
-    setBounty(getLocalBounty(params.id));
+  const refresh = useCallback(async () => {
+    const nextBounty = await getLocalBounty(params.id);
+    const nextSubmissions = nextBounty ? await listSubmissions(nextBounty.id) : [];
+    setBounty(nextBounty);
+    setSubmissions(nextSubmissions);
     setPublicLink(`${window.location.origin}/bounty/${params.id}`);
     setIsLoaded(true);
   }, [params.id]);
 
   useEffect(() => {
-    refresh();
+    void refresh().catch((caught) => {
+      setError(caught instanceof Error ? caught.message : "Could not load dashboard.");
+      setIsLoaded(true);
+    });
   }, [refresh]);
 
   async function closeBounty() {
@@ -64,14 +77,14 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
           args: [BigInt(bounty.contractBountyId)],
           account: address
         });
-        addTxHashToBounty(bounty.id, txHash);
+        await addTxHashToBounty(bounty.id, txHash);
         await publicClient.waitForTransactionReceipt({ hash: txHash });
       } else if (!ENABLE_MOCK_MODE) {
         throw new Error("Contract is not configured and mock mode is disabled.");
       }
 
-      updateLocalBounty(bounty.id, { status: "closed" });
-      refresh();
+      await updateLocalBounty(bounty.id, { status: "closed" });
+      await refresh();
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Could not close bounty.");
     } finally {
@@ -100,14 +113,14 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
           args: [BigInt(bounty.contractBountyId)],
           account: address
         });
-        addTxHashToBounty(bounty.id, txHash);
+        await addTxHashToBounty(bounty.id, txHash);
         await publicClient.waitForTransactionReceipt({ hash: txHash });
       } else if (!ENABLE_MOCK_MODE) {
         throw new Error("Contract is not configured and mock mode is disabled.");
       }
 
       setStatus("Unused funds refunded.");
-      refresh();
+      await refresh();
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Could not refund unused funds.");
     }

@@ -64,7 +64,7 @@ export default function HomePage() {
   const [openFaq, setOpenFaq] = useState(0);
 
   useEffect(() => {
-    ensureDemoBounty();
+    void ensureDemoBounty();
   }, []);
 
   return (

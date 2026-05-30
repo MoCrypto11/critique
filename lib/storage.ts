@@ -1,4 +1,5 @@
 import { createSubmissionHash } from "./hash";
+import { isSupabaseConfigured, supabase } from "./supabase";
 
 const BOUNTIES_KEY = "critique-drop:bounties";
 const SUBMISSIONS_KEY = "critique-drop:submissions";
@@ -54,6 +55,57 @@ export type FeedbackSubmission = {
   createdAt: string;
 };
 
+type BountyRow = {
+  id: string;
+  contract_bounty_id: string | null;
+  founder_address: string | null;
+  title: string;
+  product_url: string;
+  instructions: string;
+  reward_usdc: string;
+  max_submissions: number;
+  deadline: string;
+  status: BountyMetadata["status"];
+  created_at: string;
+  tx_hashes: string[] | null;
+};
+
+type SubmissionRow = {
+  id: string;
+  bounty_id: string;
+  tester_wallet: string;
+  feedback_type: FeedbackSubmission["feedbackType"] | null;
+  tester_context: string | null;
+  first_impression: string | null;
+  tried_first: string | null;
+  confusion: string | null;
+  value_clarity: string | null;
+  hesitation: string | null;
+  decision: FeedbackSubmission["decision"] | null;
+  decision_reason: string | null;
+  best_improvement: string | null;
+  video_link: string | null;
+  technical_background: string | null;
+  technical_problem: string | null;
+  technical_fix: string | null;
+  expected_impact: string | null;
+  difficulty: FeedbackSubmission["estimatedDifficulty"] | null;
+  proof_link: string | null;
+  submission_hash: string;
+  status: FeedbackSubmission["status"];
+  rejection_reason: string | null;
+  payout_tx_hash: string | null;
+  created_at: string;
+};
+
+function shouldUseSupabase() {
+  return Boolean(isSupabaseConfigured && supabase);
+}
+
+export function usesSharedPersistence() {
+  return shouldUseSupabase();
+}
+
 function read<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
   const raw = window.localStorage.getItem(key);
@@ -91,7 +143,119 @@ function saveSubmissions(submissions: FeedbackSubmission[]) {
   write(SUBMISSIONS_KEY, submissions);
 }
 
-export function createLocalBounty(input: Omit<BountyMetadata, "id" | "status" | "createdAt" | "txHashes">) {
+function toBounty(row: BountyRow): BountyMetadata {
+  return {
+    id: row.id,
+    contractBountyId: row.contract_bounty_id || undefined,
+    founderAddress: row.founder_address || undefined,
+    title: row.title,
+    productUrl: row.product_url,
+    instructions: row.instructions,
+    rewardUSDC: row.reward_usdc,
+    maxSubmissions: row.max_submissions,
+    deadline: row.deadline,
+    status: row.status,
+    createdAt: row.created_at,
+    txHashes: row.tx_hashes || []
+  };
+}
+
+function toBountyRow(bounty: BountyMetadata) {
+  return {
+    id: bounty.id,
+    contract_bounty_id: bounty.contractBountyId || null,
+    founder_address: bounty.founderAddress || null,
+    title: bounty.title,
+    product_url: bounty.productUrl,
+    instructions: bounty.instructions,
+    reward_usdc: bounty.rewardUSDC,
+    max_submissions: bounty.maxSubmissions,
+    deadline: bounty.deadline,
+    status: bounty.status,
+    created_at: bounty.createdAt,
+    tx_hashes: bounty.txHashes
+  };
+}
+
+function toSubmission(row: SubmissionRow): FeedbackSubmission {
+  const isVideo = row.feedback_type === "video_walkthrough";
+  const isTechnical = row.feedback_type === "technical_proposal";
+
+  return {
+    id: row.id,
+    bountyId: row.bounty_id,
+    testerWallet: row.tester_wallet,
+    feedbackType: row.feedback_type || undefined,
+    testerContext: row.tester_context || undefined,
+    firstImpression: isVideo ? undefined : row.first_impression || undefined,
+    firstAction: row.tried_first || undefined,
+    confusionAnswer: isVideo ? undefined : row.confusion || undefined,
+    valueClarity: isTechnical ? undefined : row.value_clarity || undefined,
+    hesitation: row.hesitation || undefined,
+    decision: row.decision || undefined,
+    decisionReason: row.decision_reason || undefined,
+    bestImprovement: isVideo ? undefined : row.best_improvement || undefined,
+    proofLink: !isTechnical ? row.proof_link || undefined : undefined,
+    videoLink: row.video_link || undefined,
+    videoSummary: isVideo ? row.first_impression || undefined : undefined,
+    biggestIssue: isVideo ? row.confusion || undefined : undefined,
+    videoImprovement: isVideo ? row.best_improvement || undefined : undefined,
+    contributorBackground: row.technical_background || undefined,
+    technicalProblem: row.technical_problem || undefined,
+    technicalWhy: isTechnical ? row.value_clarity || undefined : undefined,
+    suggestedFix: row.technical_fix || undefined,
+    expectedImpact: row.expected_impact || undefined,
+    estimatedDifficulty: row.difficulty || undefined,
+    referenceLink: isTechnical ? row.proof_link || undefined : undefined,
+    status: row.status,
+    rejectionReason: row.rejection_reason || undefined,
+    submissionHash: row.submission_hash,
+    payoutTxHash: row.payout_tx_hash || undefined,
+    createdAt: row.created_at
+  };
+}
+
+function toSubmissionRow(submission: FeedbackSubmission) {
+  const isVideo = submission.feedbackType === "video_walkthrough";
+  const isTechnical = submission.feedbackType === "technical_proposal";
+
+  return {
+    id: submission.id,
+    bounty_id: submission.bountyId,
+    tester_wallet: submission.testerWallet,
+    feedback_type: submission.feedbackType || null,
+    tester_context: submission.testerContext || null,
+    first_impression: isVideo ? submission.videoSummary || null : submission.firstImpression || null,
+    tried_first: submission.firstAction || null,
+    confusion: isVideo ? submission.biggestIssue || null : submission.confusionAnswer || null,
+    value_clarity: isTechnical ? submission.technicalWhy || null : submission.valueClarity || null,
+    hesitation: submission.hesitation || null,
+    decision: submission.decision || null,
+    decision_reason: submission.decisionReason || null,
+    best_improvement: isVideo ? submission.videoImprovement || null : submission.bestImprovement || null,
+    video_link: submission.videoLink || null,
+    technical_background: submission.contributorBackground || null,
+    technical_problem: submission.technicalProblem || null,
+    technical_fix: submission.suggestedFix || null,
+    expected_impact: submission.expectedImpact || null,
+    difficulty: submission.estimatedDifficulty || null,
+    proof_link: submission.referenceLink || submission.proofLink || null,
+    submission_hash: submission.submissionHash,
+    status: submission.status,
+    rejection_reason: submission.rejectionReason || null,
+    payout_tx_hash: submission.payoutTxHash || null,
+    created_at: submission.createdAt
+  };
+}
+
+async function upsertSupabaseBounty(bounty: BountyMetadata) {
+  if (!supabase) throw new Error("Supabase is not configured.");
+  const { error } = await supabase.from("bounties").upsert(toBountyRow(bounty));
+  if (error) throw new Error(error.message);
+  return bounty;
+}
+
+export async function createLocalBounty(input: Omit<BountyMetadata, "id" | "status" | "createdAt" | "txHashes">) {
   const bounty: BountyMetadata = {
     ...input,
     id: newId("bounty"),
@@ -99,12 +263,29 @@ export function createLocalBounty(input: Omit<BountyMetadata, "id" | "status" | 
     createdAt: new Date().toISOString(),
     txHashes: []
   };
+
+  if (shouldUseSupabase()) {
+    return upsertSupabaseBounty(bounty);
+  }
+
   saveBounties([bounty, ...getBounties()]);
   return bounty;
 }
 
-export function getLocalBounty(id: string) {
+export async function getLocalBounty(id: string) {
   if (id === "demo") return ensureDemoBounty();
+
+  if (shouldUseSupabase() && supabase) {
+    const { data, error } = await supabase.from("bounties").select("*").eq("id", id).maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!data) return undefined;
+    const bounty = toBounty(data as BountyRow);
+    if (new Date(bounty.deadline).getTime() < Date.now() && bounty.status === "open") {
+      return updateLocalBounty(id, { status: "expired" });
+    }
+    return bounty;
+  }
+
   const bounty = getBounties().find((item) => item.id === id);
   if (!bounty) return undefined;
   if (new Date(bounty.deadline).getTime() < Date.now() && bounty.status === "open") {
@@ -113,19 +294,45 @@ export function getLocalBounty(id: string) {
   return bounty;
 }
 
-export function listLocalBounties() {
-  ensureDemoBounty();
+export async function listLocalBounties() {
+  await ensureDemoBounty();
+
+  if (shouldUseSupabase() && supabase) {
+    const { data, error } = await supabase.from("bounties").select("*").order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return (data as BountyRow[]).map(toBounty);
+  }
+
   return getBounties();
 }
 
-export function updateLocalBounty(id: string, updates: Partial<BountyMetadata>) {
+export async function updateLocalBounty(id: string, updates: Partial<BountyMetadata>) {
+  if (shouldUseSupabase() && supabase && id !== "demo") {
+    const dbUpdates: Record<string, unknown> = {};
+    if (updates.contractBountyId !== undefined) dbUpdates.contract_bounty_id = updates.contractBountyId;
+    if (updates.founderAddress !== undefined) dbUpdates.founder_address = updates.founderAddress;
+    if (updates.title !== undefined) dbUpdates.title = updates.title;
+    if (updates.productUrl !== undefined) dbUpdates.product_url = updates.productUrl;
+    if (updates.instructions !== undefined) dbUpdates.instructions = updates.instructions;
+    if (updates.rewardUSDC !== undefined) dbUpdates.reward_usdc = updates.rewardUSDC;
+    if (updates.maxSubmissions !== undefined) dbUpdates.max_submissions = updates.maxSubmissions;
+    if (updates.deadline !== undefined) dbUpdates.deadline = updates.deadline;
+    if (updates.status !== undefined) dbUpdates.status = updates.status;
+    if (updates.createdAt !== undefined) dbUpdates.created_at = updates.createdAt;
+    if (updates.txHashes !== undefined) dbUpdates.tx_hashes = updates.txHashes;
+
+    const { data, error } = await supabase.from("bounties").update(dbUpdates).eq("id", id).select("*").maybeSingle();
+    if (error) throw new Error(error.message);
+    return data ? toBounty(data as BountyRow) : undefined;
+  }
+
   const bounties = getBounties();
   const next = bounties.map((bounty) => (bounty.id === id ? { ...bounty, ...updates } : bounty));
   saveBounties(next);
   return next.find((bounty) => bounty.id === id);
 }
 
-export function addSubmission(input: Omit<FeedbackSubmission, "id" | "status" | "submissionHash" | "createdAt">) {
+export async function addSubmission(input: Omit<FeedbackSubmission, "id" | "status" | "submissionHash" | "createdAt">) {
   const id = newId("submission");
   const submissionHash = createSubmissionHash({ ...input, submissionId: id });
   const submission: FeedbackSubmission = {
@@ -135,15 +342,44 @@ export function addSubmission(input: Omit<FeedbackSubmission, "id" | "status" | 
     submissionHash,
     createdAt: new Date().toISOString()
   };
+
+  if (shouldUseSupabase() && supabase && input.bountyId !== "demo") {
+    const { error } = await supabase.from("submissions").insert(toSubmissionRow(submission));
+    if (error) throw new Error(error.message);
+    return submission;
+  }
+
   saveSubmissions([submission, ...getSubmissions()]);
   return submission;
 }
 
-export function listSubmissions(bountyId: string) {
+export async function listSubmissions(bountyId: string) {
+  if (shouldUseSupabase() && supabase && bountyId !== "demo") {
+    const { data, error } = await supabase
+      .from("submissions")
+      .select("*")
+      .eq("bounty_id", bountyId)
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return (data as SubmissionRow[]).map(toSubmission);
+  }
+
   return getSubmissions().filter((submission) => submission.bountyId === bountyId);
 }
 
-export function approveLocalSubmission(bountyId: string, submissionId: string, payoutTxHash?: string) {
+export async function approveLocalSubmission(bountyId: string, submissionId: string, payoutTxHash?: string) {
+  if (shouldUseSupabase() && supabase && bountyId !== "demo") {
+    const { data, error } = await supabase
+      .from("submissions")
+      .update({ status: "approved", payout_tx_hash: payoutTxHash || null })
+      .eq("bounty_id", bountyId)
+      .eq("id", submissionId)
+      .select("*")
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return data ? toSubmission(data as SubmissionRow) : undefined;
+  }
+
   const submissions = getSubmissions();
   const next = submissions.map((submission) =>
     submission.bountyId === bountyId && submission.id === submissionId
@@ -154,7 +390,19 @@ export function approveLocalSubmission(bountyId: string, submissionId: string, p
   return next.find((submission) => submission.id === submissionId);
 }
 
-export function rejectLocalSubmission(bountyId: string, submissionId: string, rejectionReason: string) {
+export async function rejectLocalSubmission(bountyId: string, submissionId: string, rejectionReason: string) {
+  if (shouldUseSupabase() && supabase && bountyId !== "demo") {
+    const { data, error } = await supabase
+      .from("submissions")
+      .update({ status: "rejected", rejection_reason: rejectionReason })
+      .eq("bounty_id", bountyId)
+      .eq("id", submissionId)
+      .select("*")
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return data ? toSubmission(data as SubmissionRow) : undefined;
+  }
+
   const submissions = getSubmissions();
   const next = submissions.map((submission) =>
     submission.bountyId === bountyId && submission.id === submissionId
@@ -165,13 +413,13 @@ export function rejectLocalSubmission(bountyId: string, submissionId: string, re
   return next.find((submission) => submission.id === submissionId);
 }
 
-export function addTxHashToBounty(bountyId: string, txHash: string) {
-  const bounty = getLocalBounty(bountyId);
+export async function addTxHashToBounty(bountyId: string, txHash: string) {
+  const bounty = await getLocalBounty(bountyId);
   if (!bounty) return undefined;
   return updateLocalBounty(bountyId, { txHashes: [...bounty.txHashes, txHash] });
 }
 
-export function ensureDemoBounty() {
+export async function ensureDemoBounty() {
   const existing = getBounties().find((item) => item.id === "demo");
   if (existing) return existing;
 

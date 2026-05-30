@@ -97,7 +97,7 @@ export function BountyForm() {
     setIsSubmitting(true);
 
     try {
-      const bounty = createLocalBounty({
+      const bounty = await createLocalBounty({
         founderAddress: address,
         title,
         productUrl,
@@ -133,7 +133,7 @@ export function BountyForm() {
           args: [rewardAmount, BigInt(maxSubmissions), deadlineSeconds, `local://${bounty.id}`],
           account: address
         });
-        addTxHashToBounty(bounty.id, createHash);
+        await addTxHashToBounty(bounty.id, createHash);
         const createReceipt = await publicClient.waitForTransactionReceipt({ hash: createHash });
         const createdLog = createReceipt.logs
           .map((log) => {
@@ -145,7 +145,7 @@ export function BountyForm() {
           })
           .find((log) => log?.eventName === "BountyCreated");
         const contractBountyId = createdLog?.args.bountyId?.toString() || "0";
-        updateLocalBounty(bounty.id, { contractBountyId });
+        await updateLocalBounty(bounty.id, { contractBountyId });
 
         setStatus("Approving USDC for funding...");
         const approveHash = await walletClient.writeContract({
@@ -155,7 +155,7 @@ export function BountyForm() {
           args: [getAddress(CRITIQUE_DROP_CONTRACT), fundAmount],
           account: address
         });
-        addTxHashToBounty(bounty.id, approveHash);
+        await addTxHashToBounty(bounty.id, approveHash);
         await publicClient.waitForTransactionReceipt({ hash: approveHash });
 
         setStatus("Funding bounty with USDC...");
@@ -166,7 +166,7 @@ export function BountyForm() {
           args: [BigInt(contractBountyId), fundAmount],
           account: address
         });
-        addTxHashToBounty(bounty.id, fundHash);
+        await addTxHashToBounty(bounty.id, fundHash);
         await publicClient.waitForTransactionReceipt({ hash: fundHash });
       }
 

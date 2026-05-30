@@ -62,10 +62,30 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
   const [feedbackType, setFeedbackType] = useState<FeedbackType>("quick_written");
 
   useEffect(() => {
-    setBounty(getLocalBounty(params.id));
-    setSubmissions(listSubmissions(params.id));
-    setPublicLink(`${window.location.origin}/bounty/${params.id}`);
-    setIsLoaded(true);
+    let cancelled = false;
+
+    async function loadBounty() {
+      try {
+        const [nextBounty, nextSubmissions] = await Promise.all([getLocalBounty(params.id), listSubmissions(params.id)]);
+        if (cancelled) return;
+        setBounty(nextBounty);
+        setSubmissions(nextSubmissions);
+      } catch (caught) {
+        if (!cancelled) {
+          setError(caught instanceof Error ? caught.message : "Could not load bounty.");
+        }
+      } finally {
+        if (!cancelled) {
+          setPublicLink(`${window.location.origin}/bounty/${params.id}`);
+          setIsLoaded(true);
+        }
+      }
+    }
+
+    void loadBounty();
+    return () => {
+      cancelled = true;
+    };
   }, [params.id]);
 
   const status = useMemo(() => (bounty ? deriveStatus(bounty, submissions) : "open"), [bounty, submissions]);
@@ -77,7 +97,7 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
   const formSection = "space-y-3 rounded-xl border border-line/70 bg-panel/45 p-4";
   const isWrittenFeedback = feedbackType === "quick_written" || feedbackType === "deep_product_review";
 
-  function onSubmit(event: FormEvent<HTMLFormElement>) {
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
     setMessage("");
@@ -87,7 +107,8 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
     if (status === "expired") return setError("This bounty has expired.");
     if (status === "closed") return setError("This bounty is closed.");
 
-    const form = new FormData(event.currentTarget);
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
     const selectedFeedbackType = String(form.get("feedbackType") || feedbackType).trim() as FeedbackType;
     const testerWallet = String(form.get("testerWallet") || "").trim();
     const testerContext = String(form.get("testerContext") || "").trim();
@@ -153,35 +174,39 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
       return setError("This wallet already submitted feedback for this bounty.");
     }
 
-    addSubmission({
-      bountyId: bounty.id,
-      testerWallet,
-      feedbackType: selectedFeedbackType,
-      testerContext: testerContext || undefined,
-      firstImpression: firstImpression || undefined,
-      firstAction: firstAction || undefined,
-      confusionAnswer: confusionAnswer || undefined,
-      valueClarity: valueClarity || undefined,
-      hesitation: hesitation || undefined,
-      decision: decision || undefined,
-      decisionReason: decisionReason || undefined,
-      bestImprovement: bestImprovement || undefined,
-      proofLink: proofLink || undefined,
-      videoLink: videoLink || undefined,
-      videoSummary: videoSummary || undefined,
-      biggestIssue: biggestIssue || undefined,
-      videoImprovement: videoImprovement || undefined,
-      contributorBackground: contributorBackground || undefined,
-      technicalProblem: technicalProblem || undefined,
-      technicalWhy: technicalWhy || undefined,
-      suggestedFix: suggestedFix || undefined,
-      expectedImpact: expectedImpact || undefined,
-      estimatedDifficulty: estimatedDifficulty || undefined,
-      referenceLink: referenceLink || undefined
-    });
-    setSubmissions(listSubmissions(bounty.id));
-    (event.currentTarget as HTMLFormElement).reset();
-    setMessage("Feedback submitted. If approved, this wallet receives the USDC reward.");
+    try {
+      await addSubmission({
+        bountyId: bounty.id,
+        testerWallet,
+        feedbackType: selectedFeedbackType,
+        testerContext: testerContext || undefined,
+        firstImpression: firstImpression || undefined,
+        firstAction: firstAction || undefined,
+        confusionAnswer: confusionAnswer || undefined,
+        valueClarity: valueClarity || undefined,
+        hesitation: hesitation || undefined,
+        decision: decision || undefined,
+        decisionReason: decisionReason || undefined,
+        bestImprovement: bestImprovement || undefined,
+        proofLink: proofLink || undefined,
+        videoLink: videoLink || undefined,
+        videoSummary: videoSummary || undefined,
+        biggestIssue: biggestIssue || undefined,
+        videoImprovement: videoImprovement || undefined,
+        contributorBackground: contributorBackground || undefined,
+        technicalProblem: technicalProblem || undefined,
+        technicalWhy: technicalWhy || undefined,
+        suggestedFix: suggestedFix || undefined,
+        expectedImpact: expectedImpact || undefined,
+        estimatedDifficulty: estimatedDifficulty || undefined,
+        referenceLink: referenceLink || undefined
+      });
+      setSubmissions(await listSubmissions(bounty.id));
+      formElement.reset();
+      setMessage("Feedback submitted. If approved, this wallet receives the USDC reward.");
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Could not submit feedback.");
+    }
   }
 
   if (!isLoaded) {
