@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #17201d;
+  background: #f6f7f2;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(246, 247, 242, 0.92) 280px),
+    #f6f7f2;
+  color: #17201d;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  text-rendering: optimizeLegibility;
+}
+
+input,
+textarea,
+select {
+  color: #17201d;
+  font: inherit;
+}
+
+button {
+  font: inherit;
+}
+
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-action/40 focus:ring-offset-2;
+}
+
+.focus-ring:focus {
+  --tw-ring-offset-color: #f6f7f2;
+}
+
+.page-shell {
+  @apply mx-auto w-full max-w-6xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8;
+}
+
+.eyebrow {
+  @apply text-xs font-bold uppercase tracking-[0.16em] text-action;
+}
+
+.font-display {
+  font-family: "Californian FB", Georgia, "Times New Roman", serif;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.surface {
+  @apply rounded-xl border border-line/80 bg-white shadow-[0_14px_42px_rgba(23,32,29,0.06)];
+}
+
+.surface-soft {
+  @apply rounded-xl border border-line/70 bg-panel/85;
+}
+
+.btn-primary {
+  @apply focus-ring inline-flex min-h-11 items-center justify-center rounded-lg bg-action px-5 py-3 text-sm font-bold text-white shadow-[0_10px_24px_rgba(17,97,73,0.20)] transition-colors disabled:cursor-not-allowed disabled:opacity-55;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #0d513d;
+}
+
+.btn-secondary {
+  @apply focus-ring inline-flex min-h-11 items-center justify-center rounded-lg border border-line bg-white px-5 py-3 text-sm font-bold text-ink shadow-sm transition-colors hover:border-action/40 hover:bg-panel disabled:cursor-not-allowed disabled:opacity-55;
+}
+
+.btn-subtle {
+  @apply focus-ring inline-flex min-h-10 items-center justify-center rounded-lg border border-transparent px-4 py-2 text-sm font-bold text-muted transition-colors hover:bg-panel hover:text-ink disabled:cursor-not-allowed disabled:opacity-55;
+}
+
+.field {
+  @apply focus-ring mt-2 w-full rounded-lg border border-line bg-white px-3 py-3 text-sm shadow-inner shadow-ink/[0.02] placeholder:text-muted/60;
+}
+
+.label {
+  @apply block text-sm font-bold text-ink;
+}
+
+.notice {
+  @apply rounded-xl border p-4 text-sm;
+}
+
+.font-black {
+  font-weight: 760;
+}
+
+.font-bold {
+  font-weight: 650;
+}

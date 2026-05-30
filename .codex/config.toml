@@ -1,0 +1,5 @@
+[mcp_servers.arc-docs]
+url = "https://docs.arc.io/mcp"
+enabled = true
+required = true
+tool_timeout_sec = 60
