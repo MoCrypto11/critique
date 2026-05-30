@@ -27,8 +27,8 @@ const bountyCreatedEvent = {
 
 export function BountyForm() {
   const router = useRouter();
-  const { address, isConnected } = useAccount();
-  const chainId = useChainId();
+  const { address, isConnected, chainId: accountChainId } = useAccount();
+  const connectedChainId = useChainId();
   const publicClient = usePublicClient();
   const { data: walletClient } = useWalletClient();
   const { switchChainAsync, isPending: isSwitching } = useSwitchChain();
@@ -39,10 +39,12 @@ export function BountyForm() {
   const [slotsPreview, setSlotsPreview] = useState("");
 
   const contractConfigured = Boolean(CRITIQUE_DROP_CONTRACT);
+  const walletConnected = Boolean(address) || isConnected;
+  const chainId = accountChainId ?? connectedChainId;
   const isArcTestnet = chainId === ARC_CHAIN_ID;
-  const wrongNetwork = isConnected && !isArcTestnet;
+  const wrongNetwork = walletConnected && !isArcTestnet;
   const mockOnlyMode = ENABLE_MOCK_MODE && !contractConfigured;
-  const canCreateBounty = mockOnlyMode || (isConnected && isArcTestnet && contractConfigured);
+  const canCreateBounty = mockOnlyMode || (walletConnected && isArcTestnet && contractConfigured && !ENABLE_MOCK_MODE);
   const fundingSummary = useMemo(() => {
     const reward = Number(rewardPreview);
     const slots = Number(slotsPreview);
@@ -86,7 +88,7 @@ export function BountyForm() {
     if (!Number.isFinite(reward) || reward <= 0) return setError("Reward must be greater than 0.");
     if (!Number.isInteger(maxSubmissions) || maxSubmissions < 1) return setError("Slots must be at least 1.");
     if (!deadline || new Date(deadline).getTime() <= Date.now()) return setError("Deadline must be in the future.");
-    if (contractConfigured && !isConnected) return setError("Connect wallet before creating an on-chain bounty.");
+    if (contractConfigured && !walletConnected) return setError("Connect wallet before creating an on-chain bounty.");
     if (contractConfigured && wrongNetwork) {
       return setError("Wrong network. Switch to Arc Testnet to create and fund bounties.");
     }
@@ -106,11 +108,14 @@ export function BountyForm() {
       });
 
       if (contractConfigured) {
-        if (!isConnected || !address || !walletClient || !publicClient) {
+        if (!walletConnected || !address) {
           throw new Error("Connect wallet before creating an on-chain bounty.");
         }
         if (wrongNetwork) {
           throw new Error("Wrong network. Switch to Arc Testnet to create and fund bounties.");
+        }
+        if (!walletClient || !publicClient) {
+          throw new Error("Wallet client is not ready. Reconnect your wallet and try again.");
         }
         if (!USDC_ADDRESS) {
           throw new Error("USDC address is not configured.");
@@ -185,7 +190,7 @@ export function BountyForm() {
       ) : null}
       {error ? <div className="notice border-red-200 bg-red-50 font-semibold text-red-700">{error}</div> : null}
       {status ? <div className="notice border-action/20 bg-action/10 font-semibold text-action">{status}</div> : null}
-      {contractConfigured && !isConnected ? (
+      {contractConfigured && !walletConnected ? (
         <div className="notice border-accent/25 bg-accent/10 font-semibold text-accent">
           Connect wallet before creating an on-chain bounty.
         </div>
@@ -205,6 +210,11 @@ export function BountyForm() {
       ) : null}
       {!contractConfigured && !ENABLE_MOCK_MODE ? (
         <div className="notice border-red-200 bg-red-50 font-semibold text-red-700">Contract not configured.</div>
+      ) : null}
+      {contractConfigured && walletConnected && isArcTestnet && !ENABLE_MOCK_MODE ? (
+        <div className="notice border-action/20 bg-action/10 font-semibold text-action">
+          Ready to create on-chain bounty.
+        </div>
       ) : null}
 
       <div className="grid gap-6 lg:grid-cols-[1fr_320px] lg:items-start">

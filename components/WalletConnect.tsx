@@ -8,12 +8,14 @@ import { getWalletErrorMessage, switchToArcTestnet } from "@/lib/walletNetwork";
 
 export function WalletConnect() {
   const [error, setError] = useState("");
-  const { address, isConnected } = useAccount();
-  const chainId = useChainId();
+  const { address, isConnected, chainId: accountChainId } = useAccount();
+  const connectedChainId = useChainId();
   const { connectors, connect, isPending } = useConnect();
   const { disconnect } = useDisconnect();
   const { switchChainAsync, isPending: isSwitching } = useSwitchChain();
-  const wrongNetwork = isConnected && chainId !== ARC_CHAIN_ID;
+  const walletConnected = Boolean(address) || isConnected;
+  const chainId = accountChainId ?? connectedChainId;
+  const wrongNetwork = walletConnected && chainId !== ARC_CHAIN_ID;
   const connector = connectors[0];
 
   async function onSwitchNetwork() {
@@ -25,7 +27,7 @@ export function WalletConnect() {
     }
   }
 
-  if (!isConnected) {
+  if (!walletConnected) {
     return (
       <button
         type="button"
@@ -52,7 +54,7 @@ export function WalletConnect() {
           </button>
         ) : null}
         <span className="min-h-10 rounded-lg border border-line bg-white px-3 py-2 text-sm font-bold text-ink shadow-sm">
-          {shortAddress(address)}
+          {address ? shortAddress(address) : "Wallet connected"}
         </span>
         <button
           type="button"
