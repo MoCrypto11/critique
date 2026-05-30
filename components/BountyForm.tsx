@@ -6,7 +6,7 @@ import { decodeEventLog, getAddress } from "viem";
 import { useAccount, useChainId, usePublicClient, useSwitchChain, useWalletClient } from "wagmi";
 import { ARC_CHAIN_ID } from "@/lib/arc";
 import { CRITIQUE_DROP_CONTRACT, ENABLE_MOCK_MODE, critiqueDropBountyAbi } from "@/lib/contracts";
-import { createLocalBounty, updateLocalBounty, addTxHashToBounty } from "@/lib/storage";
+import { createLocalBounty, updateLocalBounty, addTxHashToBounty, SharedDatabaseSaveError } from "@/lib/storage";
 import { parseUSDC, USDC_ADDRESS, usdcAbi } from "@/lib/usdc";
 import { isValidUrl } from "@/lib/utils";
 import { getWalletErrorMessage, switchToArcTestnet } from "@/lib/walletNetwork";
@@ -33,6 +33,7 @@ export function BountyForm() {
   const { data: walletClient } = useWalletClient();
   const { switchChainAsync, isPending: isSwitching } = useSwitchChain();
   const [error, setError] = useState("");
+  const [errorDetail, setErrorDetail] = useState("");
   const [status, setStatus] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [rewardPreview, setRewardPreview] = useState("");
@@ -61,6 +62,7 @@ export function BountyForm() {
 
   async function onSwitchNetwork() {
     setError("");
+    setErrorDetail("");
     setStatus("");
     try {
       await switchToArcTestnet(switchChainAsync);
@@ -72,6 +74,7 @@ export function BountyForm() {
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
+    setErrorDetail("");
     setStatus("");
 
     const form = new FormData(event.currentTarget);
@@ -172,7 +175,24 @@ export function BountyForm() {
 
       router.push(`/bounty/${bounty.id}`);
     } catch (caught) {
-      setError(getWalletErrorMessage(caught, "Could not create bounty."));
+      console.error("[Critique create bounty]", caught);
+      const safeMessage = caught instanceof Error ? caught.message : "Unknown error.";
+      const isSharedDatabaseError =
+        caught instanceof SharedDatabaseSaveError ||
+        /shared database|row-level security|permission denied|relation .*does not exist|failed to fetch/i.test(safeMessage);
+
+      if (isSharedDatabaseError) {
+        setError("Could not save bounty to shared database.");
+        setErrorDetail(
+          `Reason: ${
+            caught instanceof SharedDatabaseSaveError
+              ? caught.reason
+              : safeMessage || "Shared database save failed, so this bounty link will not work across browsers."
+          }`
+        );
+      } else {
+        setError(getWalletErrorMessage(caught, "Could not create bounty."));
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -189,7 +209,15 @@ export function BountyForm() {
         </div>
       ) : null}
       {error && !(wrongNetwork && error === "Switch to Arc Testnet to continue.") ? (
-        <div className="notice border-red-200 bg-red-50 font-semibold text-red-700">{error}</div>
+        <div className="notice border-red-200 bg-red-50 font-semibold text-red-700">
+          <p>{error}</p>
+          {errorDetail ? <p className="mt-2 text-xs leading-5 text-red-600">{errorDetail}</p> : null}
+          {error === "Could not save bounty to shared database." ? (
+            <p className="mt-2 text-xs leading-5 text-red-600">
+              Shared database save failed, so this bounty link will not work across browsers.
+            </p>
+          ) : null}
+        </div>
       ) : null}
       {status ? <div className="notice border-action/20 bg-action/10 font-semibold text-action">{status}</div> : null}
       {contractConfigured && !walletConnected ? (

@@ -55,6 +55,16 @@ export type FeedbackSubmission = {
   createdAt: string;
 };
 
+export class SharedDatabaseSaveError extends Error {
+  reason: string;
+
+  constructor(reason: string) {
+    super("Could not save bounty to shared database.");
+    this.name = "SharedDatabaseSaveError";
+    this.reason = reason;
+  }
+}
+
 type BountyRow = {
   id: string;
   contract_bounty_id: string | null;
@@ -296,7 +306,20 @@ export async function createLocalBounty(input: Omit<BountyMetadata, "id" | "stat
   };
 
   if (shouldUseSupabase()) {
-    return upsertSupabaseBounty(bounty);
+    try {
+      return await upsertSupabaseBounty(bounty);
+    } catch (caught) {
+      console.error("[Critique shared database] create bounty save failed", caught);
+      const reason = caught instanceof Error ? caught.message : "Unknown shared database error.";
+
+      if (process.env.NODE_ENV !== "production") {
+        console.warn("[Critique shared database] falling back to localStorage in development only.");
+        saveBounties([bounty, ...getBounties()]);
+        return bounty;
+      }
+
+      throw new SharedDatabaseSaveError(reason);
+    }
   }
 
   saveBounties([bounty, ...getBounties()]);
