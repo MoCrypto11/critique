@@ -317,7 +317,7 @@ export function BountyForm() {
             </div>
           </dl>
           <p className="mt-4 rounded-lg border border-line/70 bg-white p-3">
-            Feedback stays off-chain in local storage for this MVP.
+            Feedback is stored off-chain, while the contract handles funding and payout state.
           </p>
         </aside>
       </div>

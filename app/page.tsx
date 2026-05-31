@@ -52,7 +52,7 @@ const faqs = [
   {
     question: "Are rewards real USDC?",
     answer:
-      "Today, Critique runs on Arc testnet, so rewards use testnet USDC for demonstration and testing. The payout flow is designed for USDC rewards; when the app moves to Arc mainnet, the contract and configuration can be updated for mainnet USDC."
+      "Critique currently runs on Arc testnet, so rewards use testnet USDC for demonstration and testing. The payout flow is designed around USDC, and can be configured for mainnet USDC once Arc mainnet is available."
   },
   {
     question: "Who is Critique for?",
@@ -121,8 +121,8 @@ export default function HomePage() {
                   Testers submit written feedback, deep reviews, video links, or technical proposals.
                 </p>
                 <p className="rounded-lg border border-action/20 bg-action/10 p-4 font-semibold text-action">
-                  Runs on Arc testnet with testnet USDC rewards. Mainnet USDC payouts can be enabled when the app moves
-                  to Arc mainnet.
+                  Built on Arc testnet with testnet USDC rewards. The flow is designed for USDC payouts once Arc
+                  mainnet is available.
                 </p>
               </div>
             </div>
@@ -138,77 +138,43 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-[1fr_420px] lg:items-start">
-            <div className="space-y-3">
-              {steps.map((step, index) => {
-                const isOpen = openStep === index;
-                return (
-                  <div key={step.title} className="surface overflow-hidden">
-                    <button
-                      type="button"
-                      aria-expanded={isOpen}
-                      onClick={() => setOpenStep(isOpen ? -1 : index)}
-                      className="flex w-full items-center justify-between gap-4 p-5 text-left"
-                    >
-                      <span className="flex items-center gap-4">
-                        <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-action/10 text-sm font-black text-action">
-                          {index + 1}
-                        </span>
-                        <span className="text-lg font-black text-ink">{step.title}</span>
+          <div className="space-y-3">
+            {steps.map((step, index) => {
+              const isOpen = openStep === index;
+              return (
+                <div key={step.title} className="surface overflow-hidden">
+                  <button
+                    type="button"
+                    aria-expanded={isOpen}
+                    onClick={() => setOpenStep(isOpen ? -1 : index)}
+                    className="flex w-full items-center justify-between gap-4 p-5 text-left"
+                  >
+                    <span className="flex items-center gap-4">
+                      <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-action/10 text-sm font-black text-action">
+                        {index + 1}
                       </span>
-                      <span className="grid size-8 shrink-0 place-items-center rounded-full border border-line bg-white">
-                        <span
-                          className={`size-2.5 border-b-2 border-r-2 border-action transition-transform ${
-                            isOpen ? "-rotate-[135deg] translate-y-0.5" : "rotate-45 -translate-y-0.5"
-                          }`}
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </button>
-                    {isOpen ? (
-                      <p className="border-t border-line/70 px-5 pb-5 pt-4 text-sm leading-7 text-muted sm:pl-[4.75rem]">
-                        {step.body}
-                      </p>
-                    ) : null}
-                  </div>
-                );
-              })}
-            </div>
-
-            <aside className="surface p-5 sm:p-6 lg:sticky lg:top-24">
-              <div className="flex items-center justify-between border-b border-line/70 pb-4">
-                <div>
-                  <p className="text-xs font-black uppercase tracking-[0.16em] text-muted">Bounty</p>
-                  <h3 className="mt-2 text-xl font-black text-ink">Test my landing page</h3>
-                </div>
-                <span className="rounded-full border border-action/25 bg-action/10 px-3 py-1 text-xs font-black text-action">
-                  Open
-                </span>
-              </div>
-              <div className="mt-5 grid grid-cols-2 gap-3">
-                <div className="surface-soft p-4">
-                  <p className="text-xs font-black uppercase tracking-[0.12em] text-muted">Reward</p>
-                  <p className="mt-2 text-xl font-black leading-tight text-ink">Founder-set reward</p>
-                </div>
-                <div className="surface-soft p-4">
-                  <p className="text-xs font-black uppercase tracking-[0.12em] text-muted">Slots</p>
-                  <p className="mt-2 text-2xl font-black text-ink">5</p>
-                </div>
-              </div>
-              <div className="mt-4 rounded-xl border border-line/70 bg-panel/70 p-4">
-                <p className="text-xs font-black uppercase tracking-[0.12em] text-muted">Feedback types</p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {["Written", "Video", "Technical"].map((type) => (
-                    <span key={type} className="rounded-full border border-line bg-white px-3 py-1 text-xs font-black text-ink">
-                      {type}
+                      <span className="text-lg font-black text-ink">{step.title}</span>
                     </span>
-                  ))}
+                    <span className="grid size-8 shrink-0 place-items-center rounded-full border border-line bg-white">
+                      <span
+                        className={`size-2.5 border-b-2 border-r-2 border-action transition-transform ${
+                          isOpen ? "-rotate-[135deg] translate-y-0.5" : "rotate-45 -translate-y-0.5"
+                        }`}
+                        aria-hidden="true"
+                      />
+                    </span>
+                  </button>
+                  {isOpen ? (
+                    <p className="border-t border-line/70 px-5 pb-5 pt-4 text-sm leading-7 text-muted sm:pl-[4.75rem]">
+                      {step.body}
+                    </p>
+                  ) : null}
                 </div>
-              </div>
-              <div className="mt-4 rounded-xl border border-action/20 bg-action/10 p-4 text-sm font-semibold leading-6 text-action">
-                Founder reviews each response and approves only useful submissions for payout.
-              </div>
-            </aside>
+              );
+            })}
+            <p className="rounded-xl border border-action/20 bg-action/10 p-4 text-sm font-semibold leading-6 text-action">
+              Rewards are set by the founder and paid through the Arc testnet flow using testnet USDC.
+            </p>
           </div>
         </section>
 
