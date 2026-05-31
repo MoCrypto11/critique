@@ -20,7 +20,8 @@ const steps = [
   },
   {
     title: "Approve and pay",
-    body: "The founder reviews submissions, approves useful feedback, and the tester receives the testnet USDC reward. A receipt is created for approved payouts."
+    body:
+      "Founder reviews useful submissions, approves the responses that help, and rewards are paid through the Arc testnet flow using testnet USDC."
   }
 ];
 
@@ -75,12 +76,12 @@ export default function HomePage() {
         <section className="page-shell grid min-h-[calc(100vh-96px)] content-center md:min-h-[calc(100vh-65px)]">
           <div className="grid items-center gap-7 lg:grid-cols-[1.02fr_0.98fr]">
             <div className="max-w-3xl">
-              <p className="eyebrow">Useful feedback. Instant USDC rewards.</p>
+              <p className="eyebrow">Useful feedback. Testnet USDC rewards.</p>
               <h1 className="font-display mt-4 max-w-3xl text-4xl leading-tight tracking-normal text-ink sm:text-[3.25rem] lg:text-[3.75rem]">
                 Pay real users for useful product feedback.
               </h1>
               <p className="mt-5 max-w-xl text-base font-bold leading-7 text-action">
-                Create a feedback bounty, share one link, approve helpful responses, and reward contributors in USDC.
+                Create a feedback bounty, share one link, approve helpful responses, and test USDC reward flows on Arc testnet.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link href="/create" className="btn-primary">
@@ -134,7 +135,7 @@ export default function HomePage() {
             <p className="eyebrow">How it works</p>
             <h2 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">How Critique works</h2>
             <p className="mt-4 text-lg leading-8 text-muted">
-              Create a focused feedback bounty, share one link, and reward useful responses in USDC.
+              Create a focused feedback bounty, share one link, and reward useful responses with testnet USDC.
             </p>
           </div>
 
@@ -172,9 +173,6 @@ export default function HomePage() {
                 </div>
               );
             })}
-            <p className="rounded-xl border border-action/20 bg-action/10 p-4 text-sm font-semibold leading-6 text-action">
-              Rewards are set by the founder and paid through the Arc testnet flow using testnet USDC.
-            </p>
           </div>
         </section>
 

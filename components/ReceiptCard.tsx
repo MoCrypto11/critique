@@ -18,7 +18,7 @@ export function ReceiptCard({ submission, amount }: { submission: FeedbackSubmis
       <div className="flex flex-wrap items-start justify-between gap-3 border-b border-line/70 pb-4">
         <div>
           <p className="break-all text-sm font-black text-ink">{submission.testerWallet}</p>
-          <p className="mt-2 text-sm font-semibold text-action">{amount} USDC paid</p>
+          <p className="mt-2 text-sm font-semibold text-action">{amount} testnet USDC paid</p>
         </div>
         <span className="rounded-full border border-action/25 bg-action/10 px-3 py-1 text-xs font-black capitalize text-action">
           {submission.status}

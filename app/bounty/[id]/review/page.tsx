@@ -101,7 +101,7 @@ export default function ReviewPage({ params }: { params: { id: string } }) {
       <>
         <AppHeader />
         <main className="page-shell">
-          <EmptyState title="Bounty not found" body="Create a bounty or open the demo bounty." />
+          <EmptyState title="Bounty not found" body="Create a bounty or try the example bounty." />
         </main>
       </>
     );

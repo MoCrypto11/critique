@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import { useAccount } from "wagmi";
 import { AppHeader } from "@/components/AppHeader";
 import { BountyStatusBadge } from "@/components/BountyStatusBadge";
 import { CopyLinkButton } from "@/components/CopyLinkButton";
@@ -10,6 +11,7 @@ import {
   addSubmission,
   BountyMetadata,
   FeedbackSubmission,
+  getDemoBounty,
   getLocalBounty,
   listSubmissions
 } from "@/lib/storage";
@@ -53,11 +55,14 @@ const decisionOptions: Decision[] = ["Yes", "Maybe", "No"];
 const difficultyOptions: Difficulty[] = ["Low", "Medium", "High"];
 
 export default function PublicBountyPage({ params }: { params: { id: string } }) {
-  const [bounty, setBounty] = useState<BountyMetadata>();
+  const { address } = useAccount();
+  const [bounty, setBounty] = useState<BountyMetadata | undefined>(() =>
+    params.id === "demo" ? getDemoBounty() : undefined
+  );
   const [submissions, setSubmissions] = useState<FeedbackSubmission[]>([]);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(params.id === "demo");
   const [publicLink, setPublicLink] = useState("");
   const [feedbackType, setFeedbackType] = useState<FeedbackType>("quick_written");
 
@@ -96,6 +101,9 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
   const compactTextarea = "field mt-1.5 min-h-[68px] resize-y py-2.5 leading-6";
   const formSection = "space-y-3 rounded-xl border border-line/70 bg-panel/45 p-4";
   const isWrittenFeedback = feedbackType === "quick_written" || feedbackType === "deep_product_review";
+  const isFounder = Boolean(
+    address && bounty?.founderAddress && bounty.founderAddress.toLowerCase() === address.toLowerCase()
+  );
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -203,7 +211,7 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
       });
       setSubmissions(await listSubmissions(bounty.id));
       formElement.reset();
-      setMessage("Feedback submitted. If approved, this wallet receives the USDC reward.");
+      setMessage("Feedback submitted. If approved, this wallet receives the testnet USDC reward.");
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Could not submit feedback.");
     }
@@ -225,7 +233,7 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
       <>
         <AppHeader />
         <main className="page-shell">
-          <EmptyState title="Bounty not found" body="Create a bounty or open the demo bounty." />
+          <EmptyState title="Bounty not found" body="Create a bounty or try the example bounty." />
         </main>
       </>
     );
@@ -239,7 +247,9 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
           <div>
             <p className="eyebrow">Public bounty</p>
             <h1 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">{bounty.title}</h1>
-            <p className="mt-3 text-base font-semibold text-action">{bounty.rewardUSDC} USDC per approved response</p>
+            <p className="mt-3 text-base font-semibold text-action">
+              {bounty.rewardUSDC} testnet USDC per approved response
+            </p>
           </div>
           <div className="flex flex-col gap-3 sm:items-end">
             <BountyStatusBadge status={status} />
@@ -277,14 +287,16 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
                     Submit feedback from the wallet you want paid. The founder approves useful responses for the listed reward.
                   </p>
                 </div>
-                <div className="flex flex-col gap-3 sm:flex-row">
-                  <Link href={`/bounty/${bounty.id}/review`} className="btn-secondary">
-                    Review submissions
-                  </Link>
-                  <Link href={`/bounty/${bounty.id}/dashboard`} className="btn-secondary">
-                    View dashboard
-                  </Link>
-                </div>
+                {isFounder ? (
+                  <div className="flex flex-col gap-3 sm:flex-row">
+                    <Link href={`/bounty/${bounty.id}/review`} className="btn-secondary">
+                      Review submissions
+                    </Link>
+                    <Link href={`/bounty/${bounty.id}/dashboard`} className="btn-secondary">
+                      View dashboard
+                    </Link>
+                  </div>
+                ) : null}
               </div>
             </section>
 
@@ -292,7 +304,7 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
               <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4 lg:grid-cols-2">
                 <div>
                   <p className="text-xs font-black uppercase tracking-[0.12em] text-muted">Reward</p>
-                  <p className="mt-1 font-black text-ink">{bounty.rewardUSDC} USDC</p>
+                  <p className="mt-1 font-black text-ink">{bounty.rewardUSDC} testnet USDC</p>
                 </div>
                 <div>
                   <p className="text-xs font-black uppercase tracking-[0.12em] text-muted">Slots left</p>

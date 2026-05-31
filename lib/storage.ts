@@ -327,7 +327,7 @@ export async function createLocalBounty(input: Omit<BountyMetadata, "id" | "stat
 }
 
 export async function getLocalBounty(id: string) {
-  if (id === "demo") return ensureDemoBounty();
+  if (id === "demo") return getDemoBounty();
 
   if (shouldUseSupabase() && supabase) {
     const client = supabase;
@@ -352,8 +352,6 @@ export async function getLocalBounty(id: string) {
 }
 
 export async function listLocalBounties() {
-  await ensureDemoBounty();
-
   if (shouldUseSupabase() && supabase) {
     const client = supabase;
     return withSupabaseErrors("list bounties", async () => {
@@ -363,7 +361,8 @@ export async function listLocalBounties() {
     });
   }
 
-  return getBounties();
+  const bounties = getBounties();
+  return bounties.some((bounty) => bounty.id === "demo") ? bounties : [getDemoBounty(), ...bounties];
 }
 
 export async function updateLocalBounty(id: string, updates: Partial<BountyMetadata>) {
@@ -494,12 +493,9 @@ export async function addTxHashToBounty(bountyId: string, txHash: string) {
   return updateLocalBounty(bountyId, { txHashes: [...bounty.txHashes, txHash] });
 }
 
-export async function ensureDemoBounty() {
-  const existing = getBounties().find((item) => item.id === "demo");
-  if (existing) return existing;
-
+export function getDemoBounty(): BountyMetadata {
   const deadline = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
-  const demo: BountyMetadata = {
+  return {
     id: "demo",
     title: "Test my landing page",
     productUrl: "https://example.com",
@@ -512,7 +508,8 @@ export async function ensureDemoBounty() {
     createdAt: new Date().toISOString(),
     txHashes: []
   };
+}
 
-  saveBounties([demo, ...getBounties()]);
-  return demo;
+export async function ensureDemoBounty() {
+  return getDemoBounty();
 }

@@ -54,9 +54,9 @@ export function BountyForm() {
     const total = hasReward && hasSlots ? reward * slots : 0;
 
     return {
-      reward: hasReward ? `${rewardPreview} USDC` : "Not set",
+      reward: hasReward ? `${rewardPreview} testnet USDC` : "Not set",
       slots: hasSlots ? String(slots) : "Not set",
-      total: total > 0 ? `${Number(total.toFixed(6)).toString()} USDC` : "Not set"
+      total: total > 0 ? `${Number(total.toFixed(6)).toString()} testnet USDC` : "Not set"
     };
   }, [rewardPreview, slotsPreview]);
 
@@ -150,7 +150,7 @@ export function BountyForm() {
         const contractBountyId = createdLog?.args.bountyId?.toString() || "0";
         await updateLocalBounty(bounty.id, { contractBountyId });
 
-        setStatus("Approving USDC for funding...");
+        setStatus("Approving testnet USDC for funding...");
         const approveHash = await walletClient.writeContract({
           address: getAddress(USDC_ADDRESS),
           abi: usdcAbi,
@@ -161,7 +161,7 @@ export function BountyForm() {
         await addTxHashToBounty(bounty.id, approveHash);
         await publicClient.waitForTransactionReceipt({ hash: approveHash });
 
-        setStatus("Funding bounty with USDC...");
+        setStatus("Funding bounty with testnet USDC...");
         const fundHash = await walletClient.writeContract({
           address: getAddress(CRITIQUE_DROP_CONTRACT),
           abi: critiqueDropBountyAbi,
@@ -269,7 +269,7 @@ export function BountyForm() {
           </label>
           <div className="grid gap-4 md:grid-cols-3">
             <label className="label">
-              Reward per response in USDC
+              Reward per response in testnet USDC
               <input
                 name="rewardUSDC"
                 inputMode="decimal"
@@ -326,7 +326,7 @@ export function BountyForm() {
         disabled={isSubmitting || !canCreateBounty}
         className="btn-primary w-full sm:w-auto"
       >
-        {isSubmitting ? "Creating..." : contractConfigured ? "Create and Fund with USDC" : "Create Feedback Bounty"}
+        {isSubmitting ? "Creating..." : contractConfigured ? "Create and Fund with Testnet USDC" : "Create Feedback Bounty"}
       </button>
     </form>
   );

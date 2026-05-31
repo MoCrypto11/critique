@@ -2,12 +2,12 @@
 
 ## What is Critique?
 
-Critique is a paid feedback link for builders. A founder creates a feedback bounty, funds it with USDC on Arc, shares one public link, reviews submissions, and approves useful feedback for USDC payout.
+Critique is a paid feedback link for builders. A founder creates a feedback bounty, funds it with testnet USDC on Arc testnet, shares one public link, reviews submissions, and approves useful feedback for payout.
 
 ## Example flow
 
 1. Create bounty.
-2. Fund bounty with USDC.
+2. Fund bounty with testnet USDC.
 3. Share public link.
 4. Tester submits feedback.
 5. Founder approves.

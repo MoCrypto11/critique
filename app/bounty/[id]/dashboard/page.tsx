@@ -105,7 +105,7 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
 
       if (CRITIQUE_DROP_CONTRACT && bounty.contractBountyId) {
         if (!walletClient || !publicClient) throw new Error("Wallet client is not ready.");
-        setStatus("Refunding unused USDC...");
+        setStatus("Refunding unused testnet USDC...");
         const txHash = await walletClient.writeContract({
           address: getAddress(CRITIQUE_DROP_CONTRACT),
           abi: critiqueDropBountyAbi,
@@ -142,7 +142,7 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
       <>
         <AppHeader />
         <main className="page-shell">
-          <EmptyState title="Bounty not found" body="Create a bounty or open the demo bounty." />
+          <EmptyState title="Bounty not found" body="Create a bounty or try the example bounty." />
         </main>
       </>
     );
@@ -174,10 +174,10 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
         {status ? <div className="notice mb-5 border-action/20 bg-action/10 font-semibold text-action">{status}</div> : null}
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard label="Total funded" value={`${totalFunded} USDC`} tone="strong" />
-          <StatCard label="Total paid" value={`${totalPaid} USDC`} tone="strong" />
-          <StatCard label="Remaining balance" value={`${remaining} USDC`} tone="strong" />
-          <StatCard label="Reward" value={`${bounty.rewardUSDC} USDC`} />
+          <StatCard label="Total funded" value={`${totalFunded} testnet USDC`} tone="strong" />
+          <StatCard label="Total paid" value={`${totalPaid} testnet USDC`} tone="strong" />
+          <StatCard label="Remaining balance" value={`${remaining} testnet USDC`} tone="strong" />
+          <StatCard label="Reward" value={`${bounty.rewardUSDC} testnet USDC`} />
           <StatCard label="Slots used" value={`${submissions.length}/${bounty.maxSubmissions}`} />
           <StatCard label="Approved" value={approved.length} />
           <StatCard label="Pending" value={pending.length} />
