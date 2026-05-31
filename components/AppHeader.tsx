@@ -1,7 +1,25 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { WalletConnect } from "./WalletConnect";
 
 export function AppHeader() {
+  const pathname = usePathname();
+  const isBountyRoute = pathname.startsWith("/bounty/");
+  const navLinks = isBountyRoute
+    ? [
+        { href: "/", label: "Explore" },
+        { href: "/create", label: "Create" },
+        { href: "/bounty/demo", label: "Try as Tester" }
+      ]
+    : [
+        { href: "/#how-it-works", label: "How it works" },
+        { href: "/create", label: "Create" },
+        { href: "/bounty/demo", label: "Try as Tester" },
+        { href: "/#faq", label: "FAQ" }
+      ];
+
   return (
     <header className="sticky top-0 z-20 border-b border-line/70 bg-background/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-3 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
@@ -13,18 +31,11 @@ export function AppHeader() {
             <span>Critique</span>
           </Link>
           <nav className="flex items-center gap-1 rounded-lg border border-line/70 bg-white/85 p-1 text-sm font-bold text-muted shadow-sm">
-            <Link href="/#how-it-works" className="rounded-md px-3 py-2 hover:bg-panel hover:text-ink">
-              How it works
-            </Link>
-            <Link href="/create" className="rounded-md px-3 py-2 hover:bg-panel hover:text-ink">
-              Create
-            </Link>
-            <Link href="/bounty/demo" className="rounded-md px-3 py-2 hover:bg-panel hover:text-ink">
-              Demo
-            </Link>
-            <Link href="/#faq" className="rounded-md px-3 py-2 hover:bg-panel hover:text-ink">
-              FAQ
-            </Link>
+            {navLinks.map((link) => (
+              <Link key={link.href} href={link.href} className="rounded-md px-3 py-2 hover:bg-panel hover:text-ink">
+                {link.label}
+              </Link>
+            ))}
           </nav>
         </div>
         <div className="md:flex md:justify-end">

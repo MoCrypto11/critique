@@ -69,7 +69,7 @@ export default function ReviewPage({ params }: { params: { id: string } }) {
         await addTxHashToBounty(bounty.id, txHash);
         await publicClient.waitForTransactionReceipt({ hash: txHash });
       } else if (!ENABLE_MOCK_MODE) {
-        throw new Error("Contract is not configured and mock mode is disabled.");
+        throw new Error("Contract is not configured.");
       }
 
       await approveLocalSubmission(params.id, submission.id, payoutTxHash);

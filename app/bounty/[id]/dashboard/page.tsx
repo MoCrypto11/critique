@@ -80,7 +80,7 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
         await addTxHashToBounty(bounty.id, txHash);
         await publicClient.waitForTransactionReceipt({ hash: txHash });
       } else if (!ENABLE_MOCK_MODE) {
-        throw new Error("Contract is not configured and mock mode is disabled.");
+        throw new Error("Contract is not configured.");
       }
 
       await updateLocalBounty(bounty.id, { status: "closed" });
@@ -116,7 +116,7 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
         await addTxHashToBounty(bounty.id, txHash);
         await publicClient.waitForTransactionReceipt({ hash: txHash });
       } else if (!ENABLE_MOCK_MODE) {
-        throw new Error("Contract is not configured and mock mode is disabled.");
+        throw new Error("Contract is not configured.");
       }
 
       setStatus("Unused funds refunded.");

@@ -20,7 +20,7 @@ const steps = [
   },
   {
     title: "Approve and pay",
-    body: "The founder reviews submissions, approves useful feedback, and the tester receives the USDC reward. A receipt is created for approved payouts."
+    body: "The founder reviews submissions, approves useful feedback, and the tester receives the testnet USDC reward. A receipt is created for approved payouts."
   }
 ];
 
@@ -31,7 +31,7 @@ const faqs = [
   },
   {
     question: "When does a tester get paid?",
-    answer: "After the founder reviews the submission and approves it. In the live Arc version, approved feedback is paid in USDC."
+    answer: "After the founder reviews the submission and approves it. Today, approved feedback is paid with testnet USDC on Arc testnet."
   },
   {
     question: "What kind of feedback can people submit?",
@@ -50,8 +50,9 @@ const faqs = [
     answer: "Arc is designed for stablecoin-native apps, making it a good fit for small USDC rewards, payment receipts, and real-world feedback workflows."
   },
   {
-    question: "Is the current demo using real USDC?",
-    answer: "Not yet if mock mode is active. Mock mode proves the flow. Real USDC payouts require deploying the contract on Arc testnet and configuring the contract address."
+    question: "Are rewards real USDC?",
+    answer:
+      "Today, Critique runs on Arc testnet, so rewards use testnet USDC for demonstration and testing. The payout flow is designed for USDC rewards; when the app moves to Arc mainnet, the contract and configuration can be updated for mainnet USDC."
   },
   {
     question: "Who is Critique for?",
@@ -86,7 +87,7 @@ export default function HomePage() {
                   Create Feedback Bounty
                 </Link>
                 <Link href="/bounty/demo" className="btn-secondary">
-                  View Demo Bounty
+                  Try Example Bounty
                 </Link>
               </div>
             </div>
@@ -94,7 +95,7 @@ export default function HomePage() {
             <div className="surface p-5 sm:p-6">
               <div className="flex items-center justify-between border-b border-line/70 pb-4">
                 <div>
-                  <p className="text-xs font-black uppercase tracking-[0.16em] text-muted">Demo bounty</p>
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-muted">Example bounty</p>
                   <h2 className="mt-2 text-xl font-black text-ink">Test my landing page</h2>
                 </div>
                 <span className="rounded-full border border-action/25 bg-action/10 px-3 py-1 text-xs font-black text-action">
@@ -104,7 +105,7 @@ export default function HomePage() {
               <div className="mt-5 grid gap-3 sm:grid-cols-3">
                 <div className="surface-soft p-4">
                   <p className="text-xs font-black uppercase tracking-[0.12em] text-muted">Reward</p>
-                  <p className="mt-2 text-2xl font-black text-ink">1 USDC</p>
+                  <p className="mt-2 text-xl font-black leading-tight text-ink">Founder-set reward</p>
                 </div>
                 <div className="surface-soft p-4">
                   <p className="text-xs font-black uppercase tracking-[0.12em] text-muted">Slots</p>
@@ -120,7 +121,8 @@ export default function HomePage() {
                   Testers submit written feedback, deep reviews, video links, or technical proposals.
                 </p>
                 <p className="rounded-lg border border-action/20 bg-action/10 p-4 font-semibold text-action">
-                  Mock mode keeps the demo usable while the contract address is empty.
+                  Runs on Arc testnet with testnet USDC rewards. Mainnet USDC payouts can be enabled when the app moves
+                  to Arc mainnet.
                 </p>
               </div>
             </div>
@@ -186,7 +188,7 @@ export default function HomePage() {
               <div className="mt-5 grid grid-cols-2 gap-3">
                 <div className="surface-soft p-4">
                   <p className="text-xs font-black uppercase tracking-[0.12em] text-muted">Reward</p>
-                  <p className="mt-2 text-2xl font-black text-ink">1 USDC</p>
+                  <p className="mt-2 text-xl font-black leading-tight text-ink">Founder-set reward</p>
                 </div>
                 <div className="surface-soft p-4">
                   <p className="text-xs font-black uppercase tracking-[0.12em] text-muted">Slots</p>
