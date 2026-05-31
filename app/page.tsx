@@ -61,6 +61,21 @@ const faqs = [
   }
 ];
 
+const arcFeatures = [
+  {
+    title: "Testnet USDC rewards",
+    body: "Founders fund bounty pools and approve useful submissions using testnet USDC."
+  },
+  {
+    title: "On-chain payout receipts",
+    body: "Approved rewards create visible transaction records on Arc testnet."
+  },
+  {
+    title: "Off-chain feedback, on-chain settlement",
+    body: "Feedback is stored off-chain while the contract handles funding and payout state."
+  }
+];
+
 export default function HomePage() {
   const [openStep, setOpenStep] = useState(0);
   const [openFaq, setOpenFaq] = useState(0);
@@ -211,6 +226,67 @@ export default function HomePage() {
                 </div>
               );
             })}
+          </div>
+        </section>
+
+        <section className="page-shell py-10 sm:py-14">
+          <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#071a18] text-white shadow-[0_24px_70px_rgba(7,26,24,0.18)]">
+            <div className="grid gap-8 p-5 sm:p-7 lg:grid-cols-[0.95fr_1.05fr] lg:p-8">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-white/55">BUILT ON ARC TESTNET</p>
+                <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between lg:block">
+                  <div>
+                    <h2 className="font-display text-3xl font-semibold leading-tight tracking-normal text-white sm:text-4xl">
+                      Feedback bounties powered by Arc
+                    </h2>
+                    <p className="mt-4 max-w-xl text-sm font-semibold leading-7 text-white/68 sm:text-base">
+                      Critique uses Arc testnet to demonstrate founder-funded feedback bounties with testnet USDC
+                      rewards.
+                    </p>
+                  </div>
+                  <a
+                    href="https://www.arc.io/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="focus-ring inline-flex w-fit shrink-0 items-center gap-2 rounded-full border border-white/14 bg-white/[0.08] px-4 py-2 text-xs font-black text-white transition-colors hover:bg-white/[0.13]"
+                  >
+                    <span className="size-1.5 rounded-full bg-action" aria-hidden="true" />
+                    Built on Arc
+                  </a>
+                </div>
+
+                <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                  <a
+                    href="https://www.arc.io/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="focus-ring inline-flex min-h-11 items-center justify-center rounded-lg bg-white px-5 py-3 text-sm font-black text-[#071a18] shadow-sm transition-colors hover:bg-[#f8f5eb]"
+                  >
+                    Explore Arc
+                  </a>
+                  <a
+                    href="https://docs.arc.io/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="focus-ring inline-flex min-h-11 items-center justify-center rounded-lg border border-white/16 bg-white/[0.06] px-5 py-3 text-sm font-black text-white transition-colors hover:bg-white/[0.1]"
+                  >
+                    Arc docs
+                  </a>
+                </div>
+                <p className="mt-5 max-w-md text-xs font-semibold leading-6 text-white/48">
+                  Critique is an independent demo project built on Arc testnet.
+                </p>
+              </div>
+
+              <div className="grid gap-3">
+                {arcFeatures.map((feature) => (
+                  <div key={feature.title} className="rounded-xl border border-white/10 bg-white/[0.055] p-4 sm:p-5">
+                    <h3 className="text-base font-black text-white">{feature.title}</h3>
+                    <p className="mt-2 text-sm font-semibold leading-6 text-white/62">{feature.body}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
       </main>
