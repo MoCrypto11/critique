@@ -369,16 +369,18 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
                     />
                     <span className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                       <span className="block text-sm font-black text-ink">{type.label}</span>
-                      <span className="w-fit rounded-full border border-action/20 bg-action/10 px-2.5 py-1 text-xs font-black text-action">
-                        {rewardAmountLabel(reward.rewardUSDC)}
-                      </span>
+                      {!isDemoBounty ? (
+                        <span className="w-fit rounded-full border border-action/20 bg-action/10 px-2.5 py-1 text-xs font-black text-action">
+                          {rewardAmountLabel(reward.rewardUSDC)}
+                        </span>
+                      ) : null}
                     </span>
                     <span className="mt-1 block text-xs font-semibold leading-5 text-muted">{type.description}</span>
                   </label>
                   );
                 })}
               </div>
-              {selectedReward ? (
+              {selectedReward && !isDemoBounty ? (
                 <p className="rounded-lg border border-line/70 bg-white p-3 text-sm font-semibold leading-5 text-muted">
                   Selected format: {getFeedbackTypeLabel(selectedReward.feedbackType)}. Founder-configured reward:{" "}
                   <span className="text-action">{rewardAmountLabel(selectedReward.rewardUSDC)}</span>.

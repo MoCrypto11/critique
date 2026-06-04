@@ -45,12 +45,12 @@ const faqs = [
   {
     question: "Why build Critique on Arc?",
     answer:
-      "Critique is designed around approval-based reward flows: a founder funds a bounty, contributors submit work, the founder reviews submissions, and approved payouts are settled on-chain. Arc is a strong fit because it is stablecoin-native, EVM-compatible, and designed for fast settlement with USDC-based financial workflows. Critique currently uses Arc testnet and testnet USDC for demonstration and testing."
+      "Critique is built around small, approval-based reward flows. Arc is a strong fit because it is stablecoin-native, uses USDC for gas, supports EVM smart contracts, and provides fast deterministic settlement. That lets Critique demonstrate product-feedback payouts without introducing a volatile gas token or unnecessary payment complexity."
   },
   {
     question: "Can different feedback types have different rewards?",
     answer:
-      "Yes. Founders can choose which feedback formats they accept and configure the reward amount for each one. A short written response may have a different reward than a deep product review, video walkthrough, or technical improvement proposal."
+      "Yes. Founders can choose which feedback formats they accept and configure the reward amount for each one. A written response may have a different reward than a deep product review, video walkthrough, or technical improvement proposal."
   },
   {
     question: "Are rewards real USDC?",
@@ -65,16 +65,16 @@ const faqs = [
 
 const arcFeatures = [
   {
-    title: "Stablecoin-native rewards",
-    body: "Founder-configured rewards are denominated in testnet USDC, making bounty payouts easy to understand."
+    title: "USDC-based reward flow",
+    body: "Rewards are configured in testnet USDC, so bounty amounts are easy to understand."
   },
   {
-    title: "Review before payout",
-    body: "Founders approve useful submissions before rewards are released."
+    title: "Fast settlement records",
+    body: "Approved payouts can create visible transaction records on Arc testnet."
   },
   {
-    title: "Off-chain feedback, on-chain payout state",
-    body: "Feedback stays off-chain, while funding and approved payout records are handled through Arc testnet."
+    title: "EVM-compatible workflow",
+    body: "Critique can use familiar smart-contract tooling while keeping feedback data off-chain."
   }
 ];
 
@@ -234,29 +234,25 @@ export default function HomePage() {
 
         <section className="page-shell py-10 sm:py-14">
           <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#071a18] text-white shadow-[0_24px_70px_rgba(7,26,24,0.18)]">
-            <div className="grid gap-8 p-5 sm:p-7 lg:grid-cols-[0.95fr_1.05fr] lg:p-8">
-              <div>
+            <div className="grid gap-8 p-5 sm:p-7 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:gap-10 lg:p-8">
+              <div className="min-w-0">
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-white/55">BUILT ON ARC TESTNET</p>
-                <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between lg:block">
-                  <div>
-                    <h2 className="font-display text-3xl font-semibold leading-tight tracking-normal text-white sm:text-4xl">
-                      Built for approval-based payouts
-                    </h2>
-                    <p className="mt-4 max-w-xl text-sm font-semibold leading-7 text-white/68 sm:text-base">
-                      Critique keeps product feedback off-chain while using Arc testnet to demonstrate founder-funded
-                      reward pools and payout records with testnet USDC.
-                    </p>
-                  </div>
-                  <a
-                    href="https://www.arc.io/"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="focus-ring mt-2 inline-flex w-fit shrink-0 items-center gap-2 rounded-full border border-white/14 bg-white/[0.08] px-4 py-2 text-xs font-black text-white transition-colors hover:bg-white/[0.13] sm:mt-0 lg:mt-6"
-                  >
-                    <span className="size-1.5 rounded-full bg-action" aria-hidden="true" />
-                    Built on Arc
-                  </a>
-                </div>
+                <h2 className="font-display mt-4 max-w-xl text-3xl font-semibold leading-tight tracking-normal text-white sm:text-4xl">
+                  Stablecoin-native rewards for product feedback
+                </h2>
+                <p className="mt-4 max-w-xl text-sm font-semibold leading-7 text-white/68 sm:text-base">
+                  Critique uses Arc testnet to demonstrate founder-funded feedback bounties with testnet USDC, while
+                  keeping the feedback itself off-chain.
+                </p>
+                <a
+                  href="https://www.arc.io/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="focus-ring mt-7 inline-flex w-fit shrink-0 items-center gap-2 rounded-full border border-white/14 bg-white/[0.08] px-4 py-2 text-xs font-black text-white transition-colors hover:bg-white/[0.13]"
+                >
+                  <span className="size-1.5 rounded-full bg-action" aria-hidden="true" />
+                  Built on Arc
+                </a>
 
                 <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                   <a
@@ -281,7 +277,7 @@ export default function HomePage() {
                 </p>
               </div>
 
-              <div className="grid gap-3">
+              <div className="grid min-w-0 gap-3 lg:pt-8">
                 {arcFeatures.map((feature) => (
                   <div key={feature.title} className="rounded-xl border border-white/10 bg-white/[0.055] p-4 sm:p-5">
                     <h3 className="text-base font-black text-white">{feature.title}</h3>
