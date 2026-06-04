@@ -10,13 +10,11 @@ export function AppHeader() {
   const navLinks = isBountyRoute
     ? [
         { href: "/", label: "Explore" },
-        { href: "/create", label: "Create" },
-        { href: "/bounty/demo", label: "Try as Tester" }
+        { href: "/create", label: "Create" }
       ]
     : [
         { href: "/#how-it-works", label: "How it works" },
         { href: "/create", label: "Create" },
-        { href: "/bounty/demo", label: "Try as Tester" },
         { href: "/#faq", label: "FAQ" }
       ];
 

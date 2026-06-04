@@ -38,7 +38,7 @@ function detailRows(submission: FeedbackSubmission) {
   }
 
   return [
-    ["Tester context", submission.testerContext || "Legacy submission"],
+    ["Contributor context", submission.testerContext || "Legacy submission"],
     ["First impression", submission.firstImpression || submission.understoodAnswer],
     ["What they tried first", submission.firstAction],
     ["Confusion or friction", submission.confusionAnswer || submission.confusedAnswer],

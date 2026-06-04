@@ -13,7 +13,7 @@ export default function CreateBountyPage() {
               Create feedback bounty
             </h1>
             <p className="mt-4 max-w-2xl text-lg leading-8 text-muted">
-              Set a focused brief, choose accepted feedback types, configure rewards, and share a single tester link.
+              Set a focused brief, choose accepted feedback types, configure rewards, and share a single contributor link.
             </p>
           </div>
           <div className="surface p-5 text-sm leading-6 text-muted">

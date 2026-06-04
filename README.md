@@ -9,9 +9,9 @@ Critique is a paid feedback link for founders and product teams. A founder creat
 1. Create bounty.
 2. Fund bounty with testnet USDC.
 3. Share public link.
-4. Tester submits feedback.
+4. Contributor submits feedback.
 5. Founder approves.
-6. Tester gets paid.
+6. Contributor gets paid.
 7. Dashboard shows receipt.
 
 ## Install

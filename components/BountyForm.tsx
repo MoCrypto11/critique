@@ -309,7 +309,7 @@ export function BountyForm() {
               name="instructions"
               rows={5}
               className="field resize-y leading-6"
-              placeholder="Tell testers what to try, how long to spend, and what kind of feedback helps."
+              placeholder="Tell contributors what to try, how long to spend, and what kind of feedback helps."
               required
             />
           </label>

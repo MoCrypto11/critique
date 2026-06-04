@@ -84,6 +84,7 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
   );
   const selectedReward = getRewardForType(availableRewards, feedbackType);
   const hasVariableRewards = new Set(availableRewards.map((reward) => formatUSDC(reward.rewardUSDC))).size > 1;
+  const isDemoBounty = bounty?.id === "demo";
   const slotsUsed = submissions.filter((submission) => submission.status !== "rejected").length;
   const slotsLeft = bounty ? Math.max(0, bounty.maxSubmissions - slotsUsed) : 0;
   const deadlineLabel = bounty ? new Date(bounty.deadline).toLocaleString() : "";
@@ -94,6 +95,10 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
   const isFounder = Boolean(
     address && bounty?.founderAddress && bounty.founderAddress.toLowerCase() === address.toLowerCase()
   );
+
+  function rewardAmountLabel(amount?: string) {
+    return isDemoBounty ? "Founder-set reward" : `${formatUSDC(amount)} testnet USDC`;
+  }
 
   useEffect(() => {
     if (availableRewards.length && !availableRewards.some((reward) => reward.feedbackType === feedbackType)) {
@@ -140,7 +145,7 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
     const estimatedDifficulty = String(form.get("estimatedDifficulty") || "").trim() as Difficulty;
     const referenceLink = String(form.get("referenceLink") || "").trim();
 
-    if (!looksLikeAddress(testerWallet)) return setError("Tester wallet should look like an EVM address.");
+    if (!looksLikeAddress(testerWallet)) return setError("Payout wallet should look like an EVM address.");
 
     if (selectedFeedbackType === "quick_written" || selectedFeedbackType === "deep_product_review") {
       if (
@@ -210,7 +215,7 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
       });
       setSubmissions(await listSubmissions(bounty.id));
       formElement.reset();
-      setMessage("Feedback submitted. Approved submissions receive the configured Arc testnet reward.");
+      setMessage("Feedback submitted. Approved submissions receive the configured reward.");
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Could not submit feedback.");
     }
@@ -247,9 +252,11 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
             <p className="eyebrow">Public bounty</p>
             <h1 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">{bounty.title}</h1>
             <p className="mt-3 text-base font-semibold text-action">
-              {hasVariableRewards
-                ? "Founder-set rewards by feedback type"
-                : `${formatUSDC(bounty.rewardUSDC)} testnet USDC per approved response`}
+              {isDemoBounty
+                ? "Example reward configured by founder"
+                : hasVariableRewards
+                  ? "Founder-configured rewards by feedback type"
+                  : `${rewardAmountLabel(bounty.rewardUSDC)} per approved response`}
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:items-end">
@@ -285,8 +292,8 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
                 <div className="surface-soft p-4 text-sm leading-6 text-muted">
                   <p className="font-black text-ink">How approval works</p>
                   <p className="mt-1">
-                    Submit feedback from the wallet you want paid. The founder approves useful responses for the
-                    configured Arc testnet reward.
+                    Submit feedback with the payout wallet address where approved rewards should be sent. The founder
+                    reviews submissions before any reward is released.
                   </p>
                 </div>
                 {isFounder ? (
@@ -306,7 +313,9 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
               <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4 lg:grid-cols-2">
                 <div>
                   <p className="text-xs font-black uppercase tracking-[0.12em] text-muted">Reward</p>
-                  <p className="mt-1 font-black text-ink">Up to {formatUSDC(bounty.rewardUSDC)} testnet USDC</p>
+                  <p className="mt-1 font-black text-ink">
+                    {isDemoBounty ? "Founder-set reward" : `Up to ${formatUSDC(bounty.rewardUSDC)} testnet USDC`}
+                  </p>
                 </div>
                 <div>
                   <p className="text-xs font-black uppercase tracking-[0.12em] text-muted">Slots left</p>
@@ -326,7 +335,10 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
           <form onSubmit={onSubmit} className="surface space-y-4 p-4 sm:p-5 lg:self-start">
             <div>
               <h2 className="text-xl font-black text-ink">Submit feedback</h2>
-              <p className="mt-1 text-sm leading-6 text-muted">Be direct, specific, and useful.</p>
+              <p className="mt-1 text-sm leading-6 text-muted">
+                No wallet connection is required to submit feedback. Enter the payout wallet address where approved
+                rewards should be sent.
+              </p>
             </div>
             {error ? <div className="notice border-red-200 bg-red-50 font-semibold text-red-700">{error}</div> : null}
             {message ? <div className="notice border-action/20 bg-action/10 font-semibold text-action">{message}</div> : null}
@@ -358,7 +370,7 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
                     <span className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                       <span className="block text-sm font-black text-ink">{type.label}</span>
                       <span className="w-fit rounded-full border border-action/20 bg-action/10 px-2.5 py-1 text-xs font-black text-action">
-                        {formatUSDC(reward.rewardUSDC)} testnet USDC
+                        {rewardAmountLabel(reward.rewardUSDC)}
                       </span>
                     </span>
                     <span className="mt-1 block text-xs font-semibold leading-5 text-muted">{type.description}</span>
@@ -369,7 +381,7 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
               {selectedReward ? (
                 <p className="rounded-lg border border-line/70 bg-white p-3 text-sm font-semibold leading-5 text-muted">
                   Selected format: {getFeedbackTypeLabel(selectedReward.feedbackType)}. Founder-configured reward:{" "}
-                  <span className="text-action">{formatUSDC(selectedReward.rewardUSDC)} testnet USDC</span>.
+                  <span className="text-action">{rewardAmountLabel(selectedReward.rewardUSDC)}</span>.
                 </p>
               ) : null}
             </section>
@@ -382,7 +394,10 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
                 <p className="mt-1 text-sm leading-5 text-muted">Add just enough context.</p>
               </div>
               <label className="label">
-                Tester wallet address
+                Payout wallet address
+                <span className="mt-1 block text-xs font-semibold leading-5 text-muted">
+                  This is the wallet address that will receive approved rewards.
+                </span>
                 <input name="testerWallet" className={compactField} placeholder="0x..." required />
               </label>
               {isWrittenFeedback ? (

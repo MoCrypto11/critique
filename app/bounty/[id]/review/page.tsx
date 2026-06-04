@@ -164,7 +164,7 @@ export default function ReviewPage({ params }: { params: { id: string } }) {
               />
             ))
           ) : (
-            <EmptyState title="No feedback yet" body="Share the public bounty link with testers." />
+            <EmptyState title="No feedback yet" body="Share the public bounty link with contributors." />
           )}
         </div>
       </main>

@@ -12,11 +12,11 @@ const steps = [
   },
   {
     title: "Share one link",
-    body: "Send the public bounty link to your community, users, contributors, or testers. No marketplace required."
+    body: "Send the public bounty link to your community, users, or contributors. No marketplace required."
   },
   {
     title: "Collect useful feedback",
-    body: "Testers can submit quick written feedback, deep reviews, video walkthrough links, or technical improvement proposals."
+    body: "Contributors can submit written feedback, deep product reviews, video walkthrough links, or technical improvement proposals."
   },
   {
     title: "Approve and pay",
@@ -27,11 +27,11 @@ const steps = [
 
 const faqs = [
   {
-    question: "Do testers need to pay to submit feedback?",
+    question: "Do contributors need to pay to submit feedback?",
     answer: "No. Contributors submit feedback without paying. They receive a reward only when the founder approves their submission."
   },
   {
-    question: "When does a tester get paid?",
+    question: "When does a contributor get paid?",
     answer: "After the founder reviews and approves the submission. Today, approved submissions are paid with testnet USDC on Arc testnet."
   },
   {
@@ -43,8 +43,14 @@ const faqs = [
     answer: "No. Critique is focused on one product at a time: one founder-funded bounty, one public link, structured feedback, and approved rewards."
   },
   {
-    question: "Why build this on Arc?",
-    answer: "Arc testnet lets Critique demonstrate stablecoin-style reward flows, visible payout receipts, and off-chain feedback with on-chain settlement state."
+    question: "Why build Critique on Arc?",
+    answer:
+      "Critique is designed around approval-based reward flows: a founder funds a bounty, contributors submit work, the founder reviews submissions, and approved payouts are settled on-chain. Arc is a strong fit because it is stablecoin-native, EVM-compatible, and designed for fast settlement with USDC-based financial workflows. Critique currently uses Arc testnet and testnet USDC for demonstration and testing."
+  },
+  {
+    question: "Can different feedback types have different rewards?",
+    answer:
+      "Yes. Founders can choose which feedback formats they accept and configure the reward amount for each one. A short written response may have a different reward than a deep product review, video walkthrough, or technical improvement proposal."
   },
   {
     question: "Are rewards real USDC?",
@@ -59,16 +65,16 @@ const faqs = [
 
 const arcFeatures = [
   {
-    title: "Testnet USDC rewards",
-    body: "Founders fund bounty pools and approve useful submissions using testnet USDC."
+    title: "Stablecoin-native rewards",
+    body: "Founder-configured rewards are denominated in testnet USDC, making bounty payouts easy to understand."
   },
   {
-    title: "On-chain payout receipts",
-    body: "Approved payouts can create visible transaction records on Arc testnet."
+    title: "Review before payout",
+    body: "Founders approve useful submissions before rewards are released."
   },
   {
-    title: "Off-chain feedback, on-chain settlement",
-    body: "Feedback is stored off-chain while funding and payout state are handled through Arc."
+    title: "Off-chain feedback, on-chain payout state",
+    body: "Feedback stays off-chain, while funding and approved payout records are handled through Arc testnet."
   }
 ];
 
@@ -99,7 +105,7 @@ export default function HomePage() {
                   Create Feedback Bounty
                 </Link>
                 <Link href="/bounty/demo" className="btn-secondary">
-                  Try Example Bounty
+                  Preview Bounty Link
                 </Link>
               </div>
             </div>
@@ -130,7 +136,7 @@ export default function HomePage() {
               </div>
               <div className="mt-5 space-y-3 text-sm leading-6 text-muted">
                 <p className="rounded-lg border border-line/70 bg-panel/70 p-4">
-                  Testers submit written feedback, deep reviews, video links, or technical proposals.
+                  Contributors submit written feedback, deep reviews, video links, or technical proposals.
                 </p>
                 <p className="rounded-lg border border-action/20 bg-action/10 p-4 font-semibold text-action">
                   Built on Arc testnet with testnet USDC rewards. The flow is designed for USDC payouts once Arc
@@ -234,11 +240,11 @@ export default function HomePage() {
                 <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between lg:block">
                   <div>
                     <h2 className="font-display text-3xl font-semibold leading-tight tracking-normal text-white sm:text-4xl">
-                      Feedback bounties powered by Arc
+                      Built for approval-based payouts
                     </h2>
                     <p className="mt-4 max-w-xl text-sm font-semibold leading-7 text-white/68 sm:text-base">
-                      Critique uses Arc testnet to demonstrate founder-funded feedback bounties with testnet USDC
-                      rewards.
+                      Critique keeps product feedback off-chain while using Arc testnet to demonstrate founder-funded
+                      reward pools and payout records with testnet USDC.
                     </p>
                   </div>
                   <a
