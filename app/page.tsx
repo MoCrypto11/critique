@@ -1,27 +1,37 @@
 "use client";
 
 import Link from "next/link";
+import { CircleDollarSign, FilePlus2, Link2, MessageSquareCheck } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { ensureDemoBounty } from "@/lib/storage";
 
-const steps = [
+const steps: {
+  title: string;
+  body: string;
+  icon: LucideIcon;
+}[] = [
   {
     title: "Create a bounty",
-    body: "Add your product link, write the feedback task, choose accepted feedback types, set reward amounts, assign slots, and define a deadline."
+    body: "Add your product link, write the feedback task, choose accepted feedback types, set reward amounts, assign slots, and define a deadline.",
+    icon: FilePlus2
   },
   {
     title: "Share one link",
-    body: "Send the public bounty link to your community, users, or contributors. No marketplace required."
+    body: "Send the public bounty link to your community, users, or contributors. No marketplace required.",
+    icon: Link2
   },
   {
     title: "Collect useful feedback",
-    body: "Contributors can submit written feedback, deep product reviews, video walkthrough links, or technical improvement proposals."
+    body: "Contributors can submit written feedback, deep product reviews, video walkthrough links, or technical improvement proposals.",
+    icon: MessageSquareCheck
   },
   {
     title: "Approve and pay",
     body:
-      "Founder reviews useful submissions, approves the responses that help, and rewards are paid through the Arc testnet flow using testnet USDC."
+      "Founder reviews useful submissions, approves the responses that help, and rewards are paid through the Arc testnet flow using testnet USDC.",
+    icon: CircleDollarSign
   }
 ];
 
@@ -160,6 +170,7 @@ export default function HomePage() {
           <div className="space-y-3">
             {steps.map((step, index) => {
               const isOpen = openStep === index;
+              const StepIcon = step.icon;
               return (
                 <div key={step.title} className="surface overflow-hidden">
                   <button
@@ -170,9 +181,14 @@ export default function HomePage() {
                   >
                     <span className="flex items-center gap-4">
                       <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-action/10 text-sm font-black text-action">
-                        {index + 1}
+                        <StepIcon className="size-4" aria-hidden="true" strokeWidth={2} />
                       </span>
-                      <span className="text-lg font-black text-ink">{step.title}</span>
+                      <span>
+                        <span className="block text-[11px] font-black uppercase tracking-[0.14em] text-muted">
+                          Step {index + 1}
+                        </span>
+                        <span className="block text-lg font-black text-ink">{step.title}</span>
+                      </span>
                     </span>
                     <span className="grid size-8 shrink-0 place-items-center rounded-full border border-line bg-white">
                       <span

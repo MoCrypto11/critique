@@ -7,6 +7,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { BountyStatusBadge } from "@/components/BountyStatusBadge";
 import { CopyLinkButton } from "@/components/CopyLinkButton";
 import { EmptyState } from "@/components/EmptyState";
+import { FeedbackTypeIcon } from "@/components/FeedbackTypeIcon";
 import {
   FeedbackType,
   feedbackTypeOptions,
@@ -367,10 +368,15 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
                       onChange={() => setFeedbackType(type.value)}
                       className="sr-only"
                     />
-                    <span className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                      <span className="block text-sm font-black text-ink">{type.label}</span>
+                    <span className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                      <span className="flex min-w-0 items-center gap-2.5">
+                        <span className="grid size-8 shrink-0 place-items-center rounded-lg border border-action/20 bg-action/10 text-action">
+                          <FeedbackTypeIcon type={type.value} />
+                        </span>
+                        <span className="block text-sm font-black text-ink">{type.label}</span>
+                      </span>
                       {!isDemoBounty ? (
-                        <span className="w-fit rounded-full border border-action/20 bg-action/10 px-2.5 py-1 text-xs font-black text-action">
+                        <span className="w-fit shrink-0 rounded-full border border-action/20 bg-action/10 px-2.5 py-1 text-xs font-black text-action">
                           {rewardAmountLabel(reward.rewardUSDC)}
                         </span>
                       ) : null}

@@ -6,6 +6,7 @@ import { decodeEventLog, getAddress } from "viem";
 import { useAccount, useChainId, usePublicClient, useSwitchChain, useWalletClient } from "wagmi";
 import { ARC_CHAIN_ID } from "@/lib/arc";
 import { CRITIQUE_DROP_CONTRACT, ENABLE_MOCK_MODE, critiqueDropBountyAbi } from "@/lib/contracts";
+import { FeedbackTypeIcon } from "./FeedbackTypeIcon";
 import {
   FeedbackRewardConfig,
   defaultFeedbackRewards,
@@ -340,6 +341,15 @@ export function BountyForm() {
                           onChange={(event) => setFeedbackTypeEnabled(option.value, event.currentTarget.checked)}
                           className="mt-1 size-4 accent-[#116149]"
                         />
+                        <span
+                          className={`mt-0.5 grid size-9 shrink-0 place-items-center rounded-lg border ${
+                            enabled
+                              ? "border-action/25 bg-action/10 text-action"
+                              : "border-line/80 bg-panel/70 text-muted"
+                          }`}
+                        >
+                          <FeedbackTypeIcon type={option.value} />
+                        </span>
                         <span>
                           <span className="block text-sm font-black text-ink">{option.label}</span>
                           <span className="mt-1 block text-sm leading-5 text-muted">{option.description}</span>
