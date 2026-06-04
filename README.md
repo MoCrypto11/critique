@@ -2,7 +2,7 @@
 
 ## What is Critique?
 
-Critique is a paid feedback link for builders. A founder creates a feedback bounty, funds it with testnet USDC on Arc testnet, shares one public link, reviews submissions, and approves useful feedback for payout.
+Critique is a paid feedback link for founders and product teams. A founder creates a feedback bounty, configures accepted feedback types and rewards, funds it with testnet USDC on Arc testnet, shares one public link, reviews submissions, and approves useful feedback for payout.
 
 ## Example flow
 
@@ -53,8 +53,8 @@ NEXT_PUBLIC_CRITIQUE_DROP_CONTRACT=0x...
 
 ## Important notes
 
-- Feedback text is stored off-chain/local.
-- Contract only handles bounty funding and payouts.
+- Feedback is stored off-chain while the contract handles bounty funding and payout state.
+- The current contract pays one reward amount per approved submission. The UI stores per-feedback-type reward metadata and funds the contract at the highest selected reward.
 - Verify Arc values through Arc Docs MCP.
 - This is MVP code, not audited production code.
 - Arc Testnet uses USDC as native gas. The ERC-20 USDC interface for approvals and payouts uses 6 decimals.

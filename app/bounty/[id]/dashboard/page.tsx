@@ -12,6 +12,7 @@ import { ReceiptCard } from "@/components/ReceiptCard";
 import { StatCard } from "@/components/StatCard";
 import { TxHashLink } from "@/components/TxHashLink";
 import { CRITIQUE_DROP_CONTRACT, ENABLE_MOCK_MODE, critiqueDropBountyAbi } from "@/lib/contracts";
+import { feedbackTypeOptions, formatUSDC, normalizeFeedbackRewards } from "@/lib/feedbackRewards";
 import {
   addTxHashToBounty,
   BountyMetadata,
@@ -36,6 +37,7 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
   const pending = submissions.filter((submission) => submission.status === "pending");
   const rejected = submissions.filter((submission) => submission.status === "rejected");
   const reward = bounty ? Number(bounty.rewardUSDC) : 0;
+  const rewardConfig = bounty ? normalizeFeedbackRewards(bounty.feedbackRewards, bounty.rewardUSDC, bounty.maxSubmissions) : [];
   const totalFunded = bounty ? reward * bounty.maxSubmissions : 0;
   const totalPaid = reward * approved.length;
   const remaining = Math.max(0, totalFunded - totalPaid);
@@ -177,7 +179,7 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
           <StatCard label="Total funded" value={`${totalFunded} testnet USDC`} tone="strong" />
           <StatCard label="Total paid" value={`${totalPaid} testnet USDC`} tone="strong" />
           <StatCard label="Remaining balance" value={`${remaining} testnet USDC`} tone="strong" />
-          <StatCard label="Reward" value={`${bounty.rewardUSDC} testnet USDC`} />
+          <StatCard label="On-chain reward" value={`${formatUSDC(bounty.rewardUSDC)} testnet USDC`} />
           <StatCard label="Slots used" value={`${submissions.length}/${bounty.maxSubmissions}`} />
           <StatCard label="Approved" value={approved.length} />
           <StatCard label="Pending" value={pending.length} />
@@ -219,6 +221,34 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
             ) : (
               <p>No transaction hashes yet.</p>
             )}
+          </div>
+        </section>
+
+        <section className="surface mt-6 p-5 sm:p-6">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h2 className="text-lg font-black text-ink">Feedback reward configuration</h2>
+              <p className="mt-2 text-sm leading-6 text-muted">
+                Founder-configured reward metadata by accepted feedback type.
+              </p>
+            </div>
+            <p className="text-sm font-bold text-action">
+              Contract pays {formatUSDC(bounty.rewardUSDC)} testnet USDC per approved submission
+            </p>
+          </div>
+          <div className="mt-5 grid gap-3 md:grid-cols-2">
+            {rewardConfig.map((config) => {
+              const option = feedbackTypeOptions.find((item) => item.value === config.feedbackType);
+              return (
+                <div key={config.feedbackType} className="surface-soft p-4">
+                  <p className="text-sm font-black text-ink">{option?.label || config.feedbackType}</p>
+                  <p className="mt-2 text-sm font-semibold text-action">
+                    {formatUSDC(config.rewardUSDC)} testnet USDC configured
+                  </p>
+                  <p className="mt-1 text-sm text-muted">{config.slots} slot{config.slots === 1 ? "" : "s"}</p>
+                </div>
+              );
+            })}
           </div>
         </section>
 

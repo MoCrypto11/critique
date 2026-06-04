@@ -9,6 +9,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { MockModeBanner } from "@/components/MockModeBanner";
 import { SubmissionCard } from "@/components/SubmissionCard";
 import { CRITIQUE_DROP_CONTRACT, ENABLE_MOCK_MODE, critiqueDropBountyAbi } from "@/lib/contracts";
+import { formatUSDC, getRewardForType, normalizeFeedbackRewards } from "@/lib/feedbackRewards";
 import {
   approveLocalSubmission,
   BountyMetadata,
@@ -95,6 +96,13 @@ export default function ReviewPage({ params }: { params: { id: string } }) {
   const pendingCount = submissions.filter((submission) => submission.status === "pending").length;
   const approvedCount = submissions.filter((submission) => submission.status === "approved").length;
   const rejectedCount = submissions.filter((submission) => submission.status === "rejected").length;
+  const rewardConfig = bounty ? normalizeFeedbackRewards(bounty.feedbackRewards, bounty.rewardUSDC, bounty.maxSubmissions) : [];
+
+  function rewardLabelFor(submission: FeedbackSubmission) {
+    const configured = getRewardForType(rewardConfig, submission.feedbackType);
+    if (!configured) return bounty ? `On-chain reward: ${formatUSDC(bounty.rewardUSDC)} testnet USDC` : undefined;
+    return `Configured reward: ${formatUSDC(configured.rewardUSDC)} testnet USDC`;
+  }
 
   if (isLoaded && !bounty) {
     return (
@@ -149,6 +157,7 @@ export default function ReviewPage({ params }: { params: { id: string } }) {
               <SubmissionCard
                 key={submission.id}
                 submission={submission}
+                rewardLabel={rewardLabelFor(submission)}
                 busy={busyId === submission.id}
                 onApprove={() => approve(submission)}
                 onReject={() => reject(submission)}

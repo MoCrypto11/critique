@@ -13,13 +13,13 @@ export default function CreateBountyPage() {
               Create feedback bounty
             </h1>
             <p className="mt-4 max-w-2xl text-lg leading-8 text-muted">
-              Set a focused brief, choose the reward, fund the bounty, and share a single tester link.
+              Set a focused brief, choose accepted feedback types, configure rewards, and share a single tester link.
             </p>
           </div>
           <div className="surface p-5 text-sm leading-6 text-muted">
             <p className="text-xs font-black uppercase tracking-[0.14em] text-action">How it works</p>
             <p className="mt-3">
-              Create the bounty brief, fund the testnet USDC reward pool, then approve only the responses that are useful enough to pay.
+              Create the bounty brief, fund the testnet USDC reward pool, then approve the submissions that are useful enough to pay.
             </p>
           </div>
         </div>

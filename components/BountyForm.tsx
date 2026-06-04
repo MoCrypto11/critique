@@ -6,6 +6,17 @@ import { decodeEventLog, getAddress } from "viem";
 import { useAccount, useChainId, usePublicClient, useSwitchChain, useWalletClient } from "wagmi";
 import { ARC_CHAIN_ID } from "@/lib/arc";
 import { CRITIQUE_DROP_CONTRACT, ENABLE_MOCK_MODE, critiqueDropBountyAbi } from "@/lib/contracts";
+import {
+  FeedbackRewardConfig,
+  defaultFeedbackRewards,
+  feedbackTypeOptions,
+  formatUSDC,
+  getMaxRewardUSDC,
+  getSafeContractFundingTotalUSDC,
+  getTargetRewardTotalUSDC,
+  getTotalRewardSlots,
+  normalizeRewardAmount
+} from "@/lib/feedbackRewards";
 import { createLocalBounty, updateLocalBounty, addTxHashToBounty, SharedDatabaseSaveError } from "@/lib/storage";
 import { parseUSDC, USDC_ADDRESS, usdcAbi } from "@/lib/usdc";
 import { isValidUrl } from "@/lib/utils";
@@ -36,8 +47,7 @@ export function BountyForm() {
   const [errorDetail, setErrorDetail] = useState("");
   const [status, setStatus] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [rewardPreview, setRewardPreview] = useState("");
-  const [slotsPreview, setSlotsPreview] = useState("");
+  const [feedbackRewards, setFeedbackRewards] = useState<FeedbackRewardConfig[]>(defaultFeedbackRewards);
 
   const contractConfigured = Boolean(CRITIQUE_DROP_CONTRACT);
   const walletConnected = Boolean(address) || isConnected;
@@ -46,19 +56,45 @@ export function BountyForm() {
   const wrongNetwork = walletConnected && !isArcTestnet;
   const mockOnlyMode = ENABLE_MOCK_MODE && !contractConfigured;
   const canCreateBounty = mockOnlyMode || (walletConnected && isArcTestnet && contractConfigured && !ENABLE_MOCK_MODE);
+  const selectedRewards = feedbackRewards.filter(
+    (reward) => normalizeRewardAmount(reward.rewardUSDC) > 0 && reward.slots > 0
+  );
   const fundingSummary = useMemo(() => {
-    const reward = Number(rewardPreview);
-    const slots = Number(slotsPreview);
-    const hasReward = Number.isFinite(reward) && reward > 0;
-    const hasSlots = Number.isInteger(slots) && slots > 0;
-    const total = hasReward && hasSlots ? reward * slots : 0;
+    const maxReward = getMaxRewardUSDC(selectedRewards);
+    const slots = getTotalRewardSlots(selectedRewards);
+    const targetTotal = getTargetRewardTotalUSDC(selectedRewards);
+    const safeTotal = getSafeContractFundingTotalUSDC(selectedRewards);
 
     return {
-      reward: hasReward ? `${rewardPreview} testnet USDC` : "Not set",
-      slots: hasSlots ? String(slots) : "Not set",
-      total: total > 0 ? `${Number(total.toFixed(6)).toString()} testnet USDC` : "Not set"
+      reward: maxReward > 0 ? `${formatUSDC(maxReward)} testnet USDC` : "Not set",
+      slots: slots > 0 ? String(slots) : "Not set",
+      targetTotal: targetTotal > 0 ? `${formatUSDC(targetTotal)} testnet USDC` : "Not set",
+      total: safeTotal > 0 ? `${formatUSDC(safeTotal)} testnet USDC` : "Not set"
     };
-  }, [rewardPreview, slotsPreview]);
+  }, [selectedRewards]);
+
+  function updateFeedbackReward(type: FeedbackRewardConfig["feedbackType"], updates: Partial<FeedbackRewardConfig>) {
+    setFeedbackRewards((current) =>
+      current.map((reward) => (reward.feedbackType === type ? { ...reward, ...updates } : reward))
+    );
+  }
+
+  function setFeedbackTypeEnabled(type: FeedbackRewardConfig["feedbackType"], enabled: boolean) {
+    setFeedbackRewards((current) => {
+      const existing = current.find((reward) => reward.feedbackType === type);
+      if (!enabled) return current.filter((reward) => reward.feedbackType !== type);
+      if (existing) return current;
+      const option = feedbackTypeOptions.find((item) => item.value === type);
+      return [
+        ...current,
+        {
+          feedbackType: type,
+          rewardUSDC: option?.exampleRewardUSDC || "1",
+          slots: option?.exampleSlots || 1
+        }
+      ];
+    });
+  }
 
   async function onSwitchNetwork() {
     setError("");
@@ -81,15 +117,22 @@ export function BountyForm() {
     const title = String(form.get("title") || "").trim();
     const productUrl = String(form.get("productUrl") || "").trim();
     const instructions = String(form.get("instructions") || "").trim();
-    const rewardUSDC = String(form.get("rewardUSDC") || "").trim();
-    const maxSubmissions = Number(form.get("maxSubmissions"));
     const deadline = String(form.get("deadline") || "");
-    const reward = Number(rewardUSDC);
+    const selectedFeedbackRewards = feedbackRewards
+      .filter((reward) => normalizeRewardAmount(reward.rewardUSDC) > 0 && reward.slots > 0)
+      .map((reward) => ({
+        ...reward,
+        rewardUSDC: formatUSDC(reward.rewardUSDC)
+      }));
+    const maxReward = getMaxRewardUSDC(selectedFeedbackRewards);
+    const maxSubmissions = getTotalRewardSlots(selectedFeedbackRewards);
+    const rewardUSDC = formatUSDC(maxReward);
 
     if (!title) return setError("Title is required.");
     if (!isValidUrl(productUrl)) return setError("Product URL must be a valid http or https URL.");
-    if (!Number.isFinite(reward) || reward <= 0) return setError("Reward must be greater than 0.");
-    if (!Number.isInteger(maxSubmissions) || maxSubmissions < 1) return setError("Slots must be at least 1.");
+    if (!selectedFeedbackRewards.length) return setError("Select at least one feedback type.");
+    if (maxReward <= 0) return setError("Each selected feedback type needs a reward greater than 0.");
+    if (!Number.isInteger(maxSubmissions) || maxSubmissions < 1) return setError("Each selected feedback type needs at least one slot.");
     if (!deadline || new Date(deadline).getTime() <= Date.now()) return setError("Deadline must be in the future.");
     if (contractConfigured && !walletConnected) return setError("Connect wallet before creating an on-chain bounty.");
     if (contractConfigured && wrongNetwork) {
@@ -106,6 +149,7 @@ export function BountyForm() {
         productUrl,
         instructions,
         rewardUSDC,
+        feedbackRewards: selectedFeedbackRewards,
         maxSubmissions,
         deadline: new Date(deadline).toISOString()
       });
@@ -124,6 +168,8 @@ export function BountyForm() {
           throw new Error("USDC address is not configured.");
         }
 
+        // TODO: True per-feedback-type payout amounts require contract support. The current contract pays one
+        // rewardPerSubmission, so the UI funds the bounty at the highest selected feedback reward.
         const rewardAmount = parseUSDC(rewardUSDC);
         const fundAmount = rewardAmount * BigInt(maxSubmissions);
         const deadlineSeconds = BigInt(Math.floor(new Date(deadline).getTime() / 1000));
@@ -267,30 +313,70 @@ export function BountyForm() {
               required
             />
           </label>
-          <div className="grid gap-4 md:grid-cols-3">
-            <label className="label">
-              Reward per response in testnet USDC
-              <input
-                name="rewardUSDC"
-                inputMode="decimal"
-                className="field"
-                placeholder="1"
-                onChange={(event) => setRewardPreview(event.currentTarget.value)}
-                required
-              />
-            </label>
-            <label className="label">
-              Tester slots
-              <input
-                name="maxSubmissions"
-                type="number"
-                min="1"
-                className="field"
-                placeholder="5"
-                onChange={(event) => setSlotsPreview(event.currentTarget.value)}
-                required
-              />
-            </label>
+          <section className="surface-soft p-4 sm:p-5">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <h2 className="text-base font-black text-ink">Accepted feedback types</h2>
+                <p className="mt-1 text-sm leading-6 text-muted">
+                  Choose the contribution formats you want and set founder-configured reward amounts for each one.
+                </p>
+              </div>
+              <span className="w-fit rounded-full border border-action/20 bg-action/10 px-3 py-1 text-xs font-black text-action">
+                Founder configured
+              </span>
+            </div>
+            <div className="mt-4 grid gap-3">
+              {feedbackTypeOptions.map((option) => {
+                const config = feedbackRewards.find((reward) => reward.feedbackType === option.value);
+                const enabled = Boolean(config);
+
+                return (
+                  <div key={option.value} className="rounded-xl border border-line/70 bg-white p-4">
+                    <div className="grid gap-4 lg:grid-cols-[1fr_130px_110px] lg:items-end">
+                      <label className="flex cursor-pointer items-start gap-3">
+                        <input
+                          type="checkbox"
+                          checked={enabled}
+                          onChange={(event) => setFeedbackTypeEnabled(option.value, event.currentTarget.checked)}
+                          className="mt-1 size-4 accent-[#116149]"
+                        />
+                        <span>
+                          <span className="block text-sm font-black text-ink">{option.label}</span>
+                          <span className="mt-1 block text-sm leading-5 text-muted">{option.description}</span>
+                        </span>
+                      </label>
+                      <label className="label">
+                        Reward
+                        <input
+                          inputMode="decimal"
+                          value={config?.rewardUSDC || ""}
+                          disabled={!enabled}
+                          onChange={(event) => updateFeedbackReward(option.value, { rewardUSDC: event.currentTarget.value })}
+                          className="field mt-1.5 py-2.5 disabled:cursor-not-allowed disabled:bg-panel disabled:opacity-60"
+                          placeholder={option.exampleRewardUSDC}
+                        />
+                      </label>
+                      <label className="label">
+                        Slots
+                        <input
+                          type="number"
+                          min="1"
+                          value={config?.slots || ""}
+                          disabled={!enabled}
+                          onChange={(event) =>
+                            updateFeedbackReward(option.value, { slots: Number(event.currentTarget.value) })
+                          }
+                          className="field mt-1.5 py-2.5 disabled:cursor-not-allowed disabled:bg-panel disabled:opacity-60"
+                          placeholder={String(option.exampleSlots)}
+                        />
+                      </label>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+          <div className="grid gap-4 md:grid-cols-1">
             <label className="label">
               Deadline date/time
               <input name="deadline" type="datetime-local" className="field" required />
@@ -302,12 +388,16 @@ export function BountyForm() {
           <p className="text-xs font-black uppercase tracking-[0.14em] text-action">Funding summary</p>
           <dl className="mt-4 space-y-3">
             <div className="flex items-center justify-between gap-4">
-              <dt>Reward per response</dt>
+              <dt>On-chain reward per approval</dt>
               <dd className="font-black text-ink">{fundingSummary.reward}</dd>
             </div>
             <div className="flex items-center justify-between gap-4">
-              <dt>Tester slots</dt>
+              <dt>Total accepted slots</dt>
               <dd className="font-black text-ink">{fundingSummary.slots}</dd>
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <dt>Configured reward total</dt>
+              <dd className="font-black text-ink">{fundingSummary.targetTotal}</dd>
             </div>
             <div className="border-t border-line/70 pt-3">
               <div className="flex items-center justify-between gap-4">
@@ -316,8 +406,29 @@ export function BountyForm() {
               </div>
             </div>
           </dl>
+          <div className="mt-4 space-y-2 rounded-lg border border-line/70 bg-white p-3">
+            {selectedRewards.length ? (
+              selectedRewards.map((reward) => {
+                const option = feedbackTypeOptions.find((item) => item.value === reward.feedbackType);
+                return (
+                  <div key={reward.feedbackType} className="flex items-center justify-between gap-3">
+                    <span>{option?.shortLabel || option?.label}</span>
+                    <span className="font-black text-ink">
+                      {formatUSDC(reward.rewardUSDC)} x {reward.slots}
+                    </span>
+                  </div>
+                );
+              })
+            ) : (
+              <p>Select at least one feedback type.</p>
+            )}
+          </div>
           <p className="mt-4 rounded-lg border border-line/70 bg-white p-3">
             Feedback is stored off-chain, while the contract handles funding and payout state.
+          </p>
+          <p className="mt-3 rounded-lg border border-action/15 bg-action/10 p-3 font-semibold text-action">
+            The current contract pays one reward amount per approved submission, so Critique funds at the highest
+            selected reward across all accepted types.
           </p>
         </aside>
       </div>

@@ -9,6 +9,7 @@ create table if not exists bounties (
   product_url text,
   instructions text,
   reward_usdc text,
+  feedback_config jsonb default '[]',
   max_submissions integer,
   deadline timestamptz,
   status text,
@@ -46,6 +47,9 @@ create table if not exists submissions (
 
 alter table bounties enable row level security;
 alter table submissions enable row level security;
+
+alter table bounties
+  add column if not exists feedback_config jsonb default '[]';
 
 -- MVP anon-key policies:
 -- Public bounty links need public reads. Testers need public submission inserts.

@@ -1,4 +1,5 @@
 import { createSubmissionHash } from "./hash";
+import { FeedbackRewardConfig, FeedbackType, defaultFeedbackRewards, normalizeFeedbackRewards } from "./feedbackRewards";
 import { isSupabaseConfigured, supabase } from "./supabase";
 
 const BOUNTIES_KEY = "critique-drop:bounties";
@@ -12,6 +13,7 @@ export type BountyMetadata = {
   productUrl: string;
   instructions: string;
   rewardUSDC: string;
+  feedbackRewards?: FeedbackRewardConfig[];
   maxSubmissions: number;
   deadline: string;
   status: "draft" | "open" | "closed" | "expired";
@@ -23,7 +25,7 @@ export type FeedbackSubmission = {
   id: string;
   bountyId: string;
   testerWallet: string;
-  feedbackType?: "quick_written" | "deep_product_review" | "video_walkthrough" | "technical_proposal";
+  feedbackType?: FeedbackType;
   testerContext?: string;
   firstImpression?: string;
   firstAction?: string;
@@ -73,6 +75,7 @@ type BountyRow = {
   product_url: string;
   instructions: string;
   reward_usdc: string;
+  feedback_config?: FeedbackRewardConfig[] | null;
   max_submissions: number;
   deadline: string;
   status: BountyMetadata["status"];
@@ -190,6 +193,7 @@ function toBounty(row: BountyRow): BountyMetadata {
     productUrl: row.product_url,
     instructions: row.instructions,
     rewardUSDC: row.reward_usdc,
+    feedbackRewards: normalizeFeedbackRewards(row.feedback_config, row.reward_usdc, row.max_submissions),
     maxSubmissions: row.max_submissions,
     deadline: row.deadline,
     status: row.status,
@@ -207,6 +211,7 @@ function toBountyRow(bounty: BountyMetadata) {
     product_url: bounty.productUrl,
     instructions: bounty.instructions,
     reward_usdc: bounty.rewardUSDC,
+    feedback_config: normalizeFeedbackRewards(bounty.feedbackRewards, bounty.rewardUSDC, bounty.maxSubmissions),
     max_submissions: bounty.maxSubmissions,
     deadline: bounty.deadline,
     status: bounty.status,
@@ -376,6 +381,7 @@ export async function updateLocalBounty(id: string, updates: Partial<BountyMetad
       if (updates.productUrl !== undefined) dbUpdates.product_url = updates.productUrl;
       if (updates.instructions !== undefined) dbUpdates.instructions = updates.instructions;
       if (updates.rewardUSDC !== undefined) dbUpdates.reward_usdc = updates.rewardUSDC;
+      if (updates.feedbackRewards !== undefined) dbUpdates.feedback_config = updates.feedbackRewards;
       if (updates.maxSubmissions !== undefined) dbUpdates.max_submissions = updates.maxSubmissions;
       if (updates.deadline !== undefined) dbUpdates.deadline = updates.deadline;
       if (updates.status !== undefined) dbUpdates.status = updates.status;
@@ -500,8 +506,9 @@ export function getDemoBounty(): BountyMetadata {
     title: "Test my landing page",
     productUrl: "https://example.com",
     instructions:
-      "Spend 3 minutes on this page. Tell me what confused you, what you understood clearly, and whether you would click the main call-to-action.",
-    rewardUSDC: "1",
+      "Spend 3 minutes reviewing this product page. Share what is clear, where the experience creates friction, and what improvement would make the product easier to evaluate.",
+    rewardUSDC: "7",
+    feedbackRewards: defaultFeedbackRewards,
     maxSubmissions: 5,
     deadline,
     status: "open",

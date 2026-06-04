@@ -8,7 +8,7 @@ import { ensureDemoBounty } from "@/lib/storage";
 const steps = [
   {
     title: "Create a bounty",
-    body: "Add your product link, write the feedback task, choose the reward, set tester slots, and define a deadline."
+    body: "Add your product link, write the feedback task, choose accepted feedback types, set reward amounts, assign slots, and define a deadline."
   },
   {
     title: "Share one link",
@@ -28,36 +28,32 @@ const steps = [
 const faqs = [
   {
     question: "Do testers need to pay to submit feedback?",
-    answer: "No. Testers submit feedback for free. They only receive a reward if the founder approves their submission."
+    answer: "No. Contributors submit feedback without paying. They receive a reward only when the founder approves their submission."
   },
   {
     question: "When does a tester get paid?",
-    answer: "After the founder reviews the submission and approves it. Today, approved feedback is paid with testnet USDC on Arc testnet."
+    answer: "After the founder reviews and approves the submission. Today, approved submissions are paid with testnet USDC on Arc testnet."
   },
   {
     question: "What kind of feedback can people submit?",
-    answer: "Written feedback, deep product reviews, video walkthrough links, or technical improvement proposals."
+    answer: "Contributors can submit written feedback, deep product reviews, video walkthrough links, or technical improvement proposals."
   },
   {
     question: "Is this a survey marketplace?",
-    answer: "No. Critique is focused on one product at a time: one bounty, one link, useful feedback, and approved rewards."
-  },
-  {
-    question: "Why use USDC?",
-    answer: "USDC makes small rewards simple and stable. A $1 feedback reward stays easy to understand."
+    answer: "No. Critique is focused on one product at a time: one founder-funded bounty, one public link, structured feedback, and approved rewards."
   },
   {
     question: "Why build this on Arc?",
-    answer: "Arc is designed for stablecoin-native apps, making it a good fit for small USDC rewards, payment receipts, and real-world feedback workflows."
+    answer: "Arc testnet lets Critique demonstrate stablecoin-style reward flows, visible payout receipts, and off-chain feedback with on-chain settlement state."
   },
   {
     question: "Are rewards real USDC?",
     answer:
-      "Critique currently runs on Arc testnet, so rewards use testnet USDC for demonstration and testing. The payout flow is designed around USDC, and can be configured for mainnet USDC once Arc mainnet is available."
+      "Critique currently runs on Arc testnet, so rewards use testnet USDC for demonstration and testing. The payout flow is designed around USDC and can be configured for mainnet USDC once Arc mainnet is available."
   },
   {
     question: "Who is Critique for?",
-    answer: "Indie builders, hackathon teams, vibe coders, early founders, designers, and small teams that need useful feedback fast."
+    answer: "Critique is for founders, product teams, designers, developers, hackathon teams, and small teams validating product ideas."
   }
 ];
 
@@ -68,11 +64,11 @@ const arcFeatures = [
   },
   {
     title: "On-chain payout receipts",
-    body: "Approved rewards create visible transaction records on Arc testnet."
+    body: "Approved payouts can create visible transaction records on Arc testnet."
   },
   {
     title: "Off-chain feedback, on-chain settlement",
-    body: "Feedback is stored off-chain while the contract handles funding and payout state."
+    body: "Feedback is stored off-chain while funding and payout state are handled through Arc."
   }
 ];
 
@@ -150,7 +146,8 @@ export default function HomePage() {
             <p className="eyebrow">How it works</p>
             <h2 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">How Critique works</h2>
             <p className="mt-4 text-lg leading-8 text-muted">
-              Create a focused feedback bounty, share one link, and reward useful responses with testnet USDC.
+              Create a focused feedback bounty, share one link, and reward approved responses with founder-configured
+              testnet USDC rewards.
             </p>
           </div>
 
@@ -248,7 +245,7 @@ export default function HomePage() {
                     href="https://www.arc.io/"
                     target="_blank"
                     rel="noreferrer"
-                    className="focus-ring inline-flex w-fit shrink-0 items-center gap-2 rounded-full border border-white/14 bg-white/[0.08] px-4 py-2 text-xs font-black text-white transition-colors hover:bg-white/[0.13]"
+                    className="focus-ring mt-2 inline-flex w-fit shrink-0 items-center gap-2 rounded-full border border-white/14 bg-white/[0.08] px-4 py-2 text-xs font-black text-white transition-colors hover:bg-white/[0.13] sm:mt-0 lg:mt-6"
                   >
                     <span className="size-1.5 rounded-full bg-action" aria-hidden="true" />
                     Built on Arc

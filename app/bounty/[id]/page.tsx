@@ -8,6 +8,14 @@ import { BountyStatusBadge } from "@/components/BountyStatusBadge";
 import { CopyLinkButton } from "@/components/CopyLinkButton";
 import { EmptyState } from "@/components/EmptyState";
 import {
+  FeedbackType,
+  feedbackTypeOptions,
+  formatUSDC,
+  getFeedbackTypeLabel,
+  getRewardForType,
+  normalizeFeedbackRewards
+} from "@/lib/feedbackRewards";
+import {
   addSubmission,
   BountyMetadata,
   FeedbackSubmission,
@@ -24,32 +32,8 @@ function deriveStatus(bounty: BountyMetadata, submissions: FeedbackSubmission[])
   return "open";
 }
 
-type FeedbackType = NonNullable<FeedbackSubmission["feedbackType"]>;
 type Decision = NonNullable<FeedbackSubmission["decision"]>;
 type Difficulty = NonNullable<FeedbackSubmission["estimatedDifficulty"]>;
-
-const feedbackTypes: { value: FeedbackType; label: string; description: string }[] = [
-  {
-    value: "quick_written",
-    label: "Quick written feedback",
-    description: "A guided written pass on clarity, friction, and value."
-  },
-  {
-    value: "deep_product_review",
-    label: "Deep product review",
-    description: "A more deliberate review with the full product-feedback prompts."
-  },
-  {
-    value: "video_walkthrough",
-    label: "Video walkthrough",
-    description: "Share a recording link plus the key takeaways."
-  },
-  {
-    value: "technical_proposal",
-    label: "Technical improvement proposal",
-    description: "Recommend a concrete fix or implementation improvement."
-  }
-];
 
 const decisionOptions: Decision[] = ["Yes", "Maybe", "No"];
 const difficultyOptions: Difficulty[] = ["Low", "Medium", "High"];
@@ -94,6 +78,12 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
   }, [params.id]);
 
   const status = useMemo(() => (bounty ? deriveStatus(bounty, submissions) : "open"), [bounty, submissions]);
+  const availableRewards = useMemo(
+    () => (bounty ? normalizeFeedbackRewards(bounty.feedbackRewards, bounty.rewardUSDC, bounty.maxSubmissions) : []),
+    [bounty]
+  );
+  const selectedReward = getRewardForType(availableRewards, feedbackType);
+  const hasVariableRewards = new Set(availableRewards.map((reward) => formatUSDC(reward.rewardUSDC))).size > 1;
   const slotsUsed = submissions.filter((submission) => submission.status !== "rejected").length;
   const slotsLeft = bounty ? Math.max(0, bounty.maxSubmissions - slotsUsed) : 0;
   const deadlineLabel = bounty ? new Date(bounty.deadline).toLocaleString() : "";
@@ -104,6 +94,12 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
   const isFounder = Boolean(
     address && bounty?.founderAddress && bounty.founderAddress.toLowerCase() === address.toLowerCase()
   );
+
+  useEffect(() => {
+    if (availableRewards.length && !availableRewards.some((reward) => reward.feedbackType === feedbackType)) {
+      setFeedbackType(availableRewards[0].feedbackType);
+    }
+  }, [availableRewards, feedbackType]);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -118,6 +114,9 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
     const formElement = event.currentTarget;
     const form = new FormData(formElement);
     const selectedFeedbackType = String(form.get("feedbackType") || feedbackType).trim() as FeedbackType;
+    if (!availableRewards.some((reward) => reward.feedbackType === selectedFeedbackType)) {
+      return setError("Choose one of the accepted feedback types for this bounty.");
+    }
     const testerWallet = String(form.get("testerWallet") || "").trim();
     const testerContext = String(form.get("testerContext") || "").trim();
     const firstImpression = String(form.get("firstImpression") || "").trim();
@@ -211,7 +210,7 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
       });
       setSubmissions(await listSubmissions(bounty.id));
       formElement.reset();
-      setMessage("Feedback submitted. If approved, this wallet receives the testnet USDC reward.");
+      setMessage("Feedback submitted. Approved submissions receive the configured Arc testnet reward.");
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Could not submit feedback.");
     }
@@ -248,7 +247,9 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
             <p className="eyebrow">Public bounty</p>
             <h1 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">{bounty.title}</h1>
             <p className="mt-3 text-base font-semibold text-action">
-              {bounty.rewardUSDC} testnet USDC per approved response
+              {hasVariableRewards
+                ? "Founder-set rewards by feedback type"
+                : `${formatUSDC(bounty.rewardUSDC)} testnet USDC per approved response`}
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:items-end">
@@ -284,7 +285,8 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
                 <div className="surface-soft p-4 text-sm leading-6 text-muted">
                   <p className="font-black text-ink">How approval works</p>
                   <p className="mt-1">
-                    Submit feedback from the wallet you want paid. The founder approves useful responses for the listed reward.
+                    Submit feedback from the wallet you want paid. The founder approves useful responses for the
+                    configured Arc testnet reward.
                   </p>
                 </div>
                 {isFounder ? (
@@ -304,7 +306,7 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
               <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4 lg:grid-cols-2">
                 <div>
                   <p className="text-xs font-black uppercase tracking-[0.12em] text-muted">Reward</p>
-                  <p className="mt-1 font-black text-ink">{bounty.rewardUSDC} testnet USDC</p>
+                  <p className="mt-1 font-black text-ink">Up to {formatUSDC(bounty.rewardUSDC)} testnet USDC</p>
                 </div>
                 <div>
                   <p className="text-xs font-black uppercase tracking-[0.12em] text-muted">Slots left</p>
@@ -337,7 +339,10 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
                 </p>
               </div>
               <div className="grid gap-2">
-                {feedbackTypes.map((type) => (
+                {availableRewards.map((reward) => {
+                  const type = feedbackTypeOptions.find((option) => option.value === reward.feedbackType);
+                  if (!type) return null;
+                  return (
                   <label
                     key={type.value}
                     className="focus-within:ring-action/40 cursor-pointer rounded-lg border border-line bg-white p-3 transition-colors has-[:checked]:border-action/40 has-[:checked]:bg-action/10 focus-within:ring-2"
@@ -350,11 +355,23 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
                       onChange={() => setFeedbackType(type.value)}
                       className="sr-only"
                     />
-                    <span className="block text-sm font-black text-ink">{type.label}</span>
+                    <span className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                      <span className="block text-sm font-black text-ink">{type.label}</span>
+                      <span className="w-fit rounded-full border border-action/20 bg-action/10 px-2.5 py-1 text-xs font-black text-action">
+                        {formatUSDC(reward.rewardUSDC)} testnet USDC
+                      </span>
+                    </span>
                     <span className="mt-1 block text-xs font-semibold leading-5 text-muted">{type.description}</span>
                   </label>
-                ))}
+                  );
+                })}
               </div>
+              {selectedReward ? (
+                <p className="rounded-lg border border-line/70 bg-white p-3 text-sm font-semibold leading-5 text-muted">
+                  Selected format: {getFeedbackTypeLabel(selectedReward.feedbackType)}. Founder-configured reward:{" "}
+                  <span className="text-action">{formatUSDC(selectedReward.rewardUSDC)} testnet USDC</span>.
+                </p>
+              ) : null}
             </section>
 
             <section className={formSection}>

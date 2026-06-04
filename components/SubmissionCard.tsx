@@ -1,17 +1,7 @@
 import { FeedbackSubmission } from "@/lib/storage";
+import { getFeedbackTypeLabel } from "@/lib/feedbackRewards";
 import { BountyStatusBadge } from "./BountyStatusBadge";
 import { TxHashLink } from "./TxHashLink";
-
-const feedbackTypeLabels: Record<NonNullable<FeedbackSubmission["feedbackType"]>, string> = {
-  quick_written: "Quick written feedback",
-  deep_product_review: "Deep product review",
-  video_walkthrough: "Video walkthrough",
-  technical_proposal: "Technical proposal"
-};
-
-function feedbackTypeLabel(submission: FeedbackSubmission) {
-  return submission.feedbackType ? feedbackTypeLabels[submission.feedbackType] : "Written feedback";
-}
 
 function decisionText(submission: FeedbackSubmission) {
   if (submission.decision) {
@@ -83,11 +73,13 @@ export function SubmissionCard({
   submission,
   onApprove,
   onReject,
+  rewardLabel,
   busy
 }: {
   submission: FeedbackSubmission;
   onApprove?: () => void;
   onReject?: () => void;
+  rewardLabel?: string;
   busy?: boolean;
 }) {
   const link = submissionLink(submission);
@@ -100,11 +92,12 @@ export function SubmissionCard({
         <div>
           <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-full border border-action/25 bg-action/10 px-3 py-1 text-xs font-black text-action">
-              {feedbackTypeLabel(submission)}
+              {getFeedbackTypeLabel(submission.feedbackType)}
             </span>
             <BountyStatusBadge status={submission.status} />
           </div>
           <p className="mt-3 break-all text-sm font-black text-ink">{submission.testerWallet}</p>
+          {rewardLabel ? <p className="mt-1 text-sm font-bold text-action">{rewardLabel}</p> : null}
           <p className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-muted">
             {new Date(submission.createdAt).toLocaleString()}
           </p>
