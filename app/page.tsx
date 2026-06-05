@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import {
   CircleDollarSign,
   FilePlus2,
@@ -194,34 +195,48 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="surface p-5 sm:p-6">
-              <div className="flex items-center justify-between border-b border-line/70 pb-4">
-                <div>
-                  <p className="text-xs font-black uppercase tracking-[0.16em] text-muted">Example bounty</p>
-                  <h2 className="mt-2 text-xl font-black text-ink">Test my landing page</h2>
-                </div>
-                <span className="rounded-full border border-action/25 bg-action/10 px-3 py-1 text-xs font-black text-action">
-                  Open
-                </span>
+            <div className="relative">
+              <div className="overflow-hidden rounded-2xl border border-line/70 bg-white shadow-[0_22px_60px_rgba(21,45,36,0.14)]">
+                <Image
+                  src="/hero-product-feedback.jpg"
+                  alt="Contributor reviewing a product experience on a laptop"
+                  width={1200}
+                  height={900}
+                  priority
+                  sizes="(min-width: 1024px) 46vw, 100vw"
+                  className="aspect-[4/3] w-full object-cover"
+                />
               </div>
-              <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                <div className="surface-soft p-4">
-                  <p className="text-xs font-black uppercase tracking-[0.12em] text-muted">Reward</p>
-                  <p className="mt-2 text-xl font-black leading-tight text-ink">Founder-set reward</p>
+
+              <div className="surface mt-4 p-5 shadow-[0_18px_55px_rgba(21,45,36,0.12)] sm:p-6 lg:absolute lg:bottom-5 lg:left-5 lg:right-5 lg:mt-0">
+                <div className="flex items-center justify-between border-b border-line/70 pb-4">
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-[0.16em] text-muted">Example bounty</p>
+                    <h2 className="mt-2 text-xl font-black text-ink">Test my landing page</h2>
+                  </div>
+                  <span className="rounded-full border border-action/25 bg-action/10 px-3 py-1 text-xs font-black text-action">
+                    Open
+                  </span>
                 </div>
-                <div className="surface-soft p-4">
-                  <p className="text-xs font-black uppercase tracking-[0.12em] text-muted">Slots</p>
-                  <p className="mt-2 text-2xl font-black text-ink">5</p>
+                <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                  <div className="surface-soft p-4">
+                    <p className="text-xs font-black uppercase tracking-[0.12em] text-muted">Reward</p>
+                    <p className="mt-2 text-xl font-black leading-tight text-ink">Founder-set reward</p>
+                  </div>
+                  <div className="surface-soft p-4">
+                    <p className="text-xs font-black uppercase tracking-[0.12em] text-muted">Slots</p>
+                    <p className="mt-2 text-2xl font-black text-ink">5</p>
+                  </div>
+                  <div className="surface-soft p-4">
+                    <p className="text-xs font-black uppercase tracking-[0.12em] text-muted">Review</p>
+                    <p className="mt-2 text-2xl font-black text-ink">Manual</p>
+                  </div>
                 </div>
-                <div className="surface-soft p-4">
-                  <p className="text-xs font-black uppercase tracking-[0.12em] text-muted">Review</p>
-                  <p className="mt-2 text-2xl font-black text-ink">Manual</p>
+                <div className="mt-5 space-y-3 text-sm leading-6 text-muted">
+                  <p className="rounded-lg border border-line/70 bg-panel/70 p-4">
+                    Contributors submit written feedback, deep reviews, video links, or technical proposals.
+                  </p>
                 </div>
-              </div>
-              <div className="mt-5 space-y-3 text-sm leading-6 text-muted">
-                <p className="rounded-lg border border-line/70 bg-panel/70 p-4">
-                  Contributors submit written feedback, deep reviews, video links, or technical proposals.
-                </p>
               </div>
             </div>
           </div>
