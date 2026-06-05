@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import {
   CircleDollarSign,
   FilePlus2,
@@ -195,42 +194,52 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="relative mx-auto w-full max-w-xl lg:max-w-none">
-              <div className="absolute -inset-3 rounded-[1.75rem] border border-action/10 bg-action/[0.035]" aria-hidden="true" />
-              <div className="relative overflow-hidden rounded-2xl border border-line/70 bg-white shadow-[0_22px_60px_rgba(21,45,36,0.14)]">
-                <Image
-                  src="/hero-product-feedback.jpg"
-                  alt="Contributor reviewing a product experience on a laptop"
-                  width={1200}
-                  height={900}
-                  priority
-                  sizes="(min-width: 1024px) 46vw, 100vw"
-                  className="aspect-[4/3] w-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#071a18]/28 via-transparent to-transparent" aria-hidden="true" />
-              </div>
+            <div className="relative mx-auto w-full max-w-xl lg:max-w-none" aria-hidden="true">
+              <div className="absolute -inset-3 rounded-[1.75rem] border border-action/10 bg-action/[0.035]" />
+              <div className="relative overflow-hidden rounded-2xl border border-line/70 bg-[#fbfaf4] p-5 shadow-[0_22px_60px_rgba(21,45,36,0.12)] sm:p-7">
+                <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-action/10 blur-3xl" />
+                <div className="absolute bottom-0 left-0 h-48 w-48 rounded-full bg-[#d9efe5]/70 blur-3xl" />
 
-              <div className="absolute right-4 top-4 rounded-full border border-white/50 bg-white/90 px-3 py-1.5 text-xs font-black text-action shadow-[0_12px_32px_rgba(21,45,36,0.14)] backdrop-blur">
-                Approved submission
-              </div>
-
-              <div className="surface relative mt-4 max-w-md p-4 shadow-[0_18px_55px_rgba(21,45,36,0.12)] sm:absolute sm:bottom-4 sm:left-4 sm:mt-0 sm:max-w-[72%]">
-                <p className="text-sm font-bold leading-6 text-ink">
-                  “Checkout flow is clear, but pricing is hard to compare.”
-                </p>
-                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs font-black uppercase tracking-[0.12em] text-muted">
-                  <span>Written feedback</span>
-                  <span className="size-1 rounded-full bg-action/40" aria-hidden="true" />
-                  <span>Ready for review</span>
+                <div className="relative rounded-xl border border-line/70 bg-white/82 p-4 shadow-sm">
+                  <div className="flex items-center justify-between gap-4 border-b border-line/70 pb-4">
+                    <div className="h-2.5 w-28 rounded-full bg-ink/12" />
+                    <div className="h-2.5 w-16 rounded-full bg-action/20" />
+                  </div>
+                  <div className="mt-5 grid gap-3">
+                    <div className="h-3 w-4/5 rounded-full bg-ink/10" />
+                    <div className="h-3 w-2/3 rounded-full bg-ink/10" />
+                    <div className="h-3 w-5/6 rounded-full bg-ink/10" />
+                  </div>
+                  <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                    <div className="rounded-lg border border-line/70 bg-panel/80 p-3">
+                      <div className="h-2 w-14 rounded-full bg-muted/20" />
+                      <div className="mt-3 h-3 w-20 rounded-full bg-action/20" />
+                    </div>
+                    <div className="rounded-lg border border-line/70 bg-panel/80 p-3">
+                      <div className="h-2 w-12 rounded-full bg-muted/20" />
+                      <div className="mt-3 h-3 w-14 rounded-full bg-ink/12" />
+                    </div>
+                    <div className="rounded-lg border border-line/70 bg-panel/80 p-3">
+                      <div className="h-2 w-16 rounded-full bg-muted/20" />
+                      <div className="mt-3 h-3 w-20 rounded-full bg-ink/12" />
+                    </div>
+                  </div>
                 </div>
-              </div>
 
-              <div className="absolute bottom-4 right-4 hidden rounded-xl border border-white/50 bg-white/92 p-3 text-sm font-black text-ink shadow-[0_16px_40px_rgba(21,45,36,0.16)] backdrop-blur md:block">
-                <div className="flex items-center gap-2">
-                  <span className="size-2 rounded-full bg-action" aria-hidden="true" />
-                  Reward sent
+                <div className="relative mt-4 grid gap-3 sm:grid-cols-[0.9fr_1.1fr]">
+                  <div className="rounded-xl border border-action/15 bg-action/10 p-4">
+                    <div className="h-2.5 w-20 rounded-full bg-action/30" />
+                    <div className="mt-4 h-14 rounded-lg border border-action/15 bg-white/70" />
+                  </div>
+                  <div className="rounded-xl border border-line/70 bg-white/75 p-4">
+                    <div className="h-2.5 w-24 rounded-full bg-ink/10" />
+                    <div className="mt-4 space-y-2">
+                      <div className="h-2.5 rounded-full bg-ink/10" />
+                      <div className="h-2.5 w-4/5 rounded-full bg-ink/10" />
+                      <div className="h-2.5 w-3/5 rounded-full bg-action/20" />
+                    </div>
+                  </div>
                 </div>
-                <p className="mt-1 text-xs font-bold text-muted">Configured payout</p>
               </div>
             </div>
           </div>
