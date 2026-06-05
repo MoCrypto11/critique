@@ -24,18 +24,6 @@ import { isValidUrl } from "@/lib/utils";
 import { getWalletErrorMessage, switchToArcTestnet } from "@/lib/walletNetwork";
 import { MockModeBanner } from "./MockModeBanner";
 
-const bountyCreatedEvent = {
-  type: "event",
-  name: "BountyCreated",
-  inputs: [
-    { indexed: true, name: "bountyId", type: "uint256" },
-    { indexed: true, name: "founder", type: "address" },
-    { indexed: false, name: "totalFundingRequired", type: "uint256" },
-    { indexed: false, name: "deadline", type: "uint256" },
-    { indexed: false, name: "metadataURI", type: "string" }
-  ]
-} as const;
-
 export function BountyForm() {
   const router = useRouter();
   const { address, isConnected, chainId: accountChainId } = useAccount();
@@ -130,12 +118,32 @@ export function BountyForm() {
     const maxReward = getMaxRewardUSDC(selectedFeedbackRewards);
     const maxSubmissions = getTotalRewardSlots(selectedFeedbackRewards);
     const rewardUSDC = formatUSDC(maxReward);
+    const parsedRewardAmounts = selectedFeedbackRewards.map((reward) => parseUSDC(reward.rewardUSDC));
+    const slotCounts = selectedFeedbackRewards.map((reward) => BigInt(reward.slots));
+    const feedbackTypeIds = selectedFeedbackRewards.map((reward) => getFeedbackTypeContractId(reward.feedbackType));
+    const totalFundAmount = selectedFeedbackRewards.reduce(
+      (total, reward) => total + parseUSDC(reward.rewardUSDC) * BigInt(reward.slots),
+      BigInt(0)
+    );
 
     if (!title) return setError("Title is required.");
     if (!isValidUrl(productUrl)) return setError("Product URL must be a valid http or https URL.");
     if (!selectedFeedbackRewards.length) return setError("Select at least one feedback type.");
     if (maxReward <= 0) return setError("Each selected feedback type needs a reward greater than 0.");
     if (!Number.isInteger(maxSubmissions) || maxSubmissions < 1) return setError("Each selected feedback type needs at least one slot.");
+    if (parsedRewardAmounts.some((amount) => amount <= BigInt(0))) {
+      return setError("Each selected feedback type needs a reward greater than 0.");
+    }
+    if (slotCounts.some((slots) => slots <= BigInt(0))) {
+      return setError("Each selected feedback type needs at least one slot.");
+    }
+    if (
+      feedbackTypeIds.length !== parsedRewardAmounts.length ||
+      parsedRewardAmounts.length !== slotCounts.length ||
+      totalFundAmount <= BigInt(0)
+    ) {
+      return setError("Funding configuration is invalid. Check selected feedback types, rewards, and slots.");
+    }
     if (!deadline || new Date(deadline).getTime() <= Date.now()) return setError("Deadline must be in the future.");
     if (contractConfigured && !walletConnected) return setError("Connect wallet before creating an on-chain bounty.");
     if (contractConfigured && wrongNetwork) {
@@ -158,6 +166,7 @@ export function BountyForm() {
       });
       let bounty = initialBounty;
       const txHashes: string[] = [];
+      let approvalConfirmed = false;
 
       if (contractConfigured) {
         if (!walletConnected || !address) {
@@ -173,43 +182,105 @@ export function BountyForm() {
           throw new Error("USDC address is not configured.");
         }
 
-        const totalFundAmount = selectedFeedbackRewards.reduce(
-          (total, reward) => total + parseUSDC(reward.rewardUSDC) * BigInt(reward.slots),
-          BigInt(0)
-        );
         const deadlineSeconds = BigInt(Math.floor(new Date(deadline).getTime() / 1000));
+        const contractAddress = getAddress(CRITIQUE_DROP_CONTRACT);
+        const usdcAddress = getAddress(USDC_ADDRESS);
 
-        setStatus("Approving exact testnet USDC funding...");
-        const approveHash = await walletClient.writeContract({
-          address: getAddress(USDC_ADDRESS),
+        const balance = await publicClient.readContract({
+          address: usdcAddress,
           abi: usdcAbi,
-          functionName: "approve",
-          args: [getAddress(CRITIQUE_DROP_CONTRACT), totalFundAmount],
-          account: address
+          functionName: "balanceOf",
+          args: [address]
         });
-        txHashes.push(approveHash);
-        await publicClient.waitForTransactionReceipt({ hash: approveHash });
+        if (balance < totalFundAmount) {
+          throw new Error("Not enough testnet USDC to fund this bounty.");
+        }
+
+        const allowance = await publicClient.readContract({
+          address: usdcAddress,
+          abi: usdcAbi,
+          functionName: "allowance",
+          args: [address, contractAddress]
+        });
+
+        const createArgs = [feedbackTypeIds, parsedRewardAmounts, slotCounts, deadlineSeconds, `local://${bounty.id}`] as const;
+
+        if (allowance < totalFundAmount) {
+          setStatus("Approving exact testnet USDC funding...");
+          const approveHash = await walletClient.writeContract({
+            address: usdcAddress,
+            abi: usdcAbi,
+            functionName: "approve",
+            args: [contractAddress, totalFundAmount],
+            account: address
+          });
+          txHashes.push(approveHash);
+          await publicClient.waitForTransactionReceipt({ hash: approveHash });
+          approvalConfirmed = true;
+
+          const nextAllowance = await publicClient.readContract({
+            address: usdcAddress,
+            abi: usdcAbi,
+            functionName: "allowance",
+            args: [address, contractAddress]
+          });
+          if (nextAllowance < totalFundAmount) {
+            throw new Error("USDC approval confirmed, but allowance is still below the funding amount.");
+          }
+        }
+
+        setStatus("Checking create/fund transaction...");
+        try {
+          await publicClient.simulateContract({
+            address: contractAddress,
+            abi: critiqueDropBountyAbi,
+            functionName: "createAndFundBounty",
+            args: createArgs,
+            account: address
+          });
+        } catch (simulationError) {
+          console.error("[Critique create bounty simulation]", simulationError);
+          if (approvalConfirmed) {
+            throw new Error(
+              `USDC approval succeeded, but bounty creation failed. No bounty was saved. You can retry the create/fund transaction. Existing USDC allowance may remain, so you may not need to approve again. Reason: ${getWalletErrorMessage(
+                simulationError,
+                "Check reward amounts, slots, and funding total."
+              )}`
+            );
+          }
+          throw new Error(`Bounty creation check failed: ${getWalletErrorMessage(simulationError, "Check reward amounts, slots, and funding total.")}`);
+        }
 
         setStatus("Creating and funding bounty...");
-        const createHash = await walletClient.writeContract({
-          address: getAddress(CRITIQUE_DROP_CONTRACT),
-          abi: critiqueDropBountyAbi,
-          functionName: "createAndFundBounty",
-          args: [
-            selectedFeedbackRewards.map((reward) => getFeedbackTypeContractId(reward.feedbackType)),
-            selectedFeedbackRewards.map((reward) => parseUSDC(reward.rewardUSDC)),
-            selectedFeedbackRewards.map((reward) => BigInt(reward.slots)),
-            deadlineSeconds,
-            `local://${bounty.id}`
-          ],
-          account: address
-        });
+        let createHash: `0x${string}`;
+        try {
+          createHash = await walletClient.writeContract({
+            address: contractAddress,
+            abi: critiqueDropBountyAbi,
+            functionName: "createAndFundBounty",
+            args: createArgs,
+            account: address
+          });
+        } catch (createError) {
+          console.error("[Critique create/fund bounty]", createError);
+          throw new Error(
+            `USDC approval succeeded, but bounty creation failed. No bounty was saved. You can retry the create/fund transaction. Existing USDC allowance may remain, so you may not need to approve again. Reason: ${getWalletErrorMessage(
+              createError,
+              "The create/fund transaction was rejected or reverted."
+            )}`
+          );
+        }
         txHashes.push(createHash);
         const createReceipt = await publicClient.waitForTransactionReceipt({ hash: createHash });
+        if (createReceipt.status !== "success") {
+          throw new Error(
+            "USDC approval succeeded, but bounty creation failed. No bounty was saved. You can retry the create/fund transaction. Existing USDC allowance may remain, so you may not need to approve again."
+          );
+        }
         const createdLog = createReceipt.logs
           .map((log) => {
             try {
-              return decodeEventLog({ abi: [bountyCreatedEvent], data: log.data, topics: log.topics });
+              return decodeEventLog({ abi: critiqueDropBountyAbi, data: log.data, topics: log.topics });
             } catch {
               return null;
             }
@@ -217,7 +288,10 @@ export function BountyForm() {
           .find((log) => log?.eventName === "BountyCreated");
         const contractBountyId = createdLog?.args.bountyId?.toString();
         if (!contractBountyId) {
-          throw new Error("Could not read bounty ID from the contract transaction.");
+          console.error("[Critique create bounty] missing BountyCreated event", createReceipt);
+          throw new Error(
+            "Bounty was created, but the app could not resolve the new bounty ID from the transaction receipt. No bounty was saved. Contact support with the transaction hash."
+          );
         }
         bounty = {
           ...bounty,
@@ -328,11 +402,11 @@ export function BountyForm() {
               <div>
                 <h2 className="text-base font-black text-ink">Accepted feedback types</h2>
                 <p className="mt-1 text-sm leading-6 text-muted">
-                  Choose the contribution formats you want and set founder-configured reward amounts for each one.
+                  Choose the contribution formats you want and set reward amounts for each one.
                 </p>
               </div>
-              <span className="w-fit rounded-full border border-action/20 bg-action/10 px-3 py-1 text-xs font-black text-action">
-                Founder configured
+              <span className="w-fit self-start rounded-full border border-action/15 bg-action/10 px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.12em] text-action sm:mt-0.5">
+                Reward tiers
               </span>
             </div>
             <div className="mt-4 grid gap-3">

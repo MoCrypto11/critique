@@ -3,6 +3,27 @@ export const ENABLE_MOCK_MODE = process.env.NEXT_PUBLIC_ENABLE_MOCK_MODE !== "fa
 
 export const critiqueDropBountyAbi = [
   {
+    type: "event",
+    name: "BountyCreated",
+    inputs: [
+      { indexed: true, name: "bountyId", type: "uint256" },
+      { indexed: true, name: "founder", type: "address" },
+      { indexed: false, name: "totalFundingRequired", type: "uint256" },
+      { indexed: false, name: "deadline", type: "uint256" },
+      { indexed: false, name: "metadataURI", type: "string" }
+    ]
+  },
+  {
+    type: "event",
+    name: "SubmissionApproved",
+    inputs: [
+      { indexed: true, name: "bountyId", type: "uint256" },
+      { indexed: true, name: "feedbackTypeId", type: "bytes32" },
+      { indexed: true, name: "tester", type: "address" },
+      { indexed: false, name: "submissionHash", type: "bytes32" }
+    ]
+  },
+  {
     type: "function",
     name: "createAndFundBounty",
     stateMutability: "nonpayable",
