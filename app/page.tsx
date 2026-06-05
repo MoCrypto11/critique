@@ -44,7 +44,7 @@ const steps: {
   },
   {
     title: "Approve and pay",
-    body: "Approved submissions receive the configured testnet USDC reward.",
+    body: "Approved submissions receive the configured reward.",
     icon: CircleDollarSign
   }
 ];
@@ -115,8 +115,8 @@ const contributorSteps: {
   { title: "Open the bounty link", icon: Link2 },
   { title: "Choose a feedback format", icon: Target },
   { title: "Submit useful feedback", icon: Send },
-  { title: "Enter a payout wallet address", icon: Wallet },
-  { title: "Wait for founder approval", icon: UserCheck }
+  { title: "Enter a payout wallet", icon: Wallet },
+  { title: "Wait for approval", icon: UserCheck }
 ];
 
 const faqs = [
@@ -130,7 +130,7 @@ const faqs = [
   },
   {
     question: "Can feedback types have different rewards?",
-    answer: "Yes. Founders can configure different testnet USDC rewards and slot counts for each accepted feedback format."
+    answer: "Yes. Founders can configure different USDC rewards and slot counts for each accepted feedback format."
   },
   {
     question: "Are rewards real USDC?",
@@ -138,7 +138,7 @@ const faqs = [
   },
   {
     question: "Why build Critique on Arc?",
-    answer: "Arc provides the testnet payout layer for funding bounties, approving submissions, and recording reward transactions."
+    answer: "Arc provides the payout layer for funding bounties, approving submissions, and recording reward transactions."
   },
   {
     question: "What happens after feedback is approved?",
@@ -176,13 +176,13 @@ export default function HomePage() {
         <section className="page-shell grid min-h-[calc(100vh-96px)] content-center md:min-h-[calc(100vh-65px)]">
           <div className="grid items-center gap-7 lg:grid-cols-[1.02fr_0.98fr]">
             <div className="max-w-3xl">
-              <p className="eyebrow">Useful feedback. Testnet USDC rewards.</p>
+              <p className="eyebrow">Useful feedback. USDC rewards.</p>
               <h1 className="font-display mt-4 max-w-3xl text-4xl leading-tight tracking-normal text-ink sm:text-[3.25rem] lg:text-[3.75rem]">
                 Feedback bounties for early product teams
               </h1>
               <p className="mt-5 max-w-xl text-base font-bold leading-7 text-action">
-                Create a focused bounty, share one public link, review submissions, and approve testnet USDC
-                rewards for useful product feedback.
+                Create a focused bounty, share one public link, review submissions, and approve USDC rewards for useful
+                product feedback.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link href="/create" className="btn-primary">
@@ -221,10 +221,6 @@ export default function HomePage() {
               <div className="mt-5 space-y-3 text-sm leading-6 text-muted">
                 <p className="rounded-lg border border-line/70 bg-panel/70 p-4">
                   Contributors submit written feedback, deep reviews, video links, or technical proposals.
-                </p>
-                <p className="rounded-lg border border-action/20 bg-action/10 p-4 font-semibold text-action">
-                  Built on Arc testnet with testnet USDC rewards. The flow is designed for USDC payouts once Arc
-                  mainnet is available.
                 </p>
               </div>
             </div>
@@ -345,12 +341,11 @@ export default function HomePage() {
                 Contributors can submit feedback without connecting a wallet.
               </p>
               <p className="mt-4 rounded-lg border border-action/15 bg-action/10 p-3 text-sm font-semibold leading-6 text-action">
-                Feedback is reviewed by the founder. Only approved submissions receive the configured testnet USDC
-                reward.
+                Feedback is reviewed by the founder. Only approved submissions receive the configured reward.
               </p>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {contributorSteps.map((step, index) => {
                 const ContributorIcon = step.icon;
                 return (
@@ -423,6 +418,10 @@ export default function HomePage() {
                 <p className="mt-4 max-w-lg text-sm font-semibold leading-7 text-white/58 sm:text-base">
                   Arc handles the payout layer: predictable USDC rewards, fast settlement, and visible receipts. Feedback text stays off-chain.
                 </p>
+                <p className="mt-4 max-w-lg text-sm font-semibold leading-7 text-white/58 sm:text-base">
+                  Critique currently runs on Arc testnet. The same reward flow can be configured for mainnet USDC once
+                  Arc mainnet is available.
+                </p>
                 <div className="mt-7 inline-flex w-fit shrink-0 items-center gap-2 rounded-full border border-white/14 bg-white/[0.08] px-4 py-2 text-xs font-black text-white">
                   <span className="size-1.5 rounded-full bg-action" aria-hidden="true" />
                   Built on Arc testnet
@@ -447,7 +446,7 @@ export default function HomePage() {
                   </a>
                 </div>
                 <p className="mt-5 max-w-md text-xs font-semibold leading-6 text-white/48">
-                  Critique currently runs on Arc testnet with testnet USDC rewards.
+                  Feedback stays off-chain while Arc records funding and approved payouts.
                 </p>
               </div>
 
@@ -473,7 +472,7 @@ export default function HomePage() {
                 Create your first feedback bounty
               </h2>
               <p className="mt-3 text-base leading-7 text-muted">
-                Set the reward tiers, share one link, and start collecting useful product feedback on Arc testnet.
+                Set the reward tiers, share one link, and start collecting useful product feedback on Arc.
               </p>
             </div>
             <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
