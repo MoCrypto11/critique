@@ -69,6 +69,8 @@ alter table public.submissions
 alter table public.submissions
   add column if not exists expected_reward_usdc text;
 
+notify pgrst, 'reload schema';
+
 -- MVP anon-key policies:
 -- Public bounty links need public reads. Testers need public submission inserts.
 -- Without auth, founder-only updates cannot be strongly enforced from the browser.
