@@ -9,7 +9,12 @@ async function main() {
     throw new Error("Set NEXT_PUBLIC_USDC_ADDRESS or USDC_ADDRESS before deploying.");
   }
 
-  const CritiqueDropBounty = await ethers.getContractFactory("CritiqueDropBounty");
+  const [deployer] = await ethers.getSigners();
+  if (!deployer) {
+    throw new Error("No deployer signer configured. Set PRIVATE_KEY locally before deploying.");
+  }
+
+  const CritiqueDropBounty = await ethers.getContractFactory("CritiqueDropBountyV2", deployer);
   const contract = await CritiqueDropBounty.deploy(usdcAddress);
   await contract.waitForDeployment();
 

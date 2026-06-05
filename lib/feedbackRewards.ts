@@ -1,3 +1,5 @@
+import { keccak256, stringToBytes } from "viem";
+
 export type FeedbackType = "quick_written" | "deep_product_review" | "video_walkthrough" | "technical_proposal";
 
 export type FeedbackRewardConfig = {
@@ -124,6 +126,10 @@ export function normalizeFeedbackRewards(
 
 export function getRewardForType(rewards: FeedbackRewardConfig[] | undefined, type?: FeedbackType) {
   return rewards?.find((reward) => reward.feedbackType === type);
+}
+
+export function getFeedbackTypeContractId(type: FeedbackType) {
+  return keccak256(stringToBytes(type));
 }
 
 export function getMaxRewardUSDC(rewards: FeedbackRewardConfig[]) {

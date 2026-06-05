@@ -9,7 +9,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { MockModeBanner } from "@/components/MockModeBanner";
 import { SubmissionCard } from "@/components/SubmissionCard";
 import { CRITIQUE_DROP_CONTRACT, ENABLE_MOCK_MODE, critiqueDropBountyAbi } from "@/lib/contracts";
-import { formatUSDC, getRewardForType, normalizeFeedbackRewards } from "@/lib/feedbackRewards";
+import { formatUSDC, getFeedbackTypeContractId, getRewardForType, normalizeFeedbackRewards } from "@/lib/feedbackRewards";
 import {
   approveLocalSubmission,
   BountyMetadata,
@@ -62,9 +62,11 @@ export default function ReviewPage({ params }: { params: { id: string } }) {
           (reward) => reward.enabled !== false
         );
         const selectedReward = getRewardForType(rewardConfig, submission.feedbackType);
-        const contractBountyId = selectedReward?.contractBountyId || bounty.contractBountyId;
-        if (!contractBountyId) {
-          throw new Error("This feedback type is missing a funded reward pool ID.");
+        if (!submission.feedbackType) {
+          throw new Error("This submission is missing a feedback type.");
+        }
+        if (!bounty.contractBountyId) {
+          throw new Error("This bounty is missing a contract bounty ID.");
         }
         const approvedForType = submissions.filter(
           (item) => item.status === "approved" && item.feedbackType === submission.feedbackType
@@ -77,7 +79,12 @@ export default function ReviewPage({ params }: { params: { id: string } }) {
           address: getAddress(CRITIQUE_DROP_CONTRACT),
           abi: critiqueDropBountyAbi,
           functionName: "approveSubmission",
-          args: [BigInt(contractBountyId), getAddress(submission.testerWallet), submission.submissionHash as `0x${string}`],
+          args: [
+            BigInt(bounty.contractBountyId),
+            getFeedbackTypeContractId(submission.feedbackType),
+            getAddress(submission.testerWallet),
+            submission.submissionHash as `0x${string}`
+          ],
           account: address
         });
         payoutTxHash = txHash;

@@ -52,12 +52,6 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
   const remaining = Math.max(0, totalFunded - totalPaid);
   const canRefund = bounty ? bounty.status === "closed" || new Date(bounty.deadline).getTime() <= Date.now() : false;
 
-  function contractPoolIds() {
-    const ids = rewardConfig.map((reward) => reward.contractBountyId).filter((id): id is string => Boolean(id));
-    if (!ids.length && bounty?.contractBountyId) return [bounty.contractBountyId];
-    return ids;
-  }
-
   function rewardAmountForSubmission(submission: FeedbackSubmission) {
     return (
       submission.expectedRewardUSDC ||
@@ -93,21 +87,18 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
         throw new Error("Connected wallet is not the founder for this local bounty.");
       }
 
-      const poolIds = contractPoolIds();
-      if (CRITIQUE_DROP_CONTRACT && poolIds.length) {
+      if (CRITIQUE_DROP_CONTRACT && bounty.contractBountyId) {
         if (!walletClient || !publicClient) throw new Error("Wallet client is not ready.");
-        for (const poolId of poolIds) {
-          setStatus("Closing reward pools on contract...");
-          const txHash = await walletClient.writeContract({
-            address: getAddress(CRITIQUE_DROP_CONTRACT),
-            abi: critiqueDropBountyAbi,
-            functionName: "closeBounty",
-            args: [BigInt(poolId)],
-            account: address
-          });
-          await addTxHashToBounty(bounty.id, txHash);
-          await publicClient.waitForTransactionReceipt({ hash: txHash });
-        }
+        setStatus("Closing bounty on contract...");
+        const txHash = await walletClient.writeContract({
+          address: getAddress(CRITIQUE_DROP_CONTRACT),
+          abi: critiqueDropBountyAbi,
+          functionName: "closeBounty",
+          args: [BigInt(bounty.contractBountyId)],
+          account: address
+        });
+        await addTxHashToBounty(bounty.id, txHash);
+        await publicClient.waitForTransactionReceipt({ hash: txHash });
       } else if (!ENABLE_MOCK_MODE) {
         throw new Error("Contract is not configured.");
       }
@@ -132,21 +123,18 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
         throw new Error("Connected wallet is not the founder for this local bounty.");
       }
 
-      const poolIds = contractPoolIds();
-      if (CRITIQUE_DROP_CONTRACT && poolIds.length) {
+      if (CRITIQUE_DROP_CONTRACT && bounty.contractBountyId) {
         if (!walletClient || !publicClient) throw new Error("Wallet client is not ready.");
-        for (const poolId of poolIds) {
-          setStatus("Refunding unused testnet USDC from reward pools...");
-          const txHash = await walletClient.writeContract({
-            address: getAddress(CRITIQUE_DROP_CONTRACT),
-            abi: critiqueDropBountyAbi,
-            functionName: "refundUnused",
-            args: [BigInt(poolId)],
-            account: address
-          });
-          await addTxHashToBounty(bounty.id, txHash);
-          await publicClient.waitForTransactionReceipt({ hash: txHash });
-        }
+        setStatus("Refunding unused testnet USDC...");
+        const txHash = await walletClient.writeContract({
+          address: getAddress(CRITIQUE_DROP_CONTRACT),
+          abi: critiqueDropBountyAbi,
+          functionName: "refundUnused",
+          args: [BigInt(bounty.contractBountyId)],
+          account: address
+        });
+        await addTxHashToBounty(bounty.id, txHash);
+        await publicClient.waitForTransactionReceipt({ hash: txHash });
       } else if (!ENABLE_MOCK_MODE) {
         throw new Error("Contract is not configured.");
       }
@@ -259,7 +247,7 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
             <div>
               <h2 className="text-lg font-black text-ink">Feedback reward configuration</h2>
               <p className="mt-2 text-sm leading-6 text-muted">
-                Each feedback type has its own reward pool.
+                Create and fund once. Approved submissions are paid according to the selected feedback format.
               </p>
             </div>
             <p className="text-sm font-bold text-action">Approved submissions are paid by selected feedback format.</p>
@@ -276,11 +264,8 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
                     {formatUSDC(config.rewardUSDC)} testnet USDC configured
                   </p>
                   <p className="mt-1 text-sm text-muted">
-                    {remainingForType}/{config.slots} funded slots remaining
-                  </p>
-                  {config.contractBountyId ? (
-                    <p className="mt-1 text-xs font-semibold text-muted">Pool ID: {config.contractBountyId}</p>
-                  ) : null}
+                {remainingForType}/{config.slots} configured slots remaining
+              </p>
                 </div>
               );
             })}

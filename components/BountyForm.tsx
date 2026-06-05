@@ -12,6 +12,7 @@ import {
   defaultFeedbackRewards,
   feedbackTypeOptions,
   formatUSDC,
+  getFeedbackTypeContractId,
   getMaxRewardUSDC,
   getTargetRewardTotalUSDC,
   getTotalRewardSlots,
@@ -29,8 +30,7 @@ const bountyCreatedEvent = {
   inputs: [
     { indexed: true, name: "bountyId", type: "uint256" },
     { indexed: true, name: "founder", type: "address" },
-    { indexed: false, name: "rewardPerSubmission", type: "uint256" },
-    { indexed: false, name: "maxSubmissions", type: "uint256" },
+    { indexed: false, name: "totalFundingRequired", type: "uint256" },
     { indexed: false, name: "deadline", type: "uint256" },
     { indexed: false, name: "metadataURI", type: "string" }
   ]
@@ -120,8 +120,9 @@ export function BountyForm() {
     const selectedFeedbackRewards = feedbackRewards
       .filter((reward) => normalizeRewardAmount(reward.rewardUSDC) > 0 && reward.slots > 0)
       .map((reward) => ({
-        ...reward,
+        feedbackType: reward.feedbackType,
         rewardUSDC: formatUSDC(reward.rewardUSDC),
+        slots: reward.slots,
         label: feedbackTypeOptions.find((option) => option.value === reward.feedbackType)?.label,
         description: feedbackTypeOptions.find((option) => option.value === reward.feedbackType)?.description,
         enabled: true
@@ -177,47 +178,6 @@ export function BountyForm() {
           BigInt(0)
         );
         const deadlineSeconds = BigInt(Math.floor(new Date(deadline).getTime() / 1000));
-        const fundedFeedbackRewards: FeedbackRewardConfig[] = [];
-
-        for (const reward of selectedFeedbackRewards) {
-          const option = feedbackTypeOptions.find((item) => item.value === reward.feedbackType);
-          setStatus(`Creating ${option?.shortLabel || option?.label || "feedback"} reward pool...`);
-          const createHash = await walletClient.writeContract({
-            address: getAddress(CRITIQUE_DROP_CONTRACT),
-            abi: critiqueDropBountyAbi,
-            functionName: "createBounty",
-            args: [
-              parseUSDC(reward.rewardUSDC),
-              BigInt(reward.slots),
-              deadlineSeconds,
-              `local://${bounty.id}/${reward.feedbackType}`
-            ],
-            account: address
-          });
-          txHashes.push(createHash);
-          const createReceipt = await publicClient.waitForTransactionReceipt({ hash: createHash });
-          const createdLog = createReceipt.logs
-            .map((log) => {
-              try {
-                return decodeEventLog({ abi: [bountyCreatedEvent], data: log.data, topics: log.topics });
-              } catch {
-                return null;
-              }
-            })
-            .find((log) => log?.eventName === "BountyCreated");
-          const contractBountyId = createdLog?.args.bountyId?.toString();
-          if (!contractBountyId) {
-            throw new Error("Could not read reward pool ID from the contract transaction.");
-          }
-          fundedFeedbackRewards.push({ ...reward, contractBountyId });
-        }
-
-        bounty = {
-          ...bounty,
-          contractBountyId: fundedFeedbackRewards[0]?.contractBountyId,
-          feedbackRewards: fundedFeedbackRewards,
-          txHashes
-        };
 
         setStatus("Approving exact testnet USDC funding...");
         const approveHash = await walletClient.writeContract({
@@ -230,20 +190,41 @@ export function BountyForm() {
         txHashes.push(approveHash);
         await publicClient.waitForTransactionReceipt({ hash: approveHash });
 
-        for (const reward of fundedFeedbackRewards) {
-          const option = feedbackTypeOptions.find((item) => item.value === reward.feedbackType);
-          setStatus(`Funding ${option?.shortLabel || option?.label || "feedback"} reward pool...`);
-          if (!reward.contractBountyId) throw new Error("Reward pool ID is missing.");
-          const fundHash = await walletClient.writeContract({
-            address: getAddress(CRITIQUE_DROP_CONTRACT),
-            abi: critiqueDropBountyAbi,
-            functionName: "fundBounty",
-            args: [BigInt(reward.contractBountyId), parseUSDC(reward.rewardUSDC) * BigInt(reward.slots)],
-            account: address
-          });
-          txHashes.push(fundHash);
-          await publicClient.waitForTransactionReceipt({ hash: fundHash });
+        setStatus("Creating and funding bounty...");
+        const createHash = await walletClient.writeContract({
+          address: getAddress(CRITIQUE_DROP_CONTRACT),
+          abi: critiqueDropBountyAbi,
+          functionName: "createAndFundBounty",
+          args: [
+            selectedFeedbackRewards.map((reward) => getFeedbackTypeContractId(reward.feedbackType)),
+            selectedFeedbackRewards.map((reward) => parseUSDC(reward.rewardUSDC)),
+            selectedFeedbackRewards.map((reward) => BigInt(reward.slots)),
+            deadlineSeconds,
+            `local://${bounty.id}`
+          ],
+          account: address
+        });
+        txHashes.push(createHash);
+        const createReceipt = await publicClient.waitForTransactionReceipt({ hash: createHash });
+        const createdLog = createReceipt.logs
+          .map((log) => {
+            try {
+              return decodeEventLog({ abi: [bountyCreatedEvent], data: log.data, topics: log.topics });
+            } catch {
+              return null;
+            }
+          })
+          .find((log) => log?.eventName === "BountyCreated");
+        const contractBountyId = createdLog?.args.bountyId?.toString();
+        if (!contractBountyId) {
+          throw new Error("Could not read bounty ID from the contract transaction.");
         }
+        bounty = {
+          ...bounty,
+          contractBountyId,
+          feedbackRewards: selectedFeedbackRewards,
+          txHashes
+        };
       }
 
       bounty = { ...bounty, txHashes };
@@ -465,8 +446,7 @@ export function BountyForm() {
             Feedback is stored off-chain, while the contract handles funding and payout state.
           </p>
           <p className="mt-3 rounded-lg border border-action/15 bg-action/10 p-3 font-semibold text-action">
-            Each feedback type is funded as its own reward pool, so approved submissions are paid according to the
-            selected feedback format.
+            Create and fund once. Approved submissions are paid according to the selected feedback format.
           </p>
         </aside>
       </div>
