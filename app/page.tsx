@@ -195,8 +195,9 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="relative">
-              <div className="overflow-hidden rounded-2xl border border-line/70 bg-white shadow-[0_22px_60px_rgba(21,45,36,0.14)]">
+            <div className="relative mx-auto w-full max-w-xl lg:max-w-none">
+              <div className="absolute -inset-3 rounded-[1.75rem] border border-action/10 bg-action/[0.035]" aria-hidden="true" />
+              <div className="relative overflow-hidden rounded-2xl border border-line/70 bg-white shadow-[0_22px_60px_rgba(21,45,36,0.14)]">
                 <Image
                   src="/hero-product-feedback.jpg"
                   alt="Contributor reviewing a product experience on a laptop"
@@ -206,37 +207,30 @@ export default function HomePage() {
                   sizes="(min-width: 1024px) 46vw, 100vw"
                   className="aspect-[4/3] w-full object-cover"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#071a18]/28 via-transparent to-transparent" aria-hidden="true" />
               </div>
 
-              <div className="surface mt-4 p-5 shadow-[0_18px_55px_rgba(21,45,36,0.12)] sm:p-6 lg:absolute lg:bottom-5 lg:left-5 lg:right-5 lg:mt-0">
-                <div className="flex items-center justify-between border-b border-line/70 pb-4">
-                  <div>
-                    <p className="text-xs font-black uppercase tracking-[0.16em] text-muted">Example bounty</p>
-                    <h2 className="mt-2 text-xl font-black text-ink">Test my landing page</h2>
-                  </div>
-                  <span className="rounded-full border border-action/25 bg-action/10 px-3 py-1 text-xs font-black text-action">
-                    Open
-                  </span>
+              <div className="absolute right-4 top-4 rounded-full border border-white/50 bg-white/90 px-3 py-1.5 text-xs font-black text-action shadow-[0_12px_32px_rgba(21,45,36,0.14)] backdrop-blur">
+                Approved submission
+              </div>
+
+              <div className="surface relative mt-4 max-w-md p-4 shadow-[0_18px_55px_rgba(21,45,36,0.12)] sm:absolute sm:bottom-4 sm:left-4 sm:mt-0 sm:max-w-[72%]">
+                <p className="text-sm font-bold leading-6 text-ink">
+                  “Checkout flow is clear, but pricing is hard to compare.”
+                </p>
+                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs font-black uppercase tracking-[0.12em] text-muted">
+                  <span>Written feedback</span>
+                  <span className="size-1 rounded-full bg-action/40" aria-hidden="true" />
+                  <span>Ready for review</span>
                 </div>
-                <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                  <div className="surface-soft p-4">
-                    <p className="text-xs font-black uppercase tracking-[0.12em] text-muted">Reward</p>
-                    <p className="mt-2 text-xl font-black leading-tight text-ink">Founder-set reward</p>
-                  </div>
-                  <div className="surface-soft p-4">
-                    <p className="text-xs font-black uppercase tracking-[0.12em] text-muted">Slots</p>
-                    <p className="mt-2 text-2xl font-black text-ink">5</p>
-                  </div>
-                  <div className="surface-soft p-4">
-                    <p className="text-xs font-black uppercase tracking-[0.12em] text-muted">Review</p>
-                    <p className="mt-2 text-2xl font-black text-ink">Manual</p>
-                  </div>
+              </div>
+
+              <div className="absolute bottom-4 right-4 hidden rounded-xl border border-white/50 bg-white/92 p-3 text-sm font-black text-ink shadow-[0_16px_40px_rgba(21,45,36,0.16)] backdrop-blur md:block">
+                <div className="flex items-center gap-2">
+                  <span className="size-2 rounded-full bg-action" aria-hidden="true" />
+                  Reward sent
                 </div>
-                <div className="mt-5 space-y-3 text-sm leading-6 text-muted">
-                  <p className="rounded-lg border border-line/70 bg-panel/70 p-4">
-                    Contributors submit written feedback, deep reviews, video links, or technical proposals.
-                  </p>
-                </div>
+                <p className="mt-1 text-xs font-bold text-muted">Configured payout</p>
               </div>
             </div>
           </div>
