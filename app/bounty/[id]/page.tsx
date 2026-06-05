@@ -383,26 +383,28 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
                       onChange={() => setFeedbackType(type.value)}
                       className="sr-only"
                     />
-                    <span className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                      <span className="flex min-w-0 items-center gap-2.5">
+                    <span className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                      <span className="flex min-w-0 items-start gap-2.5">
                         <span className="grid size-8 shrink-0 place-items-center rounded-lg border border-action/20 bg-action/10 text-action">
                           <FeedbackTypeIcon type={type.value} />
                         </span>
-                        <span className="block text-sm font-black text-ink">{reward.label || type.label}</span>
+                        <span className="min-w-0">
+                          <span className="block text-sm font-black text-ink">{reward.label || type.label}</span>
+                          <span className="mt-1 block text-xs font-semibold leading-5 text-muted">
+                            {reward.description || type.description}
+                          </span>
+                        </span>
                       </span>
-                      <span className="flex flex-wrap items-center gap-2">
+                      <span className="flex shrink-0 flex-wrap items-center gap-2 sm:ml-auto sm:flex-col sm:items-end">
                         {!isDemoBounty ? (
-                          <span className="w-fit shrink-0 rounded-full border border-action/20 bg-action/10 px-2.5 py-1 text-xs font-black text-action">
+                          <span className="w-fit shrink-0 whitespace-nowrap rounded-full border border-action/20 bg-action/10 px-2.5 py-1 text-xs font-black text-action">
                             {rewardAmountLabel(reward.rewardUSDC)}
                           </span>
                         ) : null}
-                        <span className="w-fit shrink-0 rounded-full border border-line/80 bg-panel/80 px-2.5 py-1 text-xs font-black text-muted">
+                        <span className="w-fit shrink-0 whitespace-nowrap rounded-full border border-line/80 bg-panel/80 px-2.5 py-1 text-xs font-black text-muted">
                           {remainingForType} slots left
                         </span>
                       </span>
-                    </span>
-                    <span className="mt-1 block text-xs font-semibold leading-5 text-muted">
-                      {reward.description || type.description}
                     </span>
                   </label>
                   );
