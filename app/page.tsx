@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import {
   CircleDollarSign,
   FilePlus2,
@@ -194,52 +195,18 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="relative mx-auto w-full max-w-xl lg:max-w-none" aria-hidden="true">
-              <div className="absolute -inset-3 rounded-[1.75rem] border border-action/10 bg-action/[0.035]" />
-              <div className="relative overflow-hidden rounded-2xl border border-line/70 bg-[#fbfaf4] p-5 shadow-[0_22px_60px_rgba(21,45,36,0.12)] sm:p-7">
-                <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-action/10 blur-3xl" />
-                <div className="absolute bottom-0 left-0 h-48 w-48 rounded-full bg-[#d9efe5]/70 blur-3xl" />
-
-                <div className="relative rounded-xl border border-line/70 bg-white/82 p-4 shadow-sm">
-                  <div className="flex items-center justify-between gap-4 border-b border-line/70 pb-4">
-                    <div className="h-2.5 w-28 rounded-full bg-ink/12" />
-                    <div className="h-2.5 w-16 rounded-full bg-action/20" />
-                  </div>
-                  <div className="mt-5 grid gap-3">
-                    <div className="h-3 w-4/5 rounded-full bg-ink/10" />
-                    <div className="h-3 w-2/3 rounded-full bg-ink/10" />
-                    <div className="h-3 w-5/6 rounded-full bg-ink/10" />
-                  </div>
-                  <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                    <div className="rounded-lg border border-line/70 bg-panel/80 p-3">
-                      <div className="h-2 w-14 rounded-full bg-muted/20" />
-                      <div className="mt-3 h-3 w-20 rounded-full bg-action/20" />
-                    </div>
-                    <div className="rounded-lg border border-line/70 bg-panel/80 p-3">
-                      <div className="h-2 w-12 rounded-full bg-muted/20" />
-                      <div className="mt-3 h-3 w-14 rounded-full bg-ink/12" />
-                    </div>
-                    <div className="rounded-lg border border-line/70 bg-panel/80 p-3">
-                      <div className="h-2 w-16 rounded-full bg-muted/20" />
-                      <div className="mt-3 h-3 w-20 rounded-full bg-ink/12" />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="relative mt-4 grid gap-3 sm:grid-cols-[0.9fr_1.1fr]">
-                  <div className="rounded-xl border border-action/15 bg-action/10 p-4">
-                    <div className="h-2.5 w-20 rounded-full bg-action/30" />
-                    <div className="mt-4 h-14 rounded-lg border border-action/15 bg-white/70" />
-                  </div>
-                  <div className="rounded-xl border border-line/70 bg-white/75 p-4">
-                    <div className="h-2.5 w-24 rounded-full bg-ink/10" />
-                    <div className="mt-4 space-y-2">
-                      <div className="h-2.5 rounded-full bg-ink/10" />
-                      <div className="h-2.5 w-4/5 rounded-full bg-ink/10" />
-                      <div className="h-2.5 w-3/5 rounded-full bg-action/20" />
-                    </div>
-                  </div>
-                </div>
+            <div className="relative mx-auto w-full max-w-xl lg:max-w-none">
+              <div className="absolute -inset-3 rounded-[1.75rem] border border-action/10 bg-action/[0.035]" aria-hidden="true" />
+              <div className="relative overflow-hidden rounded-2xl border border-line/70 bg-white p-2 shadow-[0_22px_60px_rgba(21,45,36,0.14)]">
+                <Image
+                  src="/hero-product-feedback.jpg"
+                  alt="Contributor reviewing a product experience on a laptop"
+                  width={1400}
+                  height={1050}
+                  priority
+                  sizes="(min-width: 1024px) 46vw, 100vw"
+                  className="aspect-[4/3] w-full rounded-xl object-cover object-center"
+                />
               </div>
             </div>
           </div>
