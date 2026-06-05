@@ -199,13 +199,13 @@ export default function HomePage() {
               <div className="absolute -inset-3 rounded-[1.75rem] border border-action/10 bg-action/[0.035]" aria-hidden="true" />
               <div className="relative overflow-hidden rounded-2xl border border-line/70 bg-white p-2 shadow-[0_22px_60px_rgba(21,45,36,0.14)]">
                 <Image
-                  src="/hero-product-feedback.jpg"
-                  alt="Contributor reviewing a product experience on a laptop"
-                  width={1400}
-                  height={1050}
+                  src="/images/hero-critique.png"
+                  alt="Contributor reviewing product feedback with approved submission badge"
+                  width={1600}
+                  height={1200}
                   priority
                   sizes="(min-width: 1024px) 46vw, 100vw"
-                  className="aspect-[4/3] w-full rounded-xl object-cover object-center"
+                  className="aspect-[4/3] w-full rounded-xl object-contain"
                 />
               </div>
             </div>
