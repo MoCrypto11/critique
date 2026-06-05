@@ -69,6 +69,16 @@ export class SharedDatabaseSaveError extends Error {
   }
 }
 
+export class SharedDatabasePreflightError extends Error {
+  reason: string;
+
+  constructor(reason: string) {
+    super("Could not connect to the shared database. Please try again.");
+    this.name = "SharedDatabasePreflightError";
+    this.reason = reason;
+  }
+}
+
 type BountyRow = {
   id: string;
   contract_bounty_id: string | null;
@@ -121,6 +131,27 @@ function shouldUseSupabase() {
 
 export function usesSharedPersistence() {
   return shouldUseSupabase();
+}
+
+export async function ensureSharedDatabaseReachable() {
+  if (!shouldUseSupabase() || !supabase) {
+    if (process.env.NODE_ENV === "production") {
+      throw new SharedDatabasePreflightError("Shared database is not configured.");
+    }
+    return;
+  }
+
+  const client = supabase;
+
+  try {
+    await withSupabaseErrors("shared database preflight", async () => {
+      const { error } = await client.from("bounties").select("id").limit(1);
+      throwSupabaseResponseError("shared database preflight", error);
+    });
+  } catch (caught) {
+    const reason = caught instanceof Error ? caught.message : "Shared database request failed.";
+    throw new SharedDatabasePreflightError(reason);
+  }
 }
 
 function throwSupabaseResponseError(action: string, error: { message?: string } | null) {
@@ -326,6 +357,10 @@ export async function saveLocalBounty(bounty: BountyMetadata) {
     } catch (caught) {
       console.error("[Critique shared database] create bounty save failed", caught);
       const reason = caught instanceof Error ? caught.message : "Unknown shared database error.";
+
+      if (bounty.contractBountyId) {
+        throw new SharedDatabaseSaveError(reason);
+      }
 
       if (process.env.NODE_ENV !== "production") {
         console.warn("[Critique shared database] falling back to localStorage in development only.");

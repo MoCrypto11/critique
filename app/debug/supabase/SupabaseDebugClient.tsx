@@ -21,7 +21,7 @@ type DebugResult = {
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-const expectedHostname = "ptzjyuwrjsvyptuwffn.supabase.co";
+const expectedHostname = "ptzjyuwrjjsvyptuwffn.supabase.co";
 
 function getSupabaseHostname() {
   if (!supabaseUrl) return "missing";

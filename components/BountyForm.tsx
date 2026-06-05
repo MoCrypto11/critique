@@ -18,7 +18,13 @@ import {
   getTotalRewardSlots,
   normalizeRewardAmount
 } from "@/lib/feedbackRewards";
-import { buildLocalBounty, saveLocalBounty, SharedDatabaseSaveError } from "@/lib/storage";
+import {
+  buildLocalBounty,
+  ensureSharedDatabaseReachable,
+  saveLocalBounty,
+  SharedDatabasePreflightError,
+  SharedDatabaseSaveError
+} from "@/lib/storage";
 import { parseUSDC, USDC_ADDRESS, usdcAbi } from "@/lib/usdc";
 import { isValidUrl } from "@/lib/utils";
 import { getWalletErrorMessage, switchToArcTestnet } from "@/lib/walletNetwork";
@@ -152,6 +158,7 @@ export function BountyForm() {
     if (!contractConfigured && !ENABLE_MOCK_MODE) return setError("Contract address is not configured.");
 
     setIsSubmitting(true);
+    let onChainCreateFundHash = "";
 
     try {
       const initialBounty = buildLocalBounty({
@@ -195,6 +202,9 @@ export function BountyForm() {
         if (balance < totalFundAmount) {
           throw new Error("Not enough testnet USDC to fund this bounty.");
         }
+
+        setStatus("Checking shared database...");
+        await ensureSharedDatabaseReachable();
 
         const allowance = await publicClient.readContract({
           address: usdcAddress,
@@ -271,6 +281,7 @@ export function BountyForm() {
           );
         }
         txHashes.push(createHash);
+        onChainCreateFundHash = createHash;
         const createReceipt = await publicClient.waitForTransactionReceipt({ hash: createHash });
         if (createReceipt.status !== "success") {
           throw new Error(
@@ -311,15 +322,27 @@ export function BountyForm() {
         caught instanceof SharedDatabaseSaveError ||
         /shared database|row-level security|permission denied|relation .*does not exist|failed to fetch/i.test(safeMessage);
 
-      if (isSharedDatabaseError) {
-        setError("Could not save bounty to shared database.");
-        setErrorDetail(
-          `Reason: ${
-            caught instanceof SharedDatabaseSaveError
-              ? caught.reason
-              : safeMessage || "Shared database save failed, so this bounty link will not work across browsers."
-          }`
-        );
+      if (caught instanceof SharedDatabasePreflightError) {
+        setError("Could not connect to the shared database. Please try again.");
+        setErrorDetail("Bounty creation requires the shared database before any wallet transaction starts.");
+      } else if (isSharedDatabaseError) {
+        if (onChainCreateFundHash) {
+          setError("Bounty was created on-chain, but could not be saved to the shared database.");
+          setErrorDetail(
+            `Please contact support with this transaction hash: ${onChainCreateFundHash}. Reason: ${
+              caught instanceof SharedDatabaseSaveError ? caught.reason : safeMessage || "Shared database save failed."
+            }`
+          );
+        } else {
+          setError("Could not save bounty to shared database.");
+          setErrorDetail(
+            `Reason: ${
+              caught instanceof SharedDatabaseSaveError
+                ? caught.reason
+                : safeMessage || "Shared database save failed, so this bounty link will not work across browsers."
+            }`
+          );
+        }
       } else {
         setError(getWalletErrorMessage(caught, "Could not create bounty."));
       }
