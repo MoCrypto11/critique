@@ -1,10 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import { CircleDollarSign, FilePlus2, Link2, MessageSquareCheck } from "lucide-react";
+import {
+  CircleDollarSign,
+  FilePlus2,
+  LayoutPanelTop,
+  Link2,
+  MessageSquareCheck,
+  MousePointerClick,
+  Route,
+  Send,
+  Target,
+  UserCheck,
+  Wallet,
+  Wrench
+} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
+import { FeedbackTypeIcon } from "@/components/FeedbackTypeIcon";
+import type { FeedbackType } from "@/lib/feedbackRewards";
 import { ensureDemoBounty } from "@/lib/storage";
 
 const steps: {
@@ -14,62 +29,120 @@ const steps: {
 }[] = [
   {
     title: "Create a bounty",
-    body: "Add your product link, write the feedback task, choose accepted feedback types, set reward amounts, assign slots, and define a deadline.",
+    body: "Choose the feedback formats, reward amounts, and slots you want to fund.",
     icon: FilePlus2
   },
   {
     title: "Share one link",
-    body: "Send the public bounty link to your community, users, or contributors. No marketplace required.",
+    body: "Send contributors a public bounty page for your product or feature.",
     icon: Link2
   },
   {
-    title: "Collect useful feedback",
-    body: "Contributors can submit written feedback, deep product reviews, video walkthrough links, or technical improvement proposals.",
+    title: "Review submissions",
+    body: "Read structured feedback before deciding what should be approved.",
     icon: MessageSquareCheck
   },
   {
     title: "Approve and pay",
-    body:
-      "Founder reviews useful submissions, approves the responses that help, and rewards are paid through the Arc testnet flow using testnet USDC.",
+    body: "Approved submissions receive the configured testnet USDC reward.",
     icon: CircleDollarSign
   }
 ];
 
+const feedbackFormats: {
+  type: FeedbackType;
+  title: string;
+  body: string;
+}[] = [
+  {
+    type: "quick_written",
+    title: "Written feedback",
+    body: "Quick feedback on clarity, friction, and product value."
+  },
+  {
+    type: "deep_product_review",
+    title: "Deep product review",
+    body: "A more detailed review of the product flow, positioning, and user experience."
+  },
+  {
+    type: "video_walkthrough",
+    title: "Video walkthrough link",
+    body: "A recorded walkthrough showing where the experience works, breaks, or creates confusion."
+  },
+  {
+    type: "technical_proposal",
+    title: "Technical improvement proposal",
+    body: "Developer-focused suggestions for bugs, UX logic, implementation gaps, or technical improvements."
+  }
+];
+
+const founderUseCases: {
+  title: string;
+  body: string;
+  icon: LucideIcon;
+}[] = [
+  {
+    title: "Landing page review",
+    body: "Check whether your message is clear before sending traffic.",
+    icon: LayoutPanelTop
+  },
+  {
+    title: "Onboarding feedback",
+    body: "Find where new users get confused or drop off.",
+    icon: Route
+  },
+  {
+    title: "Feature validation",
+    body: "See whether a new feature feels useful before investing more time.",
+    icon: Target
+  },
+  {
+    title: "Technical review",
+    body: "Collect implementation suggestions from developers and technical contributors.",
+    icon: Wrench
+  },
+  {
+    title: "Hackathon product feedback",
+    body: "Get fast, structured feedback before a demo, submission, or reveal.",
+    icon: MousePointerClick
+  }
+];
+
+const contributorSteps: {
+  title: string;
+  icon: LucideIcon;
+}[] = [
+  { title: "Open the bounty link", icon: Link2 },
+  { title: "Choose a feedback format", icon: Target },
+  { title: "Submit useful feedback", icon: Send },
+  { title: "Enter a payout wallet address", icon: Wallet },
+  { title: "Wait for founder approval", icon: UserCheck }
+];
+
 const faqs = [
   {
-    question: "Do contributors need to pay to submit feedback?",
-    answer: "No. Contributors submit feedback without paying. They receive a reward only when the founder approves their submission."
+    question: "Who is Critique for?",
+    answer: "Critique is for founders, product teams, and early-stage teams that need structured product feedback before launch."
   },
   {
-    question: "When does a contributor get paid?",
-    answer: "After the founder reviews and approves the submission. Today, approved submissions are paid with testnet USDC on Arc testnet."
+    question: "Do contributors need to connect a wallet?",
+    answer: "No. Contributors can submit feedback without connecting a wallet. They only enter a payout wallet address."
   },
   {
-    question: "What kind of feedback can people submit?",
-    answer: "Contributors can submit written feedback, deep product reviews, video walkthrough links, or technical improvement proposals."
-  },
-  {
-    question: "Is this a survey marketplace?",
-    answer: "No. Critique is focused on one product at a time: one founder-funded bounty, one public link, structured feedback, and approved rewards."
-  },
-  {
-    question: "Why build Critique on Arc?",
-    answer:
-      "Critique is built around small, approval-based reward flows. Arc is a strong fit because it is stablecoin-native, uses USDC for gas, supports EVM smart contracts, and provides fast deterministic settlement. That lets Critique demonstrate product-feedback payouts without introducing a volatile gas token or unnecessary payment complexity."
-  },
-  {
-    question: "Can different feedback types have different rewards?",
-    answer:
-      "Yes. Founders can choose which feedback formats they accept and configure the reward amount for each one. A written response may have a different reward than a deep product review, video walkthrough, or technical improvement proposal."
+    question: "Can feedback types have different rewards?",
+    answer: "Yes. Founders can configure different testnet USDC rewards and slot counts for each accepted feedback format."
   },
   {
     question: "Are rewards real USDC?",
-    answer:
-      "Critique currently runs on Arc testnet, so rewards use testnet USDC for demonstration and testing. The payout flow is designed around USDC and can be configured for mainnet USDC once Arc mainnet is available."
+    answer: "Critique currently runs on Arc testnet, so rewards use testnet USDC. The payout flow is designed around USDC rewards."
   },
   {
-    question: "Who is Critique for?",
-    answer: "Critique is for founders, product teams, designers, developers, hackathon teams, and small teams validating product ideas."
+    question: "Why build Critique on Arc?",
+    answer: "Arc provides the testnet payout layer for funding bounties, approving submissions, and recording reward transactions."
+  },
+  {
+    question: "What happens after feedback is approved?",
+    answer: "The submission status updates, the configured reward is paid from the bounty, and the payout transaction is saved as a receipt."
   }
 ];
 
@@ -105,17 +178,18 @@ export default function HomePage() {
             <div className="max-w-3xl">
               <p className="eyebrow">Useful feedback. Testnet USDC rewards.</p>
               <h1 className="font-display mt-4 max-w-3xl text-4xl leading-tight tracking-normal text-ink sm:text-[3.25rem] lg:text-[3.75rem]">
-                Pay real users for useful product feedback.
+                Feedback bounties for early product teams
               </h1>
               <p className="mt-5 max-w-xl text-base font-bold leading-7 text-action">
-                Create a feedback bounty, share one link, approve helpful responses, and test USDC reward flows on Arc testnet.
+                Create a focused bounty, share one public link, review submissions, and approve testnet USDC
+                rewards for useful product feedback.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link href="/create" className="btn-primary">
-                  Create Feedback Bounty
+                  Create a bounty
                 </Link>
                 <Link href="/bounty/demo" className="btn-secondary">
-                  Preview Bounty Link
+                  Preview bounty link
                 </Link>
               </div>
             </div>
@@ -157,17 +231,17 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="how-it-works" className="page-shell scroll-mt-24 py-14 sm:py-16">
-          <div className="mb-8 max-w-3xl">
+        <section id="how-it-works" className="page-shell scroll-mt-24 py-10 sm:py-12">
+          <div className="mb-6 max-w-3xl">
             <p className="eyebrow">How it works</p>
             <h2 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">How Critique works</h2>
-            <p className="mt-4 text-lg leading-8 text-muted">
-              Create a focused feedback bounty, share one link, and reward approved responses with founder-configured
-              testnet USDC rewards.
+            <p className="mt-3 max-w-2xl text-base leading-7 text-muted">
+              A compact flow for funding one bounty, collecting structured feedback, and approving only the responses
+              that help.
             </p>
           </div>
 
-          <div className="space-y-3">
+          <div className="grid gap-3 lg:grid-cols-4">
             {steps.map((step, index) => {
               const isOpen = openStep === index;
               const StepIcon = step.icon;
@@ -177,9 +251,9 @@ export default function HomePage() {
                     type="button"
                     aria-expanded={isOpen}
                     onClick={() => setOpenStep(isOpen ? -1 : index)}
-                    className="flex w-full items-center justify-between gap-4 p-5 text-left"
+                    className="flex w-full items-start justify-between gap-4 p-4 text-left sm:p-5"
                   >
-                    <span className="flex items-center gap-4">
+                    <span className="flex items-start gap-3">
                       <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-action/10 text-sm font-black text-action">
                         <StepIcon className="size-4" aria-hidden="true" strokeWidth={2} />
                       </span>
@@ -200,7 +274,7 @@ export default function HomePage() {
                     </span>
                   </button>
                   {isOpen ? (
-                    <p className="border-t border-line/70 px-5 pb-5 pt-4 text-sm leading-7 text-muted sm:pl-[4.75rem]">
+                    <p className="border-t border-line/70 px-4 pb-5 pt-4 text-sm leading-6 text-muted sm:px-5">
                       {step.body}
                     </p>
                   ) : null}
@@ -210,8 +284,95 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="faq" className="page-shell scroll-mt-24 py-14 sm:py-16">
-          <div className="mx-auto mb-8 max-w-3xl text-center">
+        <section className="page-shell py-10 sm:py-12">
+          <div className="mb-6 max-w-3xl">
+            <p className="eyebrow">Feedback formats</p>
+            <h2 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">
+              Choose the kind of feedback you need
+            </h2>
+            <p className="mt-3 max-w-2xl text-base leading-7 text-muted">
+              Set different rewards for different contribution formats, from quick written feedback to deeper product
+              and technical reviews.
+            </p>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {feedbackFormats.map((format) => (
+              <article key={format.type} className="surface p-4 sm:p-5">
+                <span className="grid size-10 place-items-center rounded-lg bg-action/10 text-action">
+                  <FeedbackTypeIcon type={format.type} />
+                </span>
+                <h3 className="mt-4 text-base font-black text-ink">{format.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-muted">{format.body}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="page-shell py-10 sm:py-12">
+          <div className="mb-6 max-w-3xl">
+            <p className="eyebrow">For founders</p>
+            <h2 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">
+              Use Critique before you ship
+            </h2>
+            <p className="mt-3 max-w-2xl text-base leading-7 text-muted">
+              Create focused bounties for the feedback that usually gets missed before launch.
+            </p>
+          </div>
+
+          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-5">
+            {founderUseCases.map((useCase) => {
+              const UseCaseIcon = useCase.icon;
+              return (
+                <article key={useCase.title} className="surface p-4">
+                  <UseCaseIcon className="size-4 text-action" aria-hidden="true" strokeWidth={2} />
+                  <h3 className="mt-3 text-sm font-black text-ink">{useCase.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-muted">{useCase.body}</p>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="page-shell py-10 sm:py-12">
+          <div className="surface grid gap-6 p-5 sm:p-7 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+            <div>
+              <p className="eyebrow">Contributor experience</p>
+              <h2 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">
+                What contributors see
+              </h2>
+              <p className="mt-3 text-base leading-7 text-muted">
+                Contributors can submit feedback without connecting a wallet.
+              </p>
+              <p className="mt-4 rounded-lg border border-action/15 bg-action/10 p-3 text-sm font-semibold leading-6 text-action">
+                Feedback is reviewed by the founder. Only approved submissions receive the configured testnet USDC
+                reward.
+              </p>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+              {contributorSteps.map((step, index) => {
+                const ContributorIcon = step.icon;
+                return (
+                  <div key={step.title} className="rounded-xl border border-line/70 bg-panel/70 p-4">
+                    <div className="flex items-center gap-2 sm:block">
+                      <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-white text-action shadow-sm">
+                        <ContributorIcon className="size-4" aria-hidden="true" strokeWidth={2} />
+                      </span>
+                      <span className="text-[11px] font-black uppercase tracking-[0.14em] text-muted sm:mt-3 sm:block">
+                        {index + 1}
+                      </span>
+                    </div>
+                    <p className="mt-3 text-sm font-black leading-5 text-ink">{step.title}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <section id="faq" className="page-shell scroll-mt-24 py-10 sm:py-12">
+          <div className="mx-auto mb-6 max-w-3xl text-center">
             <p className="eyebrow">FAQ</p>
             <h2 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">Frequently asked questions</h2>
           </div>
@@ -227,7 +388,7 @@ export default function HomePage() {
                     onClick={() => setOpenFaq(isOpen ? -1 : index)}
                     className="flex w-full items-center justify-between gap-4 p-5 text-left"
                   >
-                    <span className="text-base font-black text-ink sm:text-lg">{item.question}</span>
+                    <span className="text-base font-black text-ink">{item.question}</span>
                     <span className="grid size-8 shrink-0 place-items-center rounded-full border border-line bg-white">
                       <span
                         className={`size-2.5 border-b-2 border-r-2 border-action transition-transform ${
@@ -248,7 +409,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="page-shell py-10 sm:py-14">
+        <section className="page-shell py-10 sm:py-12">
           <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#071a18] text-white shadow-[0_24px_70px_rgba(7,26,24,0.18)]">
             <div className="grid gap-8 p-5 sm:p-7 lg:grid-cols-[minmax(0,0.96fr)_minmax(0,1.04fr)] lg:gap-10 lg:p-8">
               <div className="min-w-0">
@@ -286,7 +447,7 @@ export default function HomePage() {
                   </a>
                 </div>
                 <p className="mt-5 max-w-md text-xs font-semibold leading-6 text-white/48">
-                  Critique is an independent demo project built on Arc testnet.
+                  Critique currently runs on Arc testnet with testnet USDC rewards.
                 </p>
               </div>
 
@@ -300,6 +461,28 @@ export default function HomePage() {
                   </div>
                 ))}
               </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="page-shell py-10 sm:py-12">
+          <div className="surface flex flex-col items-start justify-between gap-5 p-5 sm:p-7 lg:flex-row lg:items-center">
+            <div className="max-w-2xl">
+              <p className="eyebrow">Start focused</p>
+              <h2 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">
+                Create your first feedback bounty
+              </h2>
+              <p className="mt-3 text-base leading-7 text-muted">
+                Set the reward tiers, share one link, and start collecting useful product feedback on Arc testnet.
+              </p>
+            </div>
+            <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+              <Link href="/create" className="btn-primary">
+                Create a bounty
+              </Link>
+              <Link href="/bounty/demo" className="btn-secondary">
+                Preview bounty link
+              </Link>
             </div>
           </div>
         </section>
