@@ -4,6 +4,10 @@ export type FeedbackRewardConfig = {
   feedbackType: FeedbackType;
   rewardUSDC: string;
   slots: number;
+  contractBountyId?: string;
+  label?: string;
+  description?: string;
+  enabled?: boolean;
 };
 
 export const feedbackTypeOptions: {
@@ -51,7 +55,10 @@ export const feedbackTypeOptions: {
 export const defaultFeedbackRewards: FeedbackRewardConfig[] = feedbackTypeOptions.map((option) => ({
   feedbackType: option.value,
   rewardUSDC: option.exampleRewardUSDC,
-  slots: option.exampleSlots
+  slots: option.exampleSlots,
+  label: option.label,
+  description: option.description,
+  enabled: true
 }));
 
 export function getFeedbackTypeLabel(type?: FeedbackType) {
@@ -75,30 +82,43 @@ export function normalizeFeedbackRewards(
   fallbackSlots = 1
 ): FeedbackRewardConfig[] {
   if (Array.isArray(rewards) && rewards.length) {
-    return rewards
-      .map((item) => {
-        const candidate = item as Partial<FeedbackRewardConfig>;
-        const isKnownType = feedbackTypeOptions.some((option) => option.value === candidate.feedbackType);
-        const rewardUSDC = String(candidate.rewardUSDC || "").trim();
+    const normalized = rewards
+      .map((item): FeedbackRewardConfig | undefined => {
+        const candidate = item as Partial<FeedbackRewardConfig> & {
+          id?: FeedbackType;
+          rewardAmount?: string | number;
+          contract_bounty_id?: string;
+        };
+        const feedbackType = candidate.feedbackType || candidate.id;
+        const option = feedbackTypeOptions.find((item) => item.value === feedbackType);
+        const rewardUSDC = String(candidate.rewardUSDC || candidate.rewardAmount || "").trim();
         const slots = Number(candidate.slots);
 
-        if (!isKnownType || normalizeRewardAmount(rewardUSDC) <= 0 || !Number.isInteger(slots) || slots < 1) {
+        if (!option || normalizeRewardAmount(rewardUSDC) <= 0 || !Number.isInteger(slots) || slots < 1) {
           return undefined;
         }
 
         return {
-          feedbackType: candidate.feedbackType as FeedbackType,
+          feedbackType: option.value,
           rewardUSDC,
-          slots
+          slots,
+          contractBountyId: candidate.contractBountyId || candidate.contract_bounty_id,
+          label: candidate.label || option.label,
+          description: candidate.description || option.description,
+          enabled: candidate.enabled !== false
         };
       })
-      .filter((item): item is FeedbackRewardConfig => Boolean(item));
+      .filter((item): item is FeedbackRewardConfig => item !== undefined);
+    return normalized;
   }
 
   return feedbackTypeOptions.map((option) => ({
     feedbackType: option.value,
     rewardUSDC: fallbackRewardUSDC,
-    slots: fallbackSlots
+    slots: fallbackSlots,
+    label: option.label,
+    description: option.description,
+    enabled: true
   }));
 }
 
@@ -107,17 +127,21 @@ export function getRewardForType(rewards: FeedbackRewardConfig[] | undefined, ty
 }
 
 export function getMaxRewardUSDC(rewards: FeedbackRewardConfig[]) {
-  return rewards.reduce((max, reward) => Math.max(max, normalizeRewardAmount(reward.rewardUSDC)), 0);
+  return rewards
+    .filter((reward) => reward.enabled !== false)
+    .reduce((max, reward) => Math.max(max, normalizeRewardAmount(reward.rewardUSDC)), 0);
 }
 
 export function getTotalRewardSlots(rewards: FeedbackRewardConfig[]) {
-  return rewards.reduce((total, reward) => total + reward.slots, 0);
+  return rewards.filter((reward) => reward.enabled !== false).reduce((total, reward) => total + reward.slots, 0);
 }
 
 export function getTargetRewardTotalUSDC(rewards: FeedbackRewardConfig[]) {
-  return rewards.reduce((total, reward) => total + normalizeRewardAmount(reward.rewardUSDC) * reward.slots, 0);
+  return rewards
+    .filter((reward) => reward.enabled !== false)
+    .reduce((total, reward) => total + normalizeRewardAmount(reward.rewardUSDC) * reward.slots, 0);
 }
 
 export function getSafeContractFundingTotalUSDC(rewards: FeedbackRewardConfig[]) {
-  return getMaxRewardUSDC(rewards) * getTotalRewardSlots(rewards);
+  return getTargetRewardTotalUSDC(rewards);
 }

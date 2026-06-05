@@ -22,6 +22,8 @@ create table if not exists submissions (
   bounty_id text references bounties(id),
   tester_wallet text,
   feedback_type text,
+  feedback_type_label text,
+  expected_reward_usdc text,
   tester_context text,
   first_impression text,
   tried_first text,
@@ -60,6 +62,12 @@ update public.bounties
 
 alter table public.bounties
   alter column feedback_config set not null;
+
+alter table public.submissions
+  add column if not exists feedback_type_label text;
+
+alter table public.submissions
+  add column if not exists expected_reward_usdc text;
 
 -- MVP anon-key policies:
 -- Public bounty links need public reads. Testers need public submission inserts.

@@ -57,13 +57,27 @@ export default function ReviewPage({ params }: { params: { id: string } }) {
       let payoutTxHash = `mock-${submission.submissionHash.slice(2, 12)}`;
       if (CRITIQUE_DROP_CONTRACT) {
         if (!walletClient || !publicClient) throw new Error("Wallet client is not ready.");
-        if (!bounty?.contractBountyId) throw new Error("This local bounty is missing a contract bounty ID.");
+        if (!bounty) throw new Error("Bounty is not loaded.");
+        const rewardConfig = normalizeFeedbackRewards(bounty.feedbackRewards, bounty.rewardUSDC, bounty.maxSubmissions).filter(
+          (reward) => reward.enabled !== false
+        );
+        const selectedReward = getRewardForType(rewardConfig, submission.feedbackType);
+        const contractBountyId = selectedReward?.contractBountyId || bounty.contractBountyId;
+        if (!contractBountyId) {
+          throw new Error("This feedback type is missing a funded reward pool ID.");
+        }
+        const approvedForType = submissions.filter(
+          (item) => item.status === "approved" && item.feedbackType === submission.feedbackType
+        ).length;
+        if (selectedReward && approvedForType >= selectedReward.slots) {
+          throw new Error("This feedback type has no remaining funded slots.");
+        }
 
         const txHash = await walletClient.writeContract({
           address: getAddress(CRITIQUE_DROP_CONTRACT),
           abi: critiqueDropBountyAbi,
           functionName: "approveSubmission",
-          args: [BigInt(bounty.contractBountyId), getAddress(submission.testerWallet), submission.submissionHash as `0x${string}`],
+          args: [BigInt(contractBountyId), getAddress(submission.testerWallet), submission.submissionHash as `0x${string}`],
           account: address
         });
         payoutTxHash = txHash;
@@ -96,11 +110,16 @@ export default function ReviewPage({ params }: { params: { id: string } }) {
   const pendingCount = submissions.filter((submission) => submission.status === "pending").length;
   const approvedCount = submissions.filter((submission) => submission.status === "approved").length;
   const rejectedCount = submissions.filter((submission) => submission.status === "rejected").length;
-  const rewardConfig = bounty ? normalizeFeedbackRewards(bounty.feedbackRewards, bounty.rewardUSDC, bounty.maxSubmissions) : [];
+  const rewardConfig = bounty
+    ? normalizeFeedbackRewards(bounty.feedbackRewards, bounty.rewardUSDC, bounty.maxSubmissions).filter(
+        (reward) => reward.enabled !== false
+      )
+    : [];
 
   function rewardLabelFor(submission: FeedbackSubmission) {
     const configured = getRewardForType(rewardConfig, submission.feedbackType);
-    if (!configured) return bounty ? `On-chain reward: ${formatUSDC(bounty.rewardUSDC)} testnet USDC` : undefined;
+    if (submission.expectedRewardUSDC) return `Expected reward: ${formatUSDC(submission.expectedRewardUSDC)} testnet USDC`;
+    if (!configured) return bounty ? `Configured reward: ${formatUSDC(bounty.rewardUSDC)} testnet USDC` : undefined;
     return `Configured reward: ${formatUSDC(configured.rewardUSDC)} testnet USDC`;
   }
 

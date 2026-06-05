@@ -19,7 +19,7 @@ export default function CreateBountyPage() {
           <div className="surface p-5 text-sm leading-6 text-muted">
             <p className="text-xs font-black uppercase tracking-[0.14em] text-action">How it works</p>
             <p className="mt-3">
-              Create the bounty brief, fund the testnet USDC reward pool, then approve the submissions that are useful enough to pay.
+              Create the bounty brief, fund the testnet USDC reward pools, then approve the submissions that are useful enough to pay.
             </p>
           </div>
         </div>

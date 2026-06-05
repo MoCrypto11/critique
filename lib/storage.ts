@@ -26,6 +26,8 @@ export type FeedbackSubmission = {
   bountyId: string;
   testerWallet: string;
   feedbackType?: FeedbackType;
+  feedbackTypeLabel?: string;
+  expectedRewardUSDC?: string;
   testerContext?: string;
   firstImpression?: string;
   firstAction?: string;
@@ -88,6 +90,8 @@ type SubmissionRow = {
   bounty_id: string;
   tester_wallet: string;
   feedback_type: FeedbackSubmission["feedbackType"] | null;
+  feedback_type_label?: string | null;
+  expected_reward_usdc?: string | null;
   tester_context: string | null;
   first_impression: string | null;
   tried_first: string | null;
@@ -229,6 +233,8 @@ function toSubmission(row: SubmissionRow): FeedbackSubmission {
     bountyId: row.bounty_id,
     testerWallet: row.tester_wallet,
     feedbackType: row.feedback_type || undefined,
+    feedbackTypeLabel: row.feedback_type_label || undefined,
+    expectedRewardUSDC: row.expected_reward_usdc || undefined,
     testerContext: row.tester_context || undefined,
     firstImpression: isVideo ? undefined : row.first_impression || undefined,
     firstAction: row.tried_first || undefined,
@@ -267,6 +273,8 @@ function toSubmissionRow(submission: FeedbackSubmission) {
     bounty_id: submission.bountyId,
     tester_wallet: submission.testerWallet,
     feedback_type: submission.feedbackType || null,
+    feedback_type_label: submission.feedbackTypeLabel || null,
+    expected_reward_usdc: submission.expectedRewardUSDC || null,
     tester_context: submission.testerContext || null,
     first_impression: isVideo ? submission.videoSummary || null : submission.firstImpression || null,
     tried_first: submission.firstAction || null,
@@ -301,15 +309,17 @@ async function upsertSupabaseBounty(bounty: BountyMetadata) {
   });
 }
 
-export async function createLocalBounty(input: Omit<BountyMetadata, "id" | "status" | "createdAt" | "txHashes">) {
-  const bounty: BountyMetadata = {
+export function buildLocalBounty(input: Omit<BountyMetadata, "id" | "status" | "createdAt" | "txHashes">): BountyMetadata {
+  return {
     ...input,
     id: newId("bounty"),
     status: "open",
     createdAt: new Date().toISOString(),
     txHashes: []
   };
+}
 
+export async function saveLocalBounty(bounty: BountyMetadata) {
   if (shouldUseSupabase()) {
     try {
       return await upsertSupabaseBounty(bounty);
@@ -329,6 +339,10 @@ export async function createLocalBounty(input: Omit<BountyMetadata, "id" | "stat
 
   saveBounties([bounty, ...getBounties()]);
   return bounty;
+}
+
+export async function createLocalBounty(input: Omit<BountyMetadata, "id" | "status" | "createdAt" | "txHashes">) {
+  return saveLocalBounty(buildLocalBounty(input));
 }
 
 export async function getLocalBounty(id: string) {
@@ -414,8 +428,15 @@ export async function addSubmission(input: Omit<FeedbackSubmission, "id" | "stat
   if (shouldUseSupabase() && supabase && input.bountyId !== "demo") {
     const client = supabase;
     return withSupabaseErrors("insert submission", async () => {
-      const { error } = await client.from("submissions").insert(toSubmissionRow(submission));
-      throwSupabaseResponseError("insert submission", error);
+      const submissionRow = toSubmissionRow(submission);
+      const { error } = await client.from("submissions").insert(submissionRow);
+      if (error && /feedback_type_label|expected_reward_usdc|schema cache/i.test(error.message || "")) {
+        const { feedback_type_label, expected_reward_usdc, ...legacySubmissionRow } = submissionRow;
+        const { error: legacyError } = await client.from("submissions").insert(legacySubmissionRow);
+        throwSupabaseResponseError("insert submission", legacyError);
+      } else {
+        throwSupabaseResponseError("insert submission", error);
+      }
       return submission;
     });
   }

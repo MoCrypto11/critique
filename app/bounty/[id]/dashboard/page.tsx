@@ -12,7 +12,13 @@ import { ReceiptCard } from "@/components/ReceiptCard";
 import { StatCard } from "@/components/StatCard";
 import { TxHashLink } from "@/components/TxHashLink";
 import { CRITIQUE_DROP_CONTRACT, ENABLE_MOCK_MODE, critiqueDropBountyAbi } from "@/lib/contracts";
-import { feedbackTypeOptions, formatUSDC, normalizeFeedbackRewards } from "@/lib/feedbackRewards";
+import {
+  feedbackTypeOptions,
+  formatUSDC,
+  getRewardForType,
+  getTargetRewardTotalUSDC,
+  normalizeFeedbackRewards
+} from "@/lib/feedbackRewards";
 import {
   addTxHashToBounty,
   BountyMetadata,
@@ -36,12 +42,30 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
   const approved = submissions.filter((submission) => submission.status === "approved");
   const pending = submissions.filter((submission) => submission.status === "pending");
   const rejected = submissions.filter((submission) => submission.status === "rejected");
-  const reward = bounty ? Number(bounty.rewardUSDC) : 0;
-  const rewardConfig = bounty ? normalizeFeedbackRewards(bounty.feedbackRewards, bounty.rewardUSDC, bounty.maxSubmissions) : [];
-  const totalFunded = bounty ? reward * bounty.maxSubmissions : 0;
-  const totalPaid = reward * approved.length;
+  const rewardConfig = bounty
+    ? normalizeFeedbackRewards(bounty.feedbackRewards, bounty.rewardUSDC, bounty.maxSubmissions).filter(
+        (reward) => reward.enabled !== false
+      )
+    : [];
+  const totalFunded = bounty ? getTargetRewardTotalUSDC(rewardConfig) : 0;
+  const totalPaid = approved.reduce((total, submission) => total + Number(rewardAmountForSubmission(submission)), 0);
   const remaining = Math.max(0, totalFunded - totalPaid);
   const canRefund = bounty ? bounty.status === "closed" || new Date(bounty.deadline).getTime() <= Date.now() : false;
+
+  function contractPoolIds() {
+    const ids = rewardConfig.map((reward) => reward.contractBountyId).filter((id): id is string => Boolean(id));
+    if (!ids.length && bounty?.contractBountyId) return [bounty.contractBountyId];
+    return ids;
+  }
+
+  function rewardAmountForSubmission(submission: FeedbackSubmission) {
+    return (
+      submission.expectedRewardUSDC ||
+      getRewardForType(rewardConfig, submission.feedbackType)?.rewardUSDC ||
+      bounty?.rewardUSDC ||
+      "0"
+    );
+  }
 
   const refresh = useCallback(async () => {
     const nextBounty = await getLocalBounty(params.id);
@@ -69,18 +93,21 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
         throw new Error("Connected wallet is not the founder for this local bounty.");
       }
 
-      if (CRITIQUE_DROP_CONTRACT && bounty.contractBountyId) {
+      const poolIds = contractPoolIds();
+      if (CRITIQUE_DROP_CONTRACT && poolIds.length) {
         if (!walletClient || !publicClient) throw new Error("Wallet client is not ready.");
-        setStatus("Closing bounty on contract...");
-        const txHash = await walletClient.writeContract({
-          address: getAddress(CRITIQUE_DROP_CONTRACT),
-          abi: critiqueDropBountyAbi,
-          functionName: "closeBounty",
-          args: [BigInt(bounty.contractBountyId)],
-          account: address
-        });
-        await addTxHashToBounty(bounty.id, txHash);
-        await publicClient.waitForTransactionReceipt({ hash: txHash });
+        for (const poolId of poolIds) {
+          setStatus("Closing reward pools on contract...");
+          const txHash = await walletClient.writeContract({
+            address: getAddress(CRITIQUE_DROP_CONTRACT),
+            abi: critiqueDropBountyAbi,
+            functionName: "closeBounty",
+            args: [BigInt(poolId)],
+            account: address
+          });
+          await addTxHashToBounty(bounty.id, txHash);
+          await publicClient.waitForTransactionReceipt({ hash: txHash });
+        }
       } else if (!ENABLE_MOCK_MODE) {
         throw new Error("Contract is not configured.");
       }
@@ -105,18 +132,21 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
         throw new Error("Connected wallet is not the founder for this local bounty.");
       }
 
-      if (CRITIQUE_DROP_CONTRACT && bounty.contractBountyId) {
+      const poolIds = contractPoolIds();
+      if (CRITIQUE_DROP_CONTRACT && poolIds.length) {
         if (!walletClient || !publicClient) throw new Error("Wallet client is not ready.");
-        setStatus("Refunding unused testnet USDC...");
-        const txHash = await walletClient.writeContract({
-          address: getAddress(CRITIQUE_DROP_CONTRACT),
-          abi: critiqueDropBountyAbi,
-          functionName: "refundUnused",
-          args: [BigInt(bounty.contractBountyId)],
-          account: address
-        });
-        await addTxHashToBounty(bounty.id, txHash);
-        await publicClient.waitForTransactionReceipt({ hash: txHash });
+        for (const poolId of poolIds) {
+          setStatus("Refunding unused testnet USDC from reward pools...");
+          const txHash = await walletClient.writeContract({
+            address: getAddress(CRITIQUE_DROP_CONTRACT),
+            abi: critiqueDropBountyAbi,
+            functionName: "refundUnused",
+            args: [BigInt(poolId)],
+            account: address
+          });
+          await addTxHashToBounty(bounty.id, txHash);
+          await publicClient.waitForTransactionReceipt({ hash: txHash });
+        }
       } else if (!ENABLE_MOCK_MODE) {
         throw new Error("Contract is not configured.");
       }
@@ -176,10 +206,10 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
         {status ? <div className="notice mb-5 border-action/20 bg-action/10 font-semibold text-action">{status}</div> : null}
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard label="Total funded" value={`${totalFunded} testnet USDC`} tone="strong" />
-          <StatCard label="Total paid" value={`${totalPaid} testnet USDC`} tone="strong" />
-          <StatCard label="Remaining balance" value={`${remaining} testnet USDC`} tone="strong" />
-          <StatCard label="On-chain reward" value={`${formatUSDC(bounty.rewardUSDC)} testnet USDC`} />
+          <StatCard label="Total configured funding" value={`${formatUSDC(totalFunded)} testnet USDC`} tone="strong" />
+          <StatCard label="Total approved payouts" value={`${formatUSDC(totalPaid)} testnet USDC`} tone="strong" />
+          <StatCard label="Remaining configured balance" value={`${formatUSDC(remaining)} testnet USDC`} tone="strong" />
+          <StatCard label="Reward pools" value={rewardConfig.length} />
           <StatCard label="Slots used" value={`${submissions.length}/${bounty.maxSubmissions}`} />
           <StatCard label="Approved" value={approved.length} />
           <StatCard label="Pending" value={pending.length} />
@@ -229,23 +259,28 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
             <div>
               <h2 className="text-lg font-black text-ink">Feedback reward configuration</h2>
               <p className="mt-2 text-sm leading-6 text-muted">
-                Founder-configured reward metadata by accepted feedback type.
+                Each feedback type has its own reward pool.
               </p>
             </div>
-            <p className="text-sm font-bold text-action">
-              Contract pays {formatUSDC(bounty.rewardUSDC)} testnet USDC per approved submission
-            </p>
+            <p className="text-sm font-bold text-action">Approved submissions are paid by selected feedback format.</p>
           </div>
           <div className="mt-5 grid gap-3 md:grid-cols-2">
             {rewardConfig.map((config) => {
               const option = feedbackTypeOptions.find((item) => item.value === config.feedbackType);
+              const approvedForType = approved.filter((submission) => submission.feedbackType === config.feedbackType).length;
+              const remainingForType = Math.max(0, config.slots - approvedForType);
               return (
                 <div key={config.feedbackType} className="surface-soft p-4">
-                  <p className="text-sm font-black text-ink">{option?.label || config.feedbackType}</p>
+                  <p className="text-sm font-black text-ink">{config.label || option?.label || config.feedbackType}</p>
                   <p className="mt-2 text-sm font-semibold text-action">
                     {formatUSDC(config.rewardUSDC)} testnet USDC configured
                   </p>
-                  <p className="mt-1 text-sm text-muted">{config.slots} slot{config.slots === 1 ? "" : "s"}</p>
+                  <p className="mt-1 text-sm text-muted">
+                    {remainingForType}/{config.slots} funded slots remaining
+                  </p>
+                  {config.contractBountyId ? (
+                    <p className="mt-1 text-xs font-semibold text-muted">Pool ID: {config.contractBountyId}</p>
+                  ) : null}
                 </div>
               );
             })}
@@ -262,7 +297,9 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
           </div>
           <div className="grid gap-4 lg:grid-cols-2">
             {approved.length ? (
-              approved.map((submission) => <ReceiptCard key={submission.id} submission={submission} amount={bounty.rewardUSDC} />)
+              approved.map((submission) => (
+                <ReceiptCard key={submission.id} submission={submission} amount={rewardAmountForSubmission(submission)} />
+              ))
             ) : (
               <EmptyState title="No paid receipts" body="Approved feedback payouts will appear here." />
             )}

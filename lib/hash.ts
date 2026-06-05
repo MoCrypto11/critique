@@ -4,6 +4,8 @@ export function createSubmissionHash(input: {
   bountyId: string;
   testerWallet: string;
   feedbackType?: string;
+  feedbackTypeLabel?: string;
+  expectedRewardUSDC?: string;
   testerContext?: string;
   firstImpression?: string;
   firstAction?: string;
@@ -34,6 +36,8 @@ export function createSubmissionHash(input: {
     input.bountyId,
     input.testerWallet.toLowerCase(),
     (input.feedbackType || "").trim(),
+    (input.feedbackTypeLabel || "").trim(),
+    (input.expectedRewardUSDC || "").trim(),
     (input.testerContext || "").trim(),
     (input.firstImpression || "").trim(),
     (input.firstAction || "").trim(),

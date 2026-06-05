@@ -13,12 +13,11 @@ import {
   feedbackTypeOptions,
   formatUSDC,
   getMaxRewardUSDC,
-  getSafeContractFundingTotalUSDC,
   getTargetRewardTotalUSDC,
   getTotalRewardSlots,
   normalizeRewardAmount
 } from "@/lib/feedbackRewards";
-import { createLocalBounty, updateLocalBounty, addTxHashToBounty, SharedDatabaseSaveError } from "@/lib/storage";
+import { buildLocalBounty, saveLocalBounty, SharedDatabaseSaveError } from "@/lib/storage";
 import { parseUSDC, USDC_ADDRESS, usdcAbi } from "@/lib/usdc";
 import { isValidUrl } from "@/lib/utils";
 import { getWalletErrorMessage, switchToArcTestnet } from "@/lib/walletNetwork";
@@ -64,13 +63,12 @@ export function BountyForm() {
     const maxReward = getMaxRewardUSDC(selectedRewards);
     const slots = getTotalRewardSlots(selectedRewards);
     const targetTotal = getTargetRewardTotalUSDC(selectedRewards);
-    const safeTotal = getSafeContractFundingTotalUSDC(selectedRewards);
 
     return {
       reward: maxReward > 0 ? `${formatUSDC(maxReward)} testnet USDC` : "Not set",
       slots: slots > 0 ? String(slots) : "Not set",
       targetTotal: targetTotal > 0 ? `${formatUSDC(targetTotal)} testnet USDC` : "Not set",
-      total: safeTotal > 0 ? `${formatUSDC(safeTotal)} testnet USDC` : "Not set"
+      total: targetTotal > 0 ? `${formatUSDC(targetTotal)} testnet USDC` : "Not set"
     };
   }, [selectedRewards]);
 
@@ -123,7 +121,10 @@ export function BountyForm() {
       .filter((reward) => normalizeRewardAmount(reward.rewardUSDC) > 0 && reward.slots > 0)
       .map((reward) => ({
         ...reward,
-        rewardUSDC: formatUSDC(reward.rewardUSDC)
+        rewardUSDC: formatUSDC(reward.rewardUSDC),
+        label: feedbackTypeOptions.find((option) => option.value === reward.feedbackType)?.label,
+        description: feedbackTypeOptions.find((option) => option.value === reward.feedbackType)?.description,
+        enabled: true
       }));
     const maxReward = getMaxRewardUSDC(selectedFeedbackRewards);
     const maxSubmissions = getTotalRewardSlots(selectedFeedbackRewards);
@@ -144,7 +145,7 @@ export function BountyForm() {
     setIsSubmitting(true);
 
     try {
-      const bounty = await createLocalBounty({
+      const initialBounty = buildLocalBounty({
         founderAddress: address,
         title,
         productUrl,
@@ -154,6 +155,8 @@ export function BountyForm() {
         maxSubmissions,
         deadline: new Date(deadline).toISOString()
       });
+      let bounty = initialBounty;
+      const txHashes: string[] = [];
 
       if (contractConfigured) {
         if (!walletConnected || !address) {
@@ -169,57 +172,82 @@ export function BountyForm() {
           throw new Error("USDC address is not configured.");
         }
 
-        // TODO: True per-feedback-type payout amounts require contract support. The current contract pays one
-        // rewardPerSubmission, so the UI funds the bounty at the highest selected feedback reward.
-        const rewardAmount = parseUSDC(rewardUSDC);
-        const fundAmount = rewardAmount * BigInt(maxSubmissions);
+        const totalFundAmount = selectedFeedbackRewards.reduce(
+          (total, reward) => total + parseUSDC(reward.rewardUSDC) * BigInt(reward.slots),
+          BigInt(0)
+        );
         const deadlineSeconds = BigInt(Math.floor(new Date(deadline).getTime() / 1000));
+        const fundedFeedbackRewards: FeedbackRewardConfig[] = [];
 
-        setStatus("Creating bounty on the contract...");
-        const createHash = await walletClient.writeContract({
-          address: getAddress(CRITIQUE_DROP_CONTRACT),
-          abi: critiqueDropBountyAbi,
-          functionName: "createBounty",
-          args: [rewardAmount, BigInt(maxSubmissions), deadlineSeconds, `local://${bounty.id}`],
-          account: address
-        });
-        await addTxHashToBounty(bounty.id, createHash);
-        const createReceipt = await publicClient.waitForTransactionReceipt({ hash: createHash });
-        const createdLog = createReceipt.logs
-          .map((log) => {
-            try {
-              return decodeEventLog({ abi: [bountyCreatedEvent], data: log.data, topics: log.topics });
-            } catch {
-              return null;
-            }
-          })
-          .find((log) => log?.eventName === "BountyCreated");
-        const contractBountyId = createdLog?.args.bountyId?.toString() || "0";
-        await updateLocalBounty(bounty.id, { contractBountyId });
+        for (const reward of selectedFeedbackRewards) {
+          const option = feedbackTypeOptions.find((item) => item.value === reward.feedbackType);
+          setStatus(`Creating ${option?.shortLabel || option?.label || "feedback"} reward pool...`);
+          const createHash = await walletClient.writeContract({
+            address: getAddress(CRITIQUE_DROP_CONTRACT),
+            abi: critiqueDropBountyAbi,
+            functionName: "createBounty",
+            args: [
+              parseUSDC(reward.rewardUSDC),
+              BigInt(reward.slots),
+              deadlineSeconds,
+              `local://${bounty.id}/${reward.feedbackType}`
+            ],
+            account: address
+          });
+          txHashes.push(createHash);
+          const createReceipt = await publicClient.waitForTransactionReceipt({ hash: createHash });
+          const createdLog = createReceipt.logs
+            .map((log) => {
+              try {
+                return decodeEventLog({ abi: [bountyCreatedEvent], data: log.data, topics: log.topics });
+              } catch {
+                return null;
+              }
+            })
+            .find((log) => log?.eventName === "BountyCreated");
+          const contractBountyId = createdLog?.args.bountyId?.toString();
+          if (!contractBountyId) {
+            throw new Error("Could not read reward pool ID from the contract transaction.");
+          }
+          fundedFeedbackRewards.push({ ...reward, contractBountyId });
+        }
 
-        setStatus("Approving testnet USDC for funding...");
+        bounty = {
+          ...bounty,
+          contractBountyId: fundedFeedbackRewards[0]?.contractBountyId,
+          feedbackRewards: fundedFeedbackRewards,
+          txHashes
+        };
+
+        setStatus("Approving exact testnet USDC funding...");
         const approveHash = await walletClient.writeContract({
           address: getAddress(USDC_ADDRESS),
           abi: usdcAbi,
           functionName: "approve",
-          args: [getAddress(CRITIQUE_DROP_CONTRACT), fundAmount],
+          args: [getAddress(CRITIQUE_DROP_CONTRACT), totalFundAmount],
           account: address
         });
-        await addTxHashToBounty(bounty.id, approveHash);
+        txHashes.push(approveHash);
         await publicClient.waitForTransactionReceipt({ hash: approveHash });
 
-        setStatus("Funding bounty with testnet USDC...");
-        const fundHash = await walletClient.writeContract({
-          address: getAddress(CRITIQUE_DROP_CONTRACT),
-          abi: critiqueDropBountyAbi,
-          functionName: "fundBounty",
-          args: [BigInt(contractBountyId), fundAmount],
-          account: address
-        });
-        await addTxHashToBounty(bounty.id, fundHash);
-        await publicClient.waitForTransactionReceipt({ hash: fundHash });
+        for (const reward of fundedFeedbackRewards) {
+          const option = feedbackTypeOptions.find((item) => item.value === reward.feedbackType);
+          setStatus(`Funding ${option?.shortLabel || option?.label || "feedback"} reward pool...`);
+          if (!reward.contractBountyId) throw new Error("Reward pool ID is missing.");
+          const fundHash = await walletClient.writeContract({
+            address: getAddress(CRITIQUE_DROP_CONTRACT),
+            abi: critiqueDropBountyAbi,
+            functionName: "fundBounty",
+            args: [BigInt(reward.contractBountyId), parseUSDC(reward.rewardUSDC) * BigInt(reward.slots)],
+            account: address
+          });
+          txHashes.push(fundHash);
+          await publicClient.waitForTransactionReceipt({ hash: fundHash });
+        }
       }
 
+      bounty = { ...bounty, txHashes };
+      await saveLocalBounty(bounty);
       router.push(`/bounty/${bounty.id}`);
     } catch (caught) {
       console.error("[Critique create bounty]", caught);
@@ -398,7 +426,7 @@ export function BountyForm() {
           <p className="text-xs font-black uppercase tracking-[0.14em] text-action">Funding summary</p>
           <dl className="mt-4 space-y-3">
             <div className="flex items-center justify-between gap-4">
-              <dt>On-chain reward per approval</dt>
+              <dt>Max reward per approval</dt>
               <dd className="font-black text-ink">{fundingSummary.reward}</dd>
             </div>
             <div className="flex items-center justify-between gap-4">
@@ -437,8 +465,8 @@ export function BountyForm() {
             Feedback is stored off-chain, while the contract handles funding and payout state.
           </p>
           <p className="mt-3 rounded-lg border border-action/15 bg-action/10 p-3 font-semibold text-action">
-            The current contract pays one reward amount per approved submission, so Critique funds at the highest
-            selected reward across all accepted types.
+            Each feedback type is funded as its own reward pool, so approved submissions are paid according to the
+            selected feedback format.
           </p>
         </aside>
       </div>

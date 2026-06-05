@@ -80,7 +80,12 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
 
   const status = useMemo(() => (bounty ? deriveStatus(bounty, submissions) : "open"), [bounty, submissions]);
   const availableRewards = useMemo(
-    () => (bounty ? normalizeFeedbackRewards(bounty.feedbackRewards, bounty.rewardUSDC, bounty.maxSubmissions) : []),
+    () =>
+      bounty
+        ? normalizeFeedbackRewards(bounty.feedbackRewards, bounty.rewardUSDC, bounty.maxSubmissions).filter(
+            (reward) => reward.enabled !== false
+          )
+        : [],
     [bounty]
   );
   const selectedReward = getRewardForType(availableRewards, feedbackType);
@@ -99,6 +104,13 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
 
   function rewardAmountLabel(amount?: string) {
     return isDemoBounty ? "Founder-set reward" : `${formatUSDC(amount)} testnet USDC`;
+  }
+
+  function slotsLeftForType(type: FeedbackType, slots: number) {
+    const used = submissions.filter(
+      (submission) => submission.feedbackType === type && submission.status !== "rejected"
+    ).length;
+    return Math.max(0, slots - used);
   }
 
   useEffect(() => {
@@ -192,6 +204,8 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
         bountyId: bounty.id,
         testerWallet,
         feedbackType: selectedFeedbackType,
+        feedbackTypeLabel: getFeedbackTypeLabel(selectedFeedbackType),
+        expectedRewardUSDC: selectedReward?.rewardUSDC,
         testerContext: testerContext || undefined,
         firstImpression: firstImpression || undefined,
         firstAction: firstAction || undefined,
@@ -355,6 +369,7 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
                 {availableRewards.map((reward) => {
                   const type = feedbackTypeOptions.find((option) => option.value === reward.feedbackType);
                   if (!type) return null;
+                  const remainingForType = slotsLeftForType(type.value, reward.slots);
                   return (
                   <label
                     key={type.value}
@@ -373,15 +388,22 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
                         <span className="grid size-8 shrink-0 place-items-center rounded-lg border border-action/20 bg-action/10 text-action">
                           <FeedbackTypeIcon type={type.value} />
                         </span>
-                        <span className="block text-sm font-black text-ink">{type.label}</span>
+                        <span className="block text-sm font-black text-ink">{reward.label || type.label}</span>
                       </span>
-                      {!isDemoBounty ? (
-                        <span className="w-fit shrink-0 rounded-full border border-action/20 bg-action/10 px-2.5 py-1 text-xs font-black text-action">
-                          {rewardAmountLabel(reward.rewardUSDC)}
+                      <span className="flex flex-wrap items-center gap-2">
+                        {!isDemoBounty ? (
+                          <span className="w-fit shrink-0 rounded-full border border-action/20 bg-action/10 px-2.5 py-1 text-xs font-black text-action">
+                            {rewardAmountLabel(reward.rewardUSDC)}
+                          </span>
+                        ) : null}
+                        <span className="w-fit shrink-0 rounded-full border border-line/80 bg-panel/80 px-2.5 py-1 text-xs font-black text-muted">
+                          {remainingForType} slots left
                         </span>
-                      ) : null}
+                      </span>
                     </span>
-                    <span className="mt-1 block text-xs font-semibold leading-5 text-muted">{type.description}</span>
+                    <span className="mt-1 block text-xs font-semibold leading-5 text-muted">
+                      {reward.description || type.description}
+                    </span>
                   </label>
                   );
                 })}
