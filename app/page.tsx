@@ -147,18 +147,25 @@ const faqs = [
   }
 ];
 
-const arcFeatures = [
+const arcFeatures: {
+  title: string;
+  body: string;
+  icon: LucideIcon;
+}[] = [
   {
-    title: "Founder set USDC rewards",
-    body: "Founders choose the reward amount before sharing a bounty link. Rewards are shown in USDC, so the value is easy to understand."
+    title: "USDC-native rewards",
+    body: "Founders fund bounties, contributors receive rewards, and fees are easier to understand because the flow is denominated in USDC.",
+    icon: CircleDollarSign
   },
   {
-    title: "Approve feedback, then pay",
-    body: "Testers submit feedback first. The founder reviews each response and only approved submissions trigger payout."
+    title: "Fast approval settlement",
+    body: "When a founder approves useful feedback, the payout can be recorded quickly and visibly on Arc.",
+    icon: MessageSquareCheck
   },
   {
-    title: "Receipts without exposing feedback",
-    body: "Critique keeps feedback content off-chain and uses Arc for the payment record: bounty funding and approved payouts."
+    title: "EVM contract workflow",
+    body: "Critique can use familiar smart-contract tooling while keeping feedback content off-chain and private to the app.",
+    icon: Wrench
   }
 ];
 
@@ -350,6 +357,85 @@ export default function HomePage() {
           </div>
         </section>
 
+        <section className="page-shell py-10 sm:py-12">
+          <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#071a18] text-white shadow-[0_24px_70px_rgba(7,26,24,0.18)]">
+            <div className="grid gap-8 p-5 sm:p-7 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)] lg:gap-10 lg:p-8">
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-3">
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-white/55">BUILT ON ARC</p>
+                  <a
+                    href="https://www.arc.io/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="focus-ring inline-flex w-fit shrink-0 items-center gap-2 rounded-full border border-white/14 bg-white/[0.08] px-3.5 py-2 text-xs font-black text-white transition-colors hover:bg-white/[0.12]"
+                  >
+                    <span className="size-1.5 rounded-full bg-action" aria-hidden="true" />
+                    Built on Arc
+                  </a>
+                </div>
+
+                <h2 className="font-display mt-5 max-w-xl text-4xl font-semibold leading-tight tracking-normal text-white sm:text-5xl">
+                  Why Critique runs on Arc
+                </h2>
+                <p className="mt-5 max-w-xl text-base font-semibold leading-7 text-white/72 sm:text-lg">
+                  Critique is not just collecting feedback. It is coordinating funded bounties, founder approvals, and
+                  USDC payouts.
+                </p>
+                <p className="mt-4 max-w-xl text-sm font-semibold leading-7 text-white/58 sm:text-base">
+                  Arc gives Critique a cleaner payout layer: USDC-denominated rewards and fees, fast final settlement,
+                  and EVM tooling for the bounty contract.
+                </p>
+                <p className="mt-5 max-w-lg rounded-xl border border-white/10 bg-white/[0.055] px-4 py-3 text-xs font-semibold leading-6 text-white/58 sm:text-sm">
+                  Currently live on Arc testnet. Mainnet USDC support can be configured once Arc mainnet is available.
+                </p>
+
+                <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+                  <a
+                    href="https://testnet.arcscan.app/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="focus-ring inline-flex min-h-11 items-center justify-center rounded-lg bg-white px-5 py-3 text-sm font-black text-[#071a18] shadow-sm transition-colors hover:bg-[#f8f5eb]"
+                  >
+                    Arc Explorer
+                  </a>
+                  <a
+                    href="https://docs.arc.io/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="focus-ring inline-flex min-h-11 items-center justify-center rounded-lg border border-white/16 bg-white/[0.06] px-5 py-3 text-sm font-black text-white transition-colors hover:bg-white/[0.1]"
+                  >
+                    Read Arc docs
+                  </a>
+                </div>
+              </div>
+
+              <div className="grid min-w-0 gap-3 lg:content-center">
+                {arcFeatures.map((feature) => {
+                  const FeatureIcon = feature.icon;
+                  return (
+                    <div
+                      key={feature.title}
+                      className="min-w-0 rounded-xl border border-white/10 bg-white/[0.055] p-4 sm:p-5"
+                    >
+                      <div className="flex items-start gap-3">
+                        <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-action/15 text-action">
+                          <FeatureIcon className="size-4" aria-hidden="true" />
+                        </span>
+                        <div className="min-w-0">
+                          <h3 className="text-base font-black text-white">{feature.title}</h3>
+                          <p className="mt-2 max-w-xl break-words text-sm font-semibold leading-6 text-white/62">
+                            {feature.body}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section id="faq" className="page-shell scroll-mt-24 py-10 sm:py-12">
           <div className="mx-auto mb-6 max-w-3xl text-center">
             <p className="eyebrow">FAQ</p>
@@ -385,66 +471,6 @@ export default function HomePage() {
                 </div>
               );
             })}
-          </div>
-        </section>
-
-        <section className="page-shell py-10 sm:py-12">
-          <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#071a18] text-white shadow-[0_24px_70px_rgba(7,26,24,0.18)]">
-            <div className="grid gap-8 p-5 sm:p-7 lg:grid-cols-[minmax(0,0.96fr)_minmax(0,1.04fr)] lg:gap-10 lg:p-8">
-              <div className="min-w-0">
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-white/55">BUILT ON ARC TESTNET</p>
-                <h2 className="font-display mt-4 max-w-xl text-3xl font-semibold leading-tight tracking-normal text-white sm:text-4xl">
-                  USDC payouts for useful product feedback
-                </h2>
-                <p className="mt-4 max-w-xl text-sm font-semibold leading-7 text-white/68 sm:text-base">
-                  Critique lets founders fund a feedback bounty, share one public link, and reward testers only when their feedback is approved.
-                </p>
-                <p className="mt-4 max-w-lg text-sm font-semibold leading-7 text-white/58 sm:text-base">
-                  Arc handles the payout layer: predictable USDC rewards, fast settlement, and visible receipts. Feedback text stays off-chain.
-                </p>
-                <p className="mt-4 max-w-lg text-sm font-semibold leading-7 text-white/58 sm:text-base">
-                  Critique currently runs on Arc testnet. The same reward flow can be configured for mainnet USDC once
-                  Arc mainnet is available.
-                </p>
-                <div className="mt-7 inline-flex w-fit shrink-0 items-center gap-2 rounded-full border border-white/14 bg-white/[0.08] px-4 py-2 text-xs font-black text-white">
-                  <span className="size-1.5 rounded-full bg-action" aria-hidden="true" />
-                  Built on Arc testnet
-                </div>
-
-                <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                  <a
-                    href="https://testnet.arcscan.app/"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="focus-ring inline-flex min-h-11 items-center justify-center rounded-lg bg-white px-5 py-3 text-sm font-black text-[#071a18] shadow-sm transition-colors hover:bg-[#f8f5eb]"
-                  >
-                    Explore Arc
-                  </a>
-                  <a
-                    href="https://docs.arc.io/"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="focus-ring inline-flex min-h-11 items-center justify-center rounded-lg border border-white/16 bg-white/[0.06] px-5 py-3 text-sm font-black text-white transition-colors hover:bg-white/[0.1]"
-                  >
-                    Read Arc docs
-                  </a>
-                </div>
-                <p className="mt-5 max-w-md text-xs font-semibold leading-6 text-white/48">
-                  Feedback stays off-chain while Arc records funding and approved payouts.
-                </p>
-              </div>
-
-              <div className="grid min-w-0 gap-3 lg:pt-8">
-                {arcFeatures.map((feature) => (
-                  <div key={feature.title} className="min-w-0 rounded-xl border border-white/10 bg-white/[0.055] p-4 sm:p-5">
-                    <h3 className="text-base font-black text-white">{feature.title}</h3>
-                    <p className="mt-2 max-w-xl break-words text-sm font-semibold leading-6 text-white/62">
-                      {feature.body}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         </section>
 
