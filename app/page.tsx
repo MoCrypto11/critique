@@ -195,9 +195,8 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="relative mx-auto w-full max-w-xl lg:max-w-none">
-              <div className="absolute -inset-3 rounded-[1.75rem] border border-action/10 bg-action/[0.035]" aria-hidden="true" />
-              <div className="relative overflow-hidden rounded-2xl border border-line/70 bg-white p-2 shadow-[0_22px_60px_rgba(21,45,36,0.14)]">
+            <div className="relative mx-auto w-full max-w-[34rem] lg:max-w-[35rem] lg:justify-self-end">
+              <div className="relative overflow-hidden rounded-[1.35rem] border border-line/50 bg-[#f7f8f3]/80 p-1 shadow-[0_18px_46px_rgba(21,45,36,0.10)]">
                 <Image
                   src="/images/hero-critique.png"
                   alt="Contributor reviewing product feedback with approved submission badge"
@@ -205,7 +204,7 @@ export default function HomePage() {
                   height={1200}
                   priority
                   sizes="(min-width: 1024px) 46vw, 100vw"
-                  className="aspect-[4/3] w-full rounded-xl object-contain"
+                  className="block h-auto w-full rounded-[1.1rem] object-contain"
                 />
               </div>
             </div>
