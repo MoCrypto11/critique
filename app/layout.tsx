@@ -6,7 +6,10 @@ import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: "Critique",
-  description: "Pay real users for useful product feedback."
+  description: "Pay real users for useful product feedback.",
+  icons: {
+    icon: "/favicon.svg"
+  }
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

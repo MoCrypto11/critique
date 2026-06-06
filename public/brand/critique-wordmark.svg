@@ -1,0 +1,11 @@
+<svg width="254" height="64" viewBox="0 0 254 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Critique logo</title>
+  <desc id="desc">Critique wordmark with CQ approval monogram.</desc>
+  <g aria-hidden="true">
+    <path d="M28.7 45.5C23.6 48.9 16.1 47.9 11.8 43.3C6.5 37.6 6.5 28.8 11.8 23.1C16.1 18.5 23.6 17.5 28.7 20.9" stroke="#123C2F" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="40.8" cy="33.2" r="15.4" stroke="#123C2F" stroke-width="6.5"/>
+    <path d="M49.2 44.9L55.4 51" stroke="#123C2F" stroke-width="6.5" stroke-linecap="round"/>
+    <path d="M32.8 33.6L38.3 39.1L50.1 26.9" stroke="#A7D8B8" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="73" y="42.5" fill="#111814" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="28" font-weight="760" letter-spacing="-0.2">Critique</text>
+</svg>
