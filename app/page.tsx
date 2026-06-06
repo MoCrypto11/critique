@@ -415,14 +415,19 @@ export default function HomePage() {
                     rel="noreferrer"
                     className="focus-ring inline-flex w-fit shrink-0 items-center gap-2 rounded-full border border-white/14 bg-white/[0.08] px-3.5 py-2 text-xs font-black text-white transition-colors hover:bg-white/[0.12]"
                   >
-                    <span className="size-1.5 rounded-full bg-action" aria-hidden="true" />
+                    <Image src="/images/arc-icon.svg" alt="" aria-hidden="true" width={14} height={14} className="size-3.5" />
                     Built on Arc
                   </a>
                 </div>
 
-                <h2 className="font-display mt-5 text-4xl font-semibold leading-tight tracking-normal text-white sm:text-5xl">
-                  Arc Network
-                </h2>
+                <div className="mt-5 flex items-center justify-center gap-3">
+                  <span className="grid size-11 shrink-0 place-items-center rounded-xl border border-white/12 bg-white/[0.08]">
+                    <Image src="/images/arc-icon.svg" alt="" aria-hidden="true" width={24} height={24} className="size-6" />
+                  </span>
+                  <h2 className="font-display text-4xl font-semibold leading-tight tracking-normal text-white sm:text-5xl">
+                    Arc Network
+                  </h2>
+                </div>
                 <p className="mt-4 text-base font-semibold leading-7 text-white/72 sm:text-lg">
                   Stablecoin-native infrastructure for approval-based payouts.
                 </p>

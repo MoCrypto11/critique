@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export function BuiltOnArcBadge() {
   return (
     <a
@@ -7,7 +9,7 @@ export function BuiltOnArcBadge() {
       className="focus-ring fixed bottom-3 right-3 z-30 inline-flex items-center gap-2 rounded-full border border-action/20 bg-[#071a18]/95 px-3.5 py-2 text-xs font-black text-white shadow-[0_14px_36px_rgba(7,26,24,0.18)] backdrop-blur transition-colors hover:bg-[#0b2f29] sm:bottom-5 sm:right-5 sm:px-4"
       aria-label="Built on Arc"
     >
-      <span className="size-1.5 rounded-full bg-action" aria-hidden="true" />
+      <Image src="/images/arc-icon.svg" alt="" aria-hidden="true" width={14} height={14} className="size-3.5" />
       Built on Arc
     </a>
   );
