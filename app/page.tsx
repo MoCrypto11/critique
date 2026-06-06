@@ -189,7 +189,7 @@ export default function HomePage() {
     <>
       <AppHeader />
       <main>
-        <section className="page-shell grid min-h-[calc(100vh-96px)] content-center md:min-h-[calc(100vh-65px)]">
+        <section className="page-shell grid pt-8 pb-12 sm:pt-10 sm:pb-14 lg:pt-12 lg:pb-16">
           <div className="grid items-center gap-7 lg:grid-cols-[1.02fr_0.98fr]">
             <div className="max-w-3xl">
               <p className="eyebrow">Useful feedback. USDC rewards.</p>
