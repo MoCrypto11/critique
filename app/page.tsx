@@ -189,7 +189,7 @@ export default function HomePage() {
     <>
       <AppHeader />
       <main>
-        <section className="page-shell grid pt-12 pb-8 sm:pt-14 sm:pb-10 lg:pt-16 lg:pb-10">
+        <section className="mx-auto grid w-full max-w-6xl px-4 pb-8 pt-14 sm:px-6 sm:pb-10 sm:pt-16 lg:px-8 lg:pb-8 lg:pt-20">
           <div className="grid items-center gap-7 lg:grid-cols-[0.92fr_1.08fr] lg:gap-10">
             <div className="max-w-3xl">
               <p className="eyebrow">Useful feedback. USDC rewards.</p>
@@ -226,7 +226,10 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="how-it-works" className="page-shell scroll-mt-24 pt-6 pb-10 sm:pt-7 sm:pb-12">
+        <section
+          id="how-it-works"
+          className="mx-auto w-full max-w-6xl scroll-mt-24 px-4 pb-10 pt-5 sm:px-6 sm:pb-12 sm:pt-6 lg:px-8"
+        >
           <div className="mb-5 max-w-3xl">
             <p className="eyebrow">How it works</p>
             <h2 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">How Critique works</h2>
@@ -236,7 +239,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid max-w-5xl gap-3 md:grid-cols-2">
+          <div className="grid max-w-5xl items-start gap-3 md:grid-cols-2">
             {steps.map((step, index) => {
               const isOpen = openStep === index;
               const StepIcon = step.icon;
@@ -246,9 +249,9 @@ export default function HomePage() {
                     type="button"
                     aria-expanded={isOpen}
                     onClick={() => setOpenStep(isOpen ? -1 : index)}
-                    className="flex w-full items-start justify-between gap-4 p-4 text-left sm:p-5"
+                    className="relative flex w-full items-start p-4 pr-14 text-left sm:p-5 sm:pr-16"
                   >
-                    <span className="flex min-w-0 flex-1 items-start gap-3 pr-2">
+                    <span className="flex min-w-0 flex-1 items-start gap-3">
                       <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-action/10 text-sm font-black text-action">
                         <StepIcon className="size-4" aria-hidden="true" strokeWidth={2} />
                       </span>
@@ -259,7 +262,7 @@ export default function HomePage() {
                         <span className="block whitespace-nowrap text-lg font-black text-ink">{step.title}</span>
                       </span>
                     </span>
-                    <span className="grid size-8 shrink-0 place-items-center rounded-full border border-line bg-white">
+                    <span className="absolute right-4 top-4 grid size-8 shrink-0 place-items-center rounded-full border border-line bg-white sm:right-5 sm:top-5">
                       <span
                         className={`size-2.5 border-b-2 border-r-2 border-action transition-transform ${
                           isOpen ? "-rotate-[135deg] translate-y-0.5" : "rotate-45 -translate-y-0.5"
