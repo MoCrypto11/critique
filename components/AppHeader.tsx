@@ -20,7 +20,7 @@ export function AppHeader() {
       ];
 
   return (
-    <header className="sticky top-0 z-30 border-b border-line/20 bg-background/95 backdrop-blur-xl">
+    <header className="sticky top-0 z-30 bg-background/95 backdrop-blur-xl">
       <div className="mx-auto grid min-h-[72px] max-w-[88rem] grid-cols-[auto_1fr] items-center gap-x-4 gap-y-3 px-4 py-3 sm:px-8 lg:grid-cols-[1fr_auto_1fr] lg:gap-x-8 lg:py-0">
         <Link
           href="/"
