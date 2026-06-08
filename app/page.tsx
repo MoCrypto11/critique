@@ -189,7 +189,7 @@ export default function HomePage() {
     <>
       <AppHeader />
       <main>
-        <section className="mx-auto grid w-full max-w-6xl px-4 pb-8 pt-14 sm:px-6 sm:pb-10 sm:pt-16 lg:px-8 lg:pb-8 lg:pt-20">
+        <section className="mx-auto grid w-full max-w-6xl px-4 pb-8 pt-10 sm:px-6 sm:pb-10 sm:pt-12 lg:px-8 lg:pb-8 lg:pt-14">
           <div className="grid items-center gap-7 lg:grid-cols-[0.92fr_1.08fr] lg:gap-10">
             <div className="max-w-3xl">
               <p className="eyebrow">Useful feedback. USDC rewards.</p>
