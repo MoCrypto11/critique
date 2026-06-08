@@ -27,10 +27,10 @@ export function AppHeader() {
             <Image
               src="/brand/critique-icon.png"
               alt="Critique"
-              width={36}
-              height={36}
+              width={32}
+              height={18}
               priority
-              className="size-9 shrink-0"
+              className="h-auto w-8 shrink-0 object-contain"
             />
             <span>Critique</span>
           </Link>
