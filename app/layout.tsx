@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: "Critique",
   description: "Pay real users for useful product feedback.",
   icons: {
-    icon: "/brand/critique-favicon.svg"
+    icon: "/brand/critique-favicon-final.svg"
   }
 };
 

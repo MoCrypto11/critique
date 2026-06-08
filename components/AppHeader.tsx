@@ -25,12 +25,12 @@ export function AppHeader() {
         <div className="flex min-w-0 flex-wrap items-center gap-x-9 gap-y-3">
           <Link href="/" className="flex items-center gap-3 text-xl font-black leading-none tracking-normal text-ink">
             <Image
-              src="/brand/critique-icon.svg"
+              src="/brand/critique-icon-final.svg"
               alt="Critique"
-              width={48}
-              height={28}
+              width={32}
+              height={32}
               priority
-              className="h-auto w-12 shrink-0 object-contain"
+              className="h-auto w-8 shrink-0 object-contain"
             />
             <span>Critique</span>
           </Link>
