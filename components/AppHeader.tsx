@@ -24,15 +24,15 @@ export function AppHeader() {
       <div className="mx-auto grid min-h-[72px] max-w-6xl grid-cols-[auto_1fr] items-center gap-x-4 gap-y-3 px-4 py-3 sm:px-6 lg:grid-cols-[1fr_auto_1fr] lg:gap-x-8 lg:px-8 lg:py-0">
         <Link
           href="/"
-          className="flex min-w-0 items-center gap-3 text-[28px] font-black leading-none tracking-normal text-ink"
+          className="flex min-w-0 translate-y-1 items-center gap-3 text-[32px] font-black leading-none tracking-normal text-ink sm:text-[36px]"
         >
           <Image
             src="/brand/critique-icon-final.svg"
             alt="Critique"
-            width={55}
-            height={55}
+            width={70}
+            height={70}
             priority
-            className="h-auto w-[55px] shrink-0 object-contain"
+            className="h-auto w-[62px] shrink-0 object-contain sm:w-[70px]"
           />
           <span>Critique</span>
         </Link>
