@@ -189,7 +189,7 @@ export default function HomePage() {
     <>
       <AppHeader />
       <main>
-        <section className="page-shell grid pt-6 pb-8 sm:pt-8 sm:pb-10 lg:pt-10 lg:pb-10">
+        <section className="page-shell grid pt-12 pb-8 sm:pt-14 sm:pb-10 lg:pt-16 lg:pb-10">
           <div className="grid items-center gap-7 lg:grid-cols-[0.92fr_1.08fr] lg:gap-10">
             <div className="max-w-3xl">
               <p className="eyebrow">Useful feedback. USDC rewards.</p>
@@ -236,7 +236,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid max-w-5xl gap-3 md:grid-cols-2">
             {steps.map((step, index) => {
               const isOpen = openStep === index;
               const StepIcon = step.icon;
@@ -246,13 +246,13 @@ export default function HomePage() {
                     type="button"
                     aria-expanded={isOpen}
                     onClick={() => setOpenStep(isOpen ? -1 : index)}
-                    className="flex w-full items-start justify-between gap-3 p-4 text-left sm:p-5"
+                    className="flex w-full items-start justify-between gap-4 p-4 text-left sm:p-5"
                   >
-                    <span className="flex items-start gap-3">
+                    <span className="flex min-w-0 flex-1 items-start gap-3 pr-2">
                       <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-action/10 text-sm font-black text-action">
                         <StepIcon className="size-4" aria-hidden="true" strokeWidth={2} />
                       </span>
-                      <span>
+                      <span className="min-w-0">
                         <span className="block text-[11px] font-black uppercase tracking-[0.14em] text-muted">
                           Step {index + 1}
                         </span>
