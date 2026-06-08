@@ -219,6 +219,10 @@ function saveSubmissions(submissions: FeedbackSubmission[]) {
   write(SUBMISSIONS_KEY, submissions);
 }
 
+function sameWalletAddress(left?: string | null, right?: string | null) {
+  return Boolean(left && right && left.toLowerCase() === right.toLowerCase());
+}
+
 function toBounty(row: BountyRow): BountyMetadata {
   return {
     id: row.id,
@@ -419,6 +423,46 @@ export async function listLocalBounties() {
   return bounties.some((bounty) => bounty.id === "demo") ? bounties : [getDemoBounty(), ...bounties];
 }
 
+export async function listBountiesByFounder(founderAddress: string) {
+  if (!founderAddress) return [];
+
+  if (shouldUseSupabase() && supabase) {
+    const client = supabase;
+    return withSupabaseErrors("list founder bounties", async () => {
+      const { data, error } = await client
+        .from("bounties")
+        .select("*")
+        .ilike("founder_address", founderAddress)
+        .order("created_at", { ascending: false });
+      throwSupabaseResponseError("list founder bounties", error);
+      return (data as BountyRow[]).map(toBounty);
+    });
+  }
+
+  return getBounties()
+    .filter((bounty) => sameWalletAddress(bounty.founderAddress, founderAddress))
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+}
+
+export async function listBountiesByIds(ids: string[]) {
+  const uniqueIds = Array.from(new Set(ids.filter(Boolean)));
+  if (!uniqueIds.length) return [];
+
+  if (shouldUseSupabase() && supabase) {
+    const client = supabase;
+    return withSupabaseErrors("list bounties by id", async () => {
+      const { data, error } = await client.from("bounties").select("*").in("id", uniqueIds);
+      throwSupabaseResponseError("list bounties by id", error);
+      const bounties = (data as BountyRow[]).map(toBounty);
+      return uniqueIds.includes("demo") ? [getDemoBounty(), ...bounties] : bounties;
+    });
+  }
+
+  const bounties = getBounties();
+  const available = uniqueIds.includes("demo") ? [getDemoBounty(), ...bounties] : bounties;
+  return available.filter((bounty) => uniqueIds.includes(bounty.id));
+}
+
 export async function updateLocalBounty(id: string, updates: Partial<BountyMetadata>) {
   if (shouldUseSupabase() && supabase && id !== "demo") {
     const client = supabase;
@@ -495,6 +539,27 @@ export async function listSubmissions(bountyId: string) {
   }
 
   return getSubmissions().filter((submission) => submission.bountyId === bountyId);
+}
+
+export async function listSubmissionsByTester(testerWallet: string) {
+  if (!testerWallet) return [];
+
+  if (shouldUseSupabase() && supabase) {
+    const client = supabase;
+    return withSupabaseErrors("list tester submissions", async () => {
+      const { data, error } = await client
+        .from("submissions")
+        .select("*")
+        .ilike("tester_wallet", testerWallet)
+        .order("created_at", { ascending: false });
+      throwSupabaseResponseError("list tester submissions", error);
+      return (data as SubmissionRow[]).map(toSubmission);
+    });
+  }
+
+  return getSubmissions()
+    .filter((submission) => sameWalletAddress(submission.testerWallet, testerWallet))
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 }
 
 export async function approveLocalSubmission(bountyId: string, submissionId: string, payoutTxHash?: string) {

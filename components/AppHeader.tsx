@@ -3,12 +3,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAccount } from "wagmi";
 import { WalletConnect } from "./WalletConnect";
 
 export function AppHeader() {
   const pathname = usePathname();
+  const { address, isConnected } = useAccount();
+  const walletConnected = Boolean(address) || isConnected;
   const isBountyRoute = pathname.startsWith("/bounty/");
-  const navLinks = isBountyRoute
+  const baseNavLinks = isBountyRoute
     ? [
         { href: "/", label: "Explore" },
         { href: "/create", label: "Create" }
@@ -18,6 +21,7 @@ export function AppHeader() {
         { href: "/create", label: "Create" },
         { href: "/#faq", label: "FAQ" }
       ];
+  const navLinks = walletConnected ? [...baseNavLinks, { href: "/dashboard", label: "Dashboard" }] : baseNavLinks;
 
   return (
     <header className="bg-transparent">
