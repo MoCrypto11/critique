@@ -20,19 +20,19 @@ export function AppHeader() {
       ];
 
   return (
-    <header className="sticky top-0 z-30 bg-background/95 backdrop-blur-xl">
+    <header className="sticky top-0 z-30 bg-background">
       <div className="mx-auto grid min-h-[72px] max-w-[88rem] grid-cols-[auto_1fr] items-center gap-x-4 gap-y-3 px-4 py-3 sm:px-8 lg:grid-cols-[1fr_auto_1fr] lg:gap-x-8 lg:py-0">
         <Link
           href="/"
-          className="flex min-w-0 items-center gap-2.5 text-[20px] font-black leading-none tracking-normal text-ink"
+          className="flex min-w-0 items-center gap-3 text-[22px] font-black leading-none tracking-normal text-ink"
         >
           <Image
             src="/brand/critique-icon-final.svg"
             alt="Critique"
-            width={36}
-            height={36}
+            width={40}
+            height={40}
             priority
-            className="h-auto w-9 shrink-0 object-contain"
+            className="h-auto w-10 shrink-0 object-contain"
           />
           <span>Critique</span>
         </Link>
