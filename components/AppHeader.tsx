@@ -25,7 +25,7 @@ export function AppHeader() {
         <div className="flex flex-wrap items-center gap-4">
           <Link href="/" className="flex items-center gap-3 text-lg font-black tracking-normal text-ink">
             <Image
-              src="/brand/critique-icon.svg"
+              src="/brand/critique-icon.png"
               alt="Critique"
               width={36}
               height={36}
