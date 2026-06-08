@@ -189,8 +189,8 @@ export default function HomePage() {
     <>
       <AppHeader />
       <main>
-        <section className="page-shell grid pt-8 pb-12 sm:pt-10 sm:pb-14 lg:pt-12 lg:pb-16">
-          <div className="grid items-center gap-7 lg:grid-cols-[1.02fr_0.98fr]">
+        <section className="page-shell grid pt-6 pb-8 sm:pt-8 sm:pb-10 lg:pt-10 lg:pb-10">
+          <div className="grid items-center gap-7 lg:grid-cols-[0.92fr_1.08fr] lg:gap-10">
             <div className="max-w-3xl">
               <p className="eyebrow">Useful feedback. USDC rewards.</p>
               <h1 className="font-display mt-4 max-w-3xl text-4xl leading-tight tracking-normal text-ink sm:text-[3.25rem] lg:text-[3.75rem]">
@@ -210,24 +210,24 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="relative mx-auto w-full max-w-[34rem] lg:max-w-[35rem] lg:justify-self-end">
-              <div className="relative overflow-hidden rounded-[1.35rem] border border-line/50 bg-[#f7f8f3]/80 p-1 shadow-[0_18px_46px_rgba(21,45,36,0.10)]">
+            <div className="relative mx-auto w-full max-w-[36rem] lg:max-w-[41rem] lg:justify-self-end">
+              <div className="relative overflow-hidden rounded-[1.45rem] border border-line/40 bg-[#f6f7f2]/60 shadow-[0_18px_44px_rgba(21,45,36,0.09)]">
                 <Image
                   src="/images/hero-critique.png"
                   alt="Contributor reviewing product feedback with approved submission badge"
                   width={1600}
                   height={1200}
                   priority
-                  sizes="(min-width: 1024px) 46vw, 100vw"
-                  className="block h-auto w-full rounded-[1.1rem] object-contain"
+                  sizes="(min-width: 1024px) 52vw, 100vw"
+                  className="block h-auto w-full rounded-[1.35rem] object-contain"
                 />
               </div>
             </div>
           </div>
         </section>
 
-        <section id="how-it-works" className="page-shell scroll-mt-24 py-10 sm:py-12">
-          <div className="mb-6 max-w-3xl">
+        <section id="how-it-works" className="page-shell scroll-mt-24 pt-6 pb-10 sm:pt-7 sm:pb-12">
+          <div className="mb-5 max-w-3xl">
             <p className="eyebrow">How it works</p>
             <h2 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">How Critique works</h2>
             <p className="mt-3 max-w-2xl text-base leading-7 text-muted">
@@ -236,7 +236,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid gap-3 lg:grid-cols-4">
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
             {steps.map((step, index) => {
               const isOpen = openStep === index;
               const StepIcon = step.icon;
@@ -246,7 +246,7 @@ export default function HomePage() {
                     type="button"
                     aria-expanded={isOpen}
                     onClick={() => setOpenStep(isOpen ? -1 : index)}
-                    className="flex w-full items-start justify-between gap-4 p-4 text-left sm:p-5"
+                    className="flex w-full items-start justify-between gap-3 p-4 text-left sm:p-5"
                   >
                     <span className="flex items-start gap-3">
                       <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-action/10 text-sm font-black text-action">
@@ -256,7 +256,7 @@ export default function HomePage() {
                         <span className="block text-[11px] font-black uppercase tracking-[0.14em] text-muted">
                           Step {index + 1}
                         </span>
-                        <span className="block text-lg font-black text-ink">{step.title}</span>
+                        <span className="block whitespace-nowrap text-lg font-black text-ink">{step.title}</span>
                       </span>
                     </span>
                     <span className="grid size-8 shrink-0 place-items-center rounded-full border border-line bg-white">
