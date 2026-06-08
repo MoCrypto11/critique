@@ -1,7 +1,6 @@
 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Critique favicon">
   <rect x="4" y="4" width="56" height="56" rx="14" fill="#123C2F"/>
-  <path d="M28.1 43.3C23.7 46 17.2 45.1 13.4 41C8.7 36 8.7 28 13.4 23C17.2 18.9 23.7 18 28.1 20.7" stroke="#F8F5EB" stroke-width="5.8" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="40.5" cy="32" r="12.8" stroke="#F8F5EB" stroke-width="5.8"/>
-  <path d="M48 42L53.5 47.5" stroke="#F8F5EB" stroke-width="5.8" stroke-linecap="round"/>
-  <path d="M34.2 32.5L39 37.3L49.5 26.6" stroke="#A7D8B8" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="31" cy="30" r="15.5" stroke="#F8F5EB" stroke-width="6.5"/>
+  <path d="M41.5 42L49.5 50" stroke="#F8F5EB" stroke-width="6.5" stroke-linecap="round"/>
+  <path d="M23.5 31.5L29.2 37.2L42.6 23.8" stroke="#A7D8B8" stroke-width="5.6" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
