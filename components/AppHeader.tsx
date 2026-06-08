@@ -23,14 +23,14 @@ export function AppHeader() {
     <header className="sticky top-0 z-20 border-b border-line/70 bg-background/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-3 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
         <div className="flex flex-wrap items-center gap-4">
-          <Link href="/" className="flex items-center gap-3 text-lg font-black tracking-normal text-ink">
+          <Link href="/" className="flex items-center gap-2.5 text-lg font-black tracking-normal text-ink">
             <Image
               src="/brand/critique-icon.svg"
               alt="Critique"
-              width={40}
-              height={23}
+              width={34}
+              height={20}
               priority
-              className="h-auto w-9 shrink-0 object-contain"
+              className="h-auto w-[34px] shrink-0 object-contain"
             />
             <span>Critique</span>
           </Link>
