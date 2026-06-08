@@ -21,32 +21,33 @@ export function AppHeader() {
 
   return (
     <header className="sticky top-0 z-30 border-b border-line/20 bg-background/95 backdrop-blur-xl">
-      <div className="mx-auto flex min-h-[72px] max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-3 sm:px-6 lg:px-8">
-        <div className="flex min-w-0 flex-wrap items-center gap-x-9 gap-y-3">
-          <Link href="/" className="flex items-center gap-3 text-xl font-black leading-none tracking-normal text-ink">
-            <Image
-              src="/brand/critique-icon-final.svg"
-              alt="Critique"
-              width={32}
-              height={32}
-              priority
-              className="h-auto w-8 shrink-0 object-contain"
-            />
-            <span>Critique</span>
-          </Link>
-          <nav className="flex items-center gap-7 text-[15px] font-semibold leading-none text-muted sm:gap-9">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="py-2 transition-colors hover:text-action"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-        <div className="flex shrink-0 items-center">
+      <div className="mx-auto grid min-h-[72px] max-w-[88rem] grid-cols-[auto_1fr] items-center gap-x-4 gap-y-3 px-4 py-3 sm:px-8 lg:grid-cols-[1fr_auto_1fr] lg:gap-x-8 lg:py-0">
+        <Link
+          href="/"
+          className="flex min-w-0 items-center gap-2.5 text-[20px] font-black leading-none tracking-normal text-ink"
+        >
+          <Image
+            src="/brand/critique-icon-final.svg"
+            alt="Critique"
+            width={36}
+            height={36}
+            priority
+            className="h-auto w-9 shrink-0 object-contain"
+          />
+          <span>Critique</span>
+        </Link>
+        <nav className="order-3 col-span-2 flex items-center gap-7 text-[15px] font-semibold leading-none text-muted sm:gap-9 lg:order-none lg:col-span-1 lg:justify-self-center">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="py-2 transition-colors hover:text-action"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+        <div className="flex shrink-0 items-center justify-self-end">
           <WalletConnect />
         </div>
       </div>
