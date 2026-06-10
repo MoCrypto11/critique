@@ -189,8 +189,8 @@ export default function HomePage() {
     <>
       <AppHeader />
       <main>
-        <section className="mx-auto grid w-full max-w-6xl px-4 pb-8 pt-12 sm:px-6 sm:pb-10 sm:pt-14 lg:px-8 lg:pb-8 lg:pt-14">
-          <div className="grid items-center gap-7 lg:grid-cols-[0.92fr_1.08fr] lg:gap-10">
+        <section className="hero-stage mx-auto grid w-full max-w-6xl px-4 pb-9 pt-12 sm:px-6 sm:pb-12 sm:pt-14 lg:px-8 lg:pb-10 lg:pt-14">
+          <div className="relative z-10 grid items-center gap-7 lg:grid-cols-[0.92fr_1.08fr] lg:gap-10">
             <div className="max-w-3xl">
               <p className="eyebrow">Useful feedback. USDC rewards.</p>
               <h1 className="font-display mt-4 max-w-3xl text-[clamp(2.65rem,5.6vw,4.25rem)] leading-[1.02] tracking-normal text-ink">
@@ -211,7 +211,7 @@ export default function HomePage() {
             </div>
 
             <div className="relative mx-auto w-full max-w-[36rem] lg:max-w-[41rem] lg:justify-self-end">
-              <div className="relative overflow-hidden rounded-[1.65rem] border border-action/10 bg-[#fbfaf4] shadow-[0_20px_55px_rgba(7,26,24,0.10)]">
+              <div className="relative overflow-hidden rounded-[1.65rem] border border-action/15 bg-[#fffdf7]/90 shadow-[0_22px_60px_rgba(7,26,24,0.13)]">
                 <Image
                   src="/images/hero-critique.png"
                   alt="Contributor reviewing product feedback with approved submission badge"
@@ -407,7 +407,7 @@ export default function HomePage() {
         </section>
 
         <section className="page-shell py-10 sm:py-12">
-          <div className="overflow-hidden rounded-[1.75rem] border border-white/12 bg-[#061916] text-white shadow-[0_22px_60px_rgba(7,26,24,0.16)]">
+          <div className="arc-network-card overflow-hidden rounded-[1.75rem] border border-white/12 bg-[#061916] text-white shadow-[0_22px_60px_rgba(7,26,24,0.16)]">
             <div className="p-5 sm:p-7 lg:p-8">
               <div className="mx-auto max-w-3xl text-center">
                 <div className="flex flex-wrap items-center justify-center gap-3">
