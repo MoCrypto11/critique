@@ -106,29 +106,36 @@ button {
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(115deg, rgba(7, 26, 24, 0.055), rgba(255, 253, 247, 0) 44%),
-    linear-gradient(rgba(17, 97, 73, 0.055) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(17, 97, 73, 0.045) 1px, transparent 1px);
+    radial-gradient(ellipse at 78% 43%, rgba(7, 26, 24, 0.075), rgba(17, 97, 73, 0.038) 30%, rgba(255, 253, 247, 0) 62%),
+    linear-gradient(115deg, rgba(7, 26, 24, 0.04), rgba(255, 253, 247, 0) 38%),
+    linear-gradient(rgba(17, 97, 73, 0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(17, 97, 73, 0.018) 1px, transparent 1px);
   background-position: center, center;
-  background-size: auto, 56px 56px, 56px 56px;
-  opacity: 0.85;
+  background-size: auto, auto, 64px 64px, 64px 64px;
+  opacity: 0.72;
+  -webkit-mask-image: radial-gradient(ellipse at 67% 46%, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.44) 43%, transparent 78%);
+  mask-image: radial-gradient(ellipse at 67% 46%, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.44) 43%, transparent 78%);
   z-index: -2;
 }
 
 .hero-stage::after {
   content: "";
   position: absolute;
-  right: clamp(-11rem, -9vw, -3rem);
-  top: -2rem;
-  width: min(62vw, 48rem);
-  height: min(58vw, 42rem);
+  right: clamp(-13rem, -11vw, -4rem);
+  top: -3.5rem;
+  width: min(68vw, 52rem);
+  height: min(60vw, 44rem);
   pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg width='820' height='640' viewBox='0 0 820 640' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M86 584C214 391 379 291 582 284C688 281 763 311 814 365' stroke='%23116149' stroke-opacity='.18' stroke-width='1.4'/%3E%3Cpath d='M8 470C151 288 332 195 551 191C684 188 783 228 849 311' stroke='%23071A18' stroke-opacity='.14' stroke-width='1.2'/%3E%3Cpath d='M140 114C287 48 438 52 592 126C684 171 751 235 793 319' stroke='%2379D8AF' stroke-opacity='.22' stroke-width='1.1'/%3E%3Cpath d='M210 620C299 510 407 452 535 446C648 441 746 484 829 575' stroke='%23116149' stroke-opacity='.12' stroke-width='1'/%3E%3Ccircle cx='602' cy='284' r='4' fill='%23116149' fill-opacity='.24'/%3E%3Ccircle cx='551' cy='191' r='3' fill='%2379D8AF' fill-opacity='.28'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg width='920' height='720' viewBox='0 0 920 720' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg stroke-linecap='round'%3E%3Cpath d='M46 620C174 413 356 302 594 286C721 277 827 309 904 382' stroke='%23071A18' stroke-opacity='.16' stroke-width='1.2'/%3E%3Cpath d='M5 504C160 298 356 191 592 184C733 179 844 219 926 304' stroke='%23116149' stroke-opacity='.18' stroke-width='1.15' stroke-dasharray='14 18'/%3E%3Cpath d='M142 118C296 43 459 46 629 126C742 179 823 260 874 369' stroke='%2379D8AF' stroke-opacity='.18' stroke-width='1'/%3E%3Cpath d='M222 672C322 525 449 445 605 433C733 423 842 470 930 574' stroke='%23116149' stroke-opacity='.13' stroke-width='1' stroke-dasharray='4 16'/%3E%3Cpath d='M330 36C411 150 517 221 648 249C747 270 833 258 906 213' stroke='%23071A18' stroke-opacity='.1' stroke-width='1'/%3E%3C/g%3E%3Ccircle cx='595' cy='286' r='3.5' fill='%23116149' fill-opacity='.22'/%3E%3Ccircle cx='593' cy='184' r='2.5' fill='%2379D8AF' fill-opacity='.25'/%3E%3Ccircle cx='648' cy='249' r='2.5' fill='%23116149' fill-opacity='.2'/%3E%3C/svg%3E");
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
+  opacity: 0.9;
+  transform-origin: 58% 46%;
   z-index: -1;
-  animation: heroArcDrift 26s ease-in-out infinite alternate;
+  animation:
+    heroArcDrift 28s ease-in-out infinite alternate,
+    heroArcBreath 18s ease-in-out infinite;
 }
 
 .arc-network-card {
@@ -154,26 +161,39 @@ button {
   }
 
   .hero-stage::before {
-    background-size: auto, 72px 72px, 72px 72px;
-    opacity: 0.45;
+    background-size: auto, auto, 96px 96px, 96px 96px;
+    opacity: 0.34;
+    -webkit-mask-image: radial-gradient(ellipse at 78% 46%, rgba(0, 0, 0, 0.66) 0%, rgba(0, 0, 0, 0.28) 48%, transparent 82%);
+    mask-image: radial-gradient(ellipse at 78% 46%, rgba(0, 0, 0, 0.66) 0%, rgba(0, 0, 0, 0.28) 48%, transparent 82%);
   }
 
   .hero-stage::after {
-    right: -17rem;
-    top: 7rem;
-    width: 34rem;
-    height: 28rem;
-    opacity: 0.65;
+    right: -20rem;
+    top: 8rem;
+    width: 36rem;
+    height: 29rem;
+    opacity: 0.46;
   }
 }
 
 @keyframes heroArcDrift {
   from {
-    transform: translate3d(-4px, 0, 0) rotate(-1deg);
+    transform: translate3d(-6px, -2px, 0) rotate(-0.6deg);
   }
 
   to {
-    transform: translate3d(12px, 8px, 0) rotate(1.5deg);
+    transform: translate3d(10px, 6px, 0) rotate(0.9deg);
+  }
+}
+
+@keyframes heroArcBreath {
+  0%,
+  100% {
+    opacity: 0.78;
+  }
+
+  50% {
+    opacity: 0.96;
   }
 }
 

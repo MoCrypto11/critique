@@ -211,7 +211,7 @@ export default function HomePage() {
             </div>
 
             <div className="relative mx-auto w-full max-w-[36rem] lg:max-w-[41rem] lg:justify-self-end">
-              <div className="relative overflow-hidden rounded-[1.65rem] border border-action/15 bg-[#fffdf7]/90 shadow-[0_22px_60px_rgba(7,26,24,0.13)]">
+              <div className="relative overflow-hidden rounded-[1.65rem] border border-action/20 bg-[#fbfaf4]/90 shadow-[0_28px_72px_rgba(7,26,24,0.17)]">
                 <Image
                   src="/images/hero-critique.png"
                   alt="Contributor reviewing product feedback with approved submission badge"
