@@ -324,7 +324,7 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
               </div>
             </section>
 
-            <aside className="surface p-4 lg:sticky lg:top-24">
+            <aside className="surface p-4">
               <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4 lg:grid-cols-2">
                 <div>
                   <p className="text-xs font-black uppercase tracking-[0.12em] text-muted">Reward</p>
@@ -648,7 +648,7 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
             </section>
             ) : null}
 
-            <div className="border-t border-line/70 bg-white/95 pt-4 lg:sticky lg:bottom-0">
+            <div className="border-t border-line/70 bg-white/95 pt-4">
               <button
                 type="submit"
                 disabled={status !== "open"}

@@ -28,7 +28,7 @@ export function AppHeader() {
       <div className="mx-auto grid min-h-[72px] max-w-6xl grid-cols-[auto_1fr] items-center gap-x-4 gap-y-3 px-4 py-3 sm:px-6 lg:grid-cols-[1fr_auto_1fr] lg:gap-x-8 lg:px-8 lg:py-0">
         <Link
           href="/"
-          className="flex min-w-0 translate-y-1 items-center gap-3 text-[32px] font-black leading-none tracking-normal text-ink sm:text-[36px]"
+          className="flex min-w-0 translate-y-0.5 items-center gap-2.5 text-[24px] font-black leading-none tracking-normal text-ink sm:translate-y-1 sm:gap-3 sm:text-[36px]"
         >
           <Image
             src="/brand/critique-icon-final.svg"
@@ -36,11 +36,11 @@ export function AppHeader() {
             width={70}
             height={70}
             priority
-            className="h-auto w-[62px] shrink-0 object-contain sm:w-[70px]"
+            className="h-auto w-[46px] shrink-0 object-contain sm:w-[70px]"
           />
           <span>Critique</span>
         </Link>
-        <nav className="order-3 col-span-2 flex items-center gap-7 text-[15px] font-semibold leading-none text-muted sm:gap-9 lg:order-none lg:col-span-1 lg:justify-self-center">
+        <nav className="order-3 col-span-2 flex items-center justify-center gap-4 text-[13px] font-semibold leading-none text-muted sm:gap-9 sm:text-[15px] lg:order-none lg:col-span-1 lg:justify-self-center">
           {navLinks.map((link) => (
             <Link
               key={link.href}

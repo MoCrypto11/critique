@@ -200,7 +200,7 @@ export function BountyForm() {
           args: [address]
         });
         if (balance < totalFundAmount) {
-          throw new Error("Not enough testnet USDC to fund this bounty.");
+          throw new Error("Not enough USDC balance.");
         }
 
         setStatus("Checking shared database...");
@@ -500,7 +500,7 @@ export function BountyForm() {
           </div>
         </div>
 
-        <aside className="surface-soft p-5 text-sm leading-6 text-muted lg:sticky lg:top-24">
+        <aside className="surface-soft p-5 text-sm leading-6 text-muted">
           <p className="text-xs font-black uppercase tracking-[0.14em] text-action">Funding summary</p>
           <dl className="mt-4 space-y-3">
             <div className="flex items-center justify-between gap-4">

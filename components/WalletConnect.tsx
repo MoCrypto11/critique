@@ -29,8 +29,18 @@ export function WalletConnect() {
       }
     }
 
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+      }
+    }
+
     document.addEventListener("mousedown", onPointerDown);
-    return () => document.removeEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
   }, [menuOpen]);
 
   async function onSwitchNetwork() {
@@ -85,18 +95,23 @@ export function WalletConnect() {
       <button
         type="button"
         onClick={() => setMenuOpen((open) => !open)}
+        aria-haspopup="menu"
         aria-expanded={menuOpen}
         className="focus-ring inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-lg border border-action/20 bg-white px-4 py-2 text-sm font-black text-ink shadow-sm transition-colors hover:border-action/35 hover:bg-panel"
       >
         <span className="size-2 rounded-full bg-action" aria-hidden="true" />
         <span>{address ? shortAddress(address) : "Wallet connected"}</span>
-        <span className="hidden text-action sm:inline">· Arc</span>
+        <span className="hidden text-action sm:inline">Arc</span>
       </button>
 
       {menuOpen ? (
-        <div className="absolute right-0 top-full z-40 mt-2 w-44 rounded-xl border border-line/70 bg-white p-1.5 shadow-[0_18px_44px_rgba(21,45,36,0.12)]">
+        <div
+          role="menu"
+          className="absolute right-0 top-full z-40 mt-2 w-44 rounded-xl border border-line/70 bg-white p-1.5 shadow-[0_18px_44px_rgba(21,45,36,0.12)]"
+        >
           <button
             type="button"
+            role="menuitem"
             onClick={onCopyAddress}
             className="w-full rounded-lg px-3 py-2 text-left text-sm font-bold text-ink transition-colors hover:bg-panel"
           >
@@ -104,6 +119,7 @@ export function WalletConnect() {
           </button>
           <button
             type="button"
+            role="menuitem"
             onClick={onDisconnect}
             className="w-full rounded-lg px-3 py-2 text-left text-sm font-bold text-muted transition-colors hover:bg-panel hover:text-ink"
           >
