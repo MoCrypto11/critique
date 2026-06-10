@@ -75,7 +75,7 @@ function TabButton({
     <button
       type="button"
       onClick={() => onClick(value)}
-      className={`focus-ring rounded-lg px-4 py-2 text-sm font-black transition-colors ${
+      className={`focus-ring min-h-11 rounded-xl px-3 py-2 text-center text-xs font-black transition-colors sm:px-4 sm:text-sm ${
         isActive ? "bg-action text-white" : "text-muted hover:bg-panel hover:text-ink"
       }`}
     >
@@ -138,10 +138,10 @@ function CreatedBountyCard({
 
       <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
         <CopyLinkButton href={publicLink} label="Copy bounty link" />
-        <Link href={`/bounty/${bounty.id}/review`} className="btn-secondary">
+        <Link href={`/bounty/${bounty.id}/review`} className="btn-secondary w-full sm:w-auto">
           Review submissions
         </Link>
-        <Link href={`/bounty/${bounty.id}/dashboard`} className="btn-primary">
+        <Link href={`/bounty/${bounty.id}/dashboard`} className="btn-primary w-full sm:w-auto">
           Open dashboard
         </Link>
       </div>
@@ -177,7 +177,7 @@ function ContributionCard({
           </p>
         </div>
         {reward ? (
-          <div className="rounded-lg border border-action/20 bg-action/10 px-4 py-3 text-left sm:text-right">
+          <div className="rounded-xl border border-action/20 bg-action/10 px-4 py-3 text-left sm:text-right">
             <p className="text-xs font-black uppercase tracking-[0.14em] text-action">Expected reward</p>
             <p className="mt-1 text-sm font-black text-ink">{formatUSDC(reward)} testnet USDC</p>
           </div>
@@ -185,19 +185,19 @@ function ContributionCard({
       </div>
 
       {submission.payoutTxHash ? (
-        <div className="mt-5 rounded-lg border border-action/20 bg-action/10 p-4 text-sm font-semibold text-action">
+        <div className="mt-5 rounded-xl border border-action/20 bg-action/10 p-4 text-sm font-semibold text-action">
           Payout transaction: <TxHashLink hash={submission.payoutTxHash} />
         </div>
       ) : null}
 
       {submission.rejectionReason ? (
-        <div className="mt-5 rounded-lg border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">
+        <div className="mt-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">
           Rejection note: {submission.rejectionReason}
         </div>
       ) : null}
 
       <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-        <Link href={`/bounty/${submission.bountyId}`} className="btn-secondary">
+        <Link href={`/bounty/${submission.bountyId}`} className="btn-secondary w-full sm:w-auto">
           Open bounty
         </Link>
       </div>
@@ -299,7 +299,7 @@ export default function WalletDashboardPage() {
                   Track the bounties you created and the feedback you submitted.
                 </p>
               </div>
-              <div className="flex rounded-xl border border-line/70 bg-white p-1">
+              <div className="grid w-full grid-cols-2 rounded-2xl border border-line/70 bg-white p-1 sm:w-auto">
                 <TabButton value="created" activeTab={activeTab} onClick={setActiveTab}>
                   Created bounties
                 </TabButton>

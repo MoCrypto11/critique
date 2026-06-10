@@ -56,15 +56,15 @@ button {
 }
 
 .surface {
-  @apply rounded-xl border border-line/80 bg-white shadow-[0_14px_42px_rgba(23,32,29,0.06)];
+  @apply rounded-2xl border border-line/80 bg-white shadow-[0_12px_34px_rgba(23,32,29,0.045)];
 }
 
 .surface-soft {
-  @apply rounded-xl border border-line/70 bg-panel/85;
+  @apply rounded-2xl border border-line/70 bg-panel/85;
 }
 
 .btn-primary {
-  @apply focus-ring inline-flex min-h-11 items-center justify-center rounded-lg bg-action px-5 py-3 text-sm font-bold text-white shadow-[0_10px_24px_rgba(17,97,73,0.20)] transition-colors disabled:cursor-not-allowed disabled:opacity-55;
+  @apply focus-ring inline-flex min-h-11 items-center justify-center rounded-xl bg-action px-5 py-3 text-sm font-bold text-white shadow-[0_10px_24px_rgba(17,97,73,0.16)] transition-colors disabled:cursor-not-allowed disabled:opacity-55;
 }
 
 .btn-primary:hover:not(:disabled) {
@@ -72,15 +72,15 @@ button {
 }
 
 .btn-secondary {
-  @apply focus-ring inline-flex min-h-11 items-center justify-center rounded-lg border border-line bg-white px-5 py-3 text-sm font-bold text-ink shadow-sm transition-colors hover:border-action/40 hover:bg-panel disabled:cursor-not-allowed disabled:opacity-55;
+  @apply focus-ring inline-flex min-h-11 items-center justify-center rounded-xl border border-line bg-white px-5 py-3 text-sm font-bold text-ink shadow-sm transition-colors hover:border-action/40 hover:bg-panel disabled:cursor-not-allowed disabled:opacity-55;
 }
 
 .btn-subtle {
-  @apply focus-ring inline-flex min-h-10 items-center justify-center rounded-lg border border-transparent px-4 py-2 text-sm font-bold text-muted transition-colors hover:bg-panel hover:text-ink disabled:cursor-not-allowed disabled:opacity-55;
+  @apply focus-ring inline-flex min-h-10 items-center justify-center rounded-xl border border-transparent px-4 py-2 text-sm font-bold text-muted transition-colors hover:bg-panel hover:text-ink disabled:cursor-not-allowed disabled:opacity-55;
 }
 
 .field {
-  @apply focus-ring mt-2 w-full rounded-lg border border-line bg-white px-3 py-3 text-sm shadow-inner shadow-ink/[0.02] placeholder:text-muted/60;
+  @apply focus-ring mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm shadow-inner shadow-ink/[0.02] placeholder:text-muted/60;
 }
 
 .label {
@@ -88,7 +88,7 @@ button {
 }
 
 .notice {
-  @apply rounded-xl border p-4 text-sm;
+  @apply rounded-2xl border p-4 text-sm;
 }
 
 .font-black {
