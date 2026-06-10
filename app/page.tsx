@@ -193,7 +193,7 @@ export default function HomePage() {
           <div className="grid items-center gap-7 lg:grid-cols-[0.92fr_1.08fr] lg:gap-10">
             <div className="max-w-3xl">
               <p className="eyebrow">Useful feedback. USDC rewards.</p>
-              <h1 className="font-display mt-4 max-w-3xl text-4xl leading-tight tracking-normal text-ink sm:text-[3.25rem] lg:text-[3.75rem]">
+              <h1 className="font-display mt-4 max-w-3xl text-[clamp(2.65rem,5.6vw,4.25rem)] leading-[1.02] tracking-normal text-ink">
                 Feedback bounties for early product teams
               </h1>
               <p className="mt-5 max-w-xl text-base font-bold leading-7 text-action">
@@ -211,7 +211,7 @@ export default function HomePage() {
             </div>
 
             <div className="relative mx-auto w-full max-w-[36rem] lg:max-w-[41rem] lg:justify-self-end">
-              <div className="relative overflow-hidden rounded-[1.45rem] border border-line/40 bg-[#f6f7f2]/60 shadow-[0_18px_44px_rgba(21,45,36,0.09)]">
+              <div className="relative overflow-hidden rounded-[1.65rem] border border-action/10 bg-[#fbfaf4] shadow-[0_20px_55px_rgba(7,26,24,0.10)]">
                 <Image
                   src="/images/hero-critique.png"
                   alt="Contributor reviewing product feedback with approved submission badge"
@@ -219,7 +219,7 @@ export default function HomePage() {
                   height={1200}
                   priority
                   sizes="(min-width: 1024px) 52vw, 100vw"
-                  className="block h-auto w-full rounded-[1.35rem] object-contain"
+                  className="block h-auto w-full rounded-[1.55rem] object-contain"
                 />
               </div>
             </div>
@@ -407,7 +407,7 @@ export default function HomePage() {
         </section>
 
         <section className="page-shell py-10 sm:py-12">
-          <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#071a18] text-white shadow-[0_24px_70px_rgba(7,26,24,0.18)]">
+          <div className="overflow-hidden rounded-[1.75rem] border border-white/12 bg-[#061916] text-white shadow-[0_22px_60px_rgba(7,26,24,0.16)]">
             <div className="p-5 sm:p-7 lg:p-8">
               <div className="mx-auto max-w-3xl text-center">
                 <div className="flex flex-wrap items-center justify-center gap-3">
@@ -445,7 +445,7 @@ export default function HomePage() {
                   return (
                     <div
                       key={feature.title}
-                      className="min-w-0 rounded-xl border border-white/10 bg-white/[0.055] p-4 sm:p-5"
+                      className="min-w-0 rounded-2xl border border-white/10 bg-white/[0.07] p-4 sm:p-5"
                     >
                       <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-action/15 text-action">
                         <FeatureIcon className="size-4" aria-hidden="true" />
@@ -462,7 +462,7 @@ export default function HomePage() {
                   href="https://testnet.arcscan.app/"
                   target="_blank"
                   rel="noreferrer"
-                  className="focus-ring inline-flex min-h-11 items-center justify-center rounded-lg bg-white px-5 py-3 text-sm font-black text-[#071a18] shadow-sm transition-colors hover:bg-[#f8f5eb]"
+                  className="focus-ring inline-flex min-h-11 items-center justify-center rounded-xl bg-white px-5 py-3 text-sm font-black text-[#071a18] shadow-sm transition-colors hover:bg-[#f8f5eb]"
                 >
                   Arc Explorer
                 </a>
@@ -470,7 +470,7 @@ export default function HomePage() {
                   href="https://docs.arc.io/"
                   target="_blank"
                   rel="noreferrer"
-                  className="focus-ring inline-flex min-h-11 items-center justify-center rounded-lg border border-white/16 bg-white/[0.06] px-5 py-3 text-sm font-black text-white transition-colors hover:bg-white/[0.1]"
+                  className="focus-ring inline-flex min-h-11 items-center justify-center rounded-xl border border-white/16 bg-white/[0.06] px-5 py-3 text-sm font-black text-white transition-colors hover:bg-white/[0.1]"
                 >
                   Read Arc docs
                 </a>
