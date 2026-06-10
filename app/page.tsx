@@ -196,11 +196,11 @@ export default function HomePage() {
               <h1 className="font-display mt-4 max-w-3xl text-[clamp(2.65rem,5.6vw,4.25rem)] leading-[1.02] tracking-normal text-ink">
                 Feedback bounties for early product teams
               </h1>
-              <p className="mt-5 max-w-xl text-base font-bold leading-7 text-action">
+              <p className="mt-6 max-w-2xl text-base font-bold leading-8 text-action">
                 Create a focused bounty, share one public link, review submissions, and approve USDC rewards for useful
                 product feedback.
               </p>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
                 <Link href="/create" className="btn-primary">
                   Create a bounty
                 </Link>
