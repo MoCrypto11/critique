@@ -1,13 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import {
-  Blocks,
+  ChevronDown,
   CircleDollarSign,
+  ExternalLink,
   FilePlus2,
-  Fuel,
-  Gauge,
   LayoutPanelTop,
   Link2,
   MessageSquareCheck,
@@ -151,35 +149,7 @@ const faqs = [
   }
 ];
 
-const arcFeatures: {
-  title: string;
-  body: string;
-  icon: LucideIcon;
-}[] = [
-  {
-    title: "USDC gas",
-    body: "Fees and rewards use USDC, so the payment flow stays easy to understand.",
-    icon: Fuel
-  },
-  {
-    title: "Fast finality",
-    body: "Approved payouts can settle quickly with deterministic finality.",
-    icon: Gauge
-  },
-  {
-    title: "EVM compatible",
-    body: "Critique can use familiar smart-contract tooling for bounty funding and approvals.",
-    icon: Blocks
-  },
-  {
-    title: "Native USDC",
-    body: "Arc is designed around native USDC movement, not fragmented wrapped assets.",
-    icon: CircleDollarSign
-  }
-];
-
 export default function HomePage() {
-  const [openStep, setOpenStep] = useState(0);
   const [openFaq, setOpenFaq] = useState(0);
 
   useEffect(() => {
@@ -206,7 +176,7 @@ export default function HomePage() {
           </section>
         </div>
 
-        <section className="home-section mx-auto w-full max-w-7xl px-4 pt-2 pb-10 sm:px-6 sm:pt-4 sm:pb-12 lg:px-8">
+        <section className="home-section mx-auto w-full max-w-6xl px-4 pt-2 pb-10 sm:px-6 sm:pt-4 sm:pb-12 lg:px-8">
           <div className="surface flex flex-col items-start justify-between gap-5 p-5 sm:p-7 lg:flex-row lg:items-center">
             <div className="max-w-2xl">
               <p className="eyebrow">Start focused</p>
@@ -230,9 +200,9 @@ export default function HomePage() {
 
         <section
           id="how-it-works"
-          className="home-section home-section-soft mx-auto w-full max-w-6xl scroll-mt-24 px-4 pb-10 pt-7 sm:px-6 sm:pb-12 sm:pt-8 lg:px-8"
+          className="home-section home-section-soft mx-auto w-full max-w-6xl scroll-mt-24 px-4 pb-14 pt-10 sm:px-6 sm:pb-16 sm:pt-12 lg:px-8"
         >
-          <div className="mb-5 max-w-3xl">
+          <div className="mb-6 max-w-3xl">
             <p className="eyebrow">How it works</p>
             <h2 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">How Critique works</h2>
             <p className="mt-3 max-w-2xl text-base leading-7 text-muted">
@@ -241,50 +211,28 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid max-w-5xl items-start gap-3 md:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {steps.map((step, index) => {
-              const isOpen = openStep === index;
               const StepIcon = step.icon;
               return (
-                <div key={step.title} className="surface overflow-hidden">
-                  <button
-                    type="button"
-                    aria-expanded={isOpen}
-                    onClick={() => setOpenStep(isOpen ? -1 : index)}
-                    className="relative flex w-full items-start p-4 pr-14 text-left sm:p-5 sm:pr-16"
-                  >
-                    <span className="flex min-w-0 flex-1 items-start gap-3">
-                      <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-action/10 text-sm font-black text-action">
-                        <StepIcon className="size-4" aria-hidden="true" strokeWidth={2} />
-                      </span>
-                      <span className="min-w-0">
-                        <span className="block text-[11px] font-black uppercase tracking-[0.14em] text-muted">
-                          Step {index + 1}
-                        </span>
-                        <span className="block whitespace-nowrap text-lg font-black text-ink">{step.title}</span>
-                      </span>
+                <article key={step.title} className="surface flex flex-col p-4 sm:p-5">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-action/10 text-action">
+                      <StepIcon className="size-4" aria-hidden="true" strokeWidth={2} />
                     </span>
-                    <span className="absolute right-4 top-4 grid size-8 shrink-0 place-items-center rounded-full border border-line bg-white sm:right-5 sm:top-5">
-                      <span
-                        className={`size-2.5 border-b-2 border-r-2 border-action transition-transform ${
-                          isOpen ? "-rotate-[135deg] translate-y-0.5" : "rotate-45 -translate-y-0.5"
-                        }`}
-                        aria-hidden="true"
-                      />
+                    <span className="text-[11px] font-black uppercase tracking-[0.14em] text-muted">
+                      Step {index + 1}
                     </span>
-                  </button>
-                  {isOpen ? (
-                    <p className="border-t border-line/70 px-4 pb-5 pt-4 text-sm leading-6 text-muted sm:px-5">
-                      {step.body}
-                    </p>
-                  ) : null}
-                </div>
+                  </div>
+                  <h3 className="mt-4 text-base font-black text-ink">{step.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-muted">{step.body}</p>
+                </article>
               );
             })}
           </div>
         </section>
 
-        <section className="home-section page-shell py-10 sm:py-12">
+        <section className="home-section page-shell py-12 sm:py-16">
           <div className="mb-6 max-w-3xl">
             <p className="eyebrow">Feedback formats</p>
             <h2 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">
@@ -309,7 +257,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="home-section page-shell py-10 sm:py-12">
+        <section className="home-section page-shell py-12 sm:py-16">
           <div className="mb-6 max-w-3xl">
             <p className="eyebrow">For founders</p>
             <h2 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">
@@ -325,7 +273,9 @@ export default function HomePage() {
               const UseCaseIcon = useCase.icon;
               return (
                 <article key={useCase.title} className="surface p-4">
-                  <UseCaseIcon className="size-4 text-action" aria-hidden="true" strokeWidth={2} />
+                  <span className="grid size-10 place-items-center rounded-lg bg-action/10 text-action">
+                    <UseCaseIcon className="size-4" aria-hidden="true" strokeWidth={2} />
+                  </span>
                   <h3 className="mt-3 text-sm font-black text-ink">{useCase.title}</h3>
                   <p className="mt-2 text-sm leading-6 text-muted">{useCase.body}</p>
                 </article>
@@ -334,7 +284,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="home-section page-shell py-10 sm:py-12">
+        <section className="home-section page-shell py-12 sm:py-16">
           <div className="surface grid gap-6 p-5 sm:p-7 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
             <div>
               <p className="eyebrow">Contributor experience</p>
@@ -370,7 +320,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="faq" className="home-section page-shell scroll-mt-24 py-10 sm:py-12">
+        <section id="faq" className="home-section page-shell scroll-mt-24 py-12 sm:py-16">
           <div className="mx-auto mb-6 max-w-3xl text-center">
             <p className="eyebrow">FAQ</p>
             <h2 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">Frequently asked questions</h2>
@@ -389,11 +339,10 @@ export default function HomePage() {
                   >
                     <span className="text-base font-black text-ink">{item.question}</span>
                     <span className="grid size-8 shrink-0 place-items-center rounded-full border border-line bg-white">
-                      <span
-                        className={`size-2.5 border-b-2 border-r-2 border-action transition-transform ${
-                          isOpen ? "-rotate-[135deg] translate-y-0.5" : "rotate-45 -translate-y-0.5"
-                        }`}
+                      <ChevronDown
+                        className={`size-4 text-action transition-transform ${isOpen ? "rotate-180" : ""}`}
                         aria-hidden="true"
+                        strokeWidth={2}
                       />
                     </span>
                   </button>
@@ -408,75 +357,33 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="home-section home-section-soft page-shell py-10 sm:py-12">
-          <div className="arc-network-card overflow-hidden rounded-[1.75rem] border border-white/12 bg-[#061916] text-white shadow-[0_22px_60px_rgba(7,26,24,0.16)]">
-            <div className="p-5 sm:p-7 lg:p-8">
-              <div className="mx-auto max-w-3xl text-center">
-                <div className="flex flex-wrap items-center justify-center gap-3">
-                  <p className="text-xs font-black uppercase tracking-[0.18em] text-white/55">BUILT ON</p>
-                  <a
-                    href="https://www.arc.io/"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="focus-ring inline-flex w-fit shrink-0 items-center gap-2 rounded-full border border-white/14 bg-white/[0.08] px-3.5 py-2 text-xs font-black text-white transition-colors hover:bg-white/[0.12]"
-                  >
-                    <Image src="/images/arc-icon.svg" alt="" aria-hidden="true" width={14} height={14} className="size-3.5" />
-                    Built on Arc
-                  </a>
-                </div>
-
-                <div className="mt-5 flex items-center justify-center gap-3">
-                  <span className="grid size-11 shrink-0 place-items-center rounded-xl border border-white/12 bg-white/[0.08]">
-                    <Image src="/images/arc-icon.svg" alt="" aria-hidden="true" width={24} height={24} className="size-6" />
-                  </span>
-                  <h2 className="font-display text-4xl font-semibold leading-tight tracking-normal text-white sm:text-5xl">
-                    Arc Network
-                  </h2>
-                </div>
-                <p className="mt-4 text-base font-semibold leading-7 text-white/72 sm:text-lg">
-                  Stablecoin-native infrastructure for approval-based payouts.
-                </p>
-                <p className="mt-3 text-sm font-semibold leading-6 text-white/55 sm:text-base">
-                  USDC rewards, fast settlement, and EVM tooling for bounty workflows.
+        <section className="home-section page-shell py-12 sm:py-16">
+          <div className="surface flex flex-col items-start justify-between gap-4 p-5 sm:flex-row sm:items-center sm:gap-6 sm:p-6">
+            <div className="flex items-start gap-3">
+              <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-action/10 text-action">
+                <CircleDollarSign className="size-5" aria-hidden="true" strokeWidth={2} />
+              </span>
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-action">Built on Arc testnet</p>
+                <p className="mt-1 text-sm leading-6 text-muted">
+                  Built on Arc testnet for USDC-based feedback rewards.
                 </p>
               </div>
-
-              <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                {arcFeatures.map((feature) => {
-                  const FeatureIcon = feature.icon;
-                  return (
-                    <div
-                      key={feature.title}
-                      className="min-w-0 rounded-2xl border border-white/10 bg-white/[0.07] p-4 sm:p-5"
-                    >
-                      <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-action/15 text-action">
-                        <FeatureIcon className="size-4" aria-hidden="true" />
-                      </span>
-                      <h3 className="mt-4 text-base font-black text-white">{feature.title}</h3>
-                      <p className="mt-2 break-words text-sm font-semibold leading-6 text-white/62">{feature.body}</p>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
-                <a
-                  href="https://testnet.arcscan.app/"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="focus-ring inline-flex min-h-11 items-center justify-center rounded-xl bg-white px-5 py-3 text-sm font-black text-[#071a18] shadow-sm transition-colors hover:bg-[#f8f5eb]"
-                >
-                  Arc Explorer
-                </a>
-                <a
-                  href="https://docs.arc.io/"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="focus-ring inline-flex min-h-11 items-center justify-center rounded-xl border border-white/16 bg-white/[0.06] px-5 py-3 text-sm font-black text-white transition-colors hover:bg-white/[0.1]"
-                >
-                  Read Arc docs
-                </a>
-              </div>
+            </div>
+            <div className="flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row">
+              <a
+                href="https://testnet.arcscan.app/"
+                target="_blank"
+                rel="noreferrer"
+                className="btn-secondary gap-2"
+              >
+                <ExternalLink className="size-4" aria-hidden="true" strokeWidth={2} />
+                Arc Explorer
+              </a>
+              <a href="https://docs.arc.io/" target="_blank" rel="noreferrer" className="btn-secondary gap-2">
+                <ExternalLink className="size-4" aria-hidden="true" strokeWidth={2} />
+                Arc Docs
+              </a>
             </div>
           </div>
         </section>
