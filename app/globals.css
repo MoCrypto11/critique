@@ -188,39 +188,49 @@ button {
   width: 100%;
   height: 100%;
   overflow: visible;
-  /* Very faint behind text (left 40%), full opacity on right side */
+  /* Faint behind text, full opacity on right. Arc paths now start at x≥600
+     so the left-zone fade mostly just dims the secondary arc bottoms — the
+     primary arc tops at x=1200+ are always at mask=1.0. */
   -webkit-mask-image: linear-gradient(
     to right,
-    rgba(0, 0, 0, 0.08) 0%,
-    rgba(0, 0, 0, 0.18) 40%,
-    rgba(0, 0, 0, 0.75) 62%,
-    rgba(0, 0, 0, 1.00) 80%
+    rgba(0, 0, 0, 0.06) 0%,
+    rgba(0, 0, 0, 0.22) 38%,
+    rgba(0, 0, 0, 0.78) 56%,
+    rgba(0, 0, 0, 1.00) 70%
   );
   mask-image: linear-gradient(
     to right,
-    rgba(0, 0, 0, 0.08) 0%,
-    rgba(0, 0, 0, 0.18) 40%,
-    rgba(0, 0, 0, 0.75) 62%,
-    rgba(0, 0, 0, 1.00) 80%
+    rgba(0, 0, 0, 0.06) 0%,
+    rgba(0, 0, 0, 0.22) 38%,
+    rgba(0, 0, 0, 0.78) 56%,
+    rgba(0, 0, 0, 1.00) 70%
   );
 }
 
-/* Primary orbital — large translate sweep, clearly visible in 5s */
+/* Primary sweep — arc tops at x=1200+ are in full-opacity zone; 280px range
+   means ~78px visible shift in 5 s on a 18s period. */
 .orbit-primary {
   will-change: transform;
-  animation: orbitSweepPrimary 20s linear infinite alternate;
+  animation: orbitSweepPrimary 18s linear infinite alternate;
 }
 
-/* Secondary orbital — opposite direction, slower period */
+/* Secondary sweep — counter-phase; arc bottoms at x=1176–1250 fully visible. */
 .orbit-secondary {
   will-change: transform;
-  animation: orbitSweepSecondary 28s linear infinite alternate;
+  animation: orbitSweepSecondary 26s linear infinite alternate;
 }
 
-/* Accent orbital — dashed strokes, offset phase */
+/* Accent group translate + inner path runs dashoffset independently. */
 .orbit-accent {
   will-change: transform;
-  animation: orbitSweepAccent 24s linear infinite alternate;
+  animation: orbitSweepAccent 22s linear infinite alternate;
+}
+
+/* Flowing dash along the accent arc — dashoffset travels 880 units (≈ arc length)
+   per cycle, creating unmistakable visible motion at 63 units/s. */
+.orbit-dash-flow {
+  will-change: stroke-dashoffset;
+  animation: orbitDashFlow 14s linear infinite;
 }
 
 /* Pulse nodes: opacity + scale pop */
@@ -374,23 +384,28 @@ button {
 /* ─── Keyframes ────────────────────────────────────────────────────────── */
 
 /*
-  Orbital sweep keyframes — each uses translate (primary motion, 75–100px in 5s)
-  combined with a small rotate (for arc curvature) around default fill-box center.
-  Linear + alternate = constant visible drift; no ease-in invisible start.
+  Orbital sweep keyframes — pure translate only. The SVG <path> arcs already have
+  the correct curvature; adding rotate would skew them in unnatural directions.
+  280px horizontal range / 18s = 15.6px per second → 78px visible shift by t=5s.
 */
 @keyframes orbitSweepPrimary {
-  from { transform: translate(-140px, 55px) rotate(-5deg); }
-  to   { transform: translate(160px, -50px) rotate(6deg); }
+  from { transform: translate(-140px,  35px); }
+  to   { transform: translate( 140px, -35px); }
 }
 
 @keyframes orbitSweepSecondary {
-  from { transform: translate(110px, -60px) rotate(4deg); }
-  to   { transform: translate(-130px, 80px) rotate(-5deg); }
+  from { transform: translate( 110px, -30px); }
+  to   { transform: translate(-110px,  50px); }
 }
 
 @keyframes orbitSweepAccent {
-  from { transform: translate(-80px, 90px) rotate(-3.5deg); }
-  to   { transform: translate(120px, -70px) rotate(4deg); }
+  from { transform: translate( -70px,  50px); }
+  to   { transform: translate(  90px, -40px); }
+}
+
+@keyframes orbitDashFlow {
+  from { stroke-dashoffset:    0; }
+  to   { stroke-dashoffset: -880; }
 }
 
 @keyframes nodePulse {
@@ -439,6 +454,7 @@ button {
   .orbit-primary,
   .orbit-secondary,
   .orbit-accent,
+  .orbit-dash-flow,
   .hero-node-pulse,
   .hero-scan-line {
     animation: none !important;
@@ -454,3 +470,27 @@ button {
 .font-bold {
   font-weight: 650;
 }
+
+/*
+  ─── DEBUG MODE — uncomment to prove animation mechanism locally ─────────────
+  Removes masks, cranks stroke to red at 0.9 opacity, 3s fast sweep.
+  NEVER commit this block. Remove before npm run build.
+
+.hero-geo-svg,
+.hero-motion-background {
+  mask-image: none !important;
+  -webkit-mask-image: none !important;
+}
+.orbit-primary {
+  animation: debugFastSweep 3s linear infinite alternate !important;
+}
+.orbit-primary path {
+  stroke: #cc0000 !important;
+  stroke-opacity: 0.9 !important;
+  stroke-width: 5px !important;
+}
+@keyframes debugFastSweep {
+  from { transform: translateX(-200px); }
+  to   { transform: translateX( 200px); }
+}
+  ─── END DEBUG ───────────────────────────────────────────────────────────── */
