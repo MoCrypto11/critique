@@ -93,51 +93,38 @@ button {
   @apply rounded-2xl border p-4 text-sm;
 }
 
+/* ─── Hero band ────────────────────────────────────────────────────────── */
+
 .home-hero-band {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  border-top: 1px solid rgba(17, 97, 73, 0.06);
-  background:
-    radial-gradient(ellipse at 14% 8%, rgba(198, 168, 106, 0.08), transparent 22rem),
-    linear-gradient(180deg, #fbfcf8 0%, #f8f5eb 100%);
+  border-top: 1px solid rgba(17, 97, 73, 0.07);
+  background: linear-gradient(160deg, #f4f1e7 0%, #ece9d5 100%);
 }
 
-.home-hero-band::before {
-  content: "";
-  position: absolute;
-  right: -12rem;
-  top: 5rem;
-  width: 32rem;
-  height: 22rem;
-  pointer-events: none;
-  border: 1px solid rgba(17, 97, 73, 0.08);
-  border-radius: 999px;
-  background:
-    linear-gradient(135deg, rgba(255, 253, 247, 0.28), rgba(17, 97, 73, 0.06)),
-    radial-gradient(ellipse at center, rgba(121, 216, 175, 0.12), transparent 70%);
-  opacity: 0.9;
-  transform: rotate(-8deg);
-  z-index: 0;
-  display: none;
-}
-
+/* Bottom fade: blends hero band into the sections below */
 .home-hero-band::after {
   content: "";
   position: absolute;
   inset: auto 0 0 0;
   height: 9rem;
   pointer-events: none;
-  background:
-    linear-gradient(180deg, rgba(248, 245, 235, 0), #f8f5eb 84%),
-    linear-gradient(90deg, transparent, rgba(17, 97, 73, 0.1), transparent);
+  background: linear-gradient(180deg, transparent, rgba(238, 235, 220, 0.96) 84%);
+  z-index: 1;
+}
+
+/* Motion background stays behind all hero content */
+.home-hero-band > .hero-motion-background {
   z-index: 0;
 }
 
 .home-hero-band > .hero-stage {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
+
+/* ─── Hero motion background (full-band geometry layer) ────────────────── */
 
 .hero-motion-background {
   position: absolute;
@@ -147,41 +134,70 @@ button {
   overflow: hidden;
 }
 
+.hero-geo-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Arc ring group: gentle drift animation */
+.hero-arc-rings {
+  will-change: transform;
+  animation: arcRingDrift 22s ease-in-out infinite alternate;
+}
+
+/* Pulse nodes: opacity + scale pop on each dot */
+.hero-node-pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  will-change: opacity, transform;
+  animation: nodePulse 3s ease-in-out infinite;
+}
+
+/* Scan line: horizontal gradient line traversing the hero */
+.hero-scan-line {
+  position: absolute;
+  top: 38%;
+  left: 0;
+  width: 220px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(17, 97, 73, 0.50) 50%, transparent);
+  pointer-events: none;
+  animation: heroScanLine 7s linear infinite;
+}
+
+/* ─── Ambient glow blobs ───────────────────────────────────────────────── */
+
 .hero-ambient-glow {
   position: absolute;
   border-radius: 999px;
   pointer-events: none;
-  filter: blur(36px);
-  opacity: 0.42;
+  filter: blur(48px);
   transform-origin: center;
   will-change: opacity, transform;
 }
 
 .hero-ambient-glow-primary {
-  width: min(76%, 520px);
-  height: min(76%, 520px);
-  right: -10%;
-  top: 4%;
-  background: rgba(121, 216, 175, 0.26);
-  animation: critiqueGlowPulse 14s ease-in-out infinite alternate;
+  width: 480px;
+  height: 480px;
+  right: 10%;
+  top: -10%;
+  background: rgba(121, 216, 175, 0.22);
+  animation: heroGlowPulse 8s ease-in-out infinite alternate;
 }
 
 .hero-ambient-glow-secondary {
-  width: min(54%, 360px);
-  height: min(54%, 360px);
-  left: 2%;
-  bottom: -10%;
-  background: rgba(17, 97, 73, 0.16);
-  animation: critiqueGlowPulseSecondary 18s ease-in-out infinite alternate;
+  width: 320px;
+  height: 320px;
+  left: 0%;
+  bottom: -12%;
+  background: rgba(17, 97, 73, 0.18);
+  animation: heroGlowPulseSecondary 11s ease-in-out infinite alternate;
 }
 
-.hero-orbit-system {
-  position: absolute;
-  inset: -22% -28% -24% -32%;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 1;
-}
+/* ─── Home sections ────────────────────────────────────────────────────── */
 
 .home-section {
   position: relative;
@@ -206,74 +222,47 @@ button {
   opacity: 1;
 }
 
+/* ─── Hero image ───────────────────────────────────────────────────────── */
+
 .hero-image-wrap {
   position: relative;
+  z-index: 2;
   isolation: isolate;
+  width: min(94%, 560px);
+  margin: auto;
 }
 
-.hero-image-wrap::before {
-  content: none;
-  position: absolute;
-  inset: -1.8rem -1.4rem -1.6rem 3.5rem;
-  border: 1px solid rgba(17, 97, 73, 0.12);
-  border-radius: 2rem;
-  background:
-    linear-gradient(145deg, rgba(7, 26, 24, 0.12), rgba(121, 216, 175, 0.12) 48%, rgba(255, 253, 247, 0.28)),
-    radial-gradient(ellipse at 78% 22%, rgba(198, 168, 106, 0.12), transparent 58%);
-  transform: rotate(-2.4deg);
-  z-index: -2;
-}
-
-.hero-image-wrap::after {
-  content: none;
-  position: absolute;
-  right: -2.4rem;
-  top: 1.1rem;
-  width: 18rem;
-  height: 14rem;
-  pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg width='320' height='240' viewBox='0 0 320 240' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg stroke='%23116149' stroke-linecap='round'%3E%3Cpath d='M42 54H158' stroke-opacity='.24'/%3E%3Cpath d='M112 54V112' stroke-opacity='.16'/%3E%3Cpath d='M112 112H226' stroke-opacity='.18'/%3E%3Cpath d='M184 112V174' stroke-opacity='.14'/%3E%3Cpath d='M84 176H184' stroke-opacity='.14'/%3E%3C/g%3E%3Ccircle cx='112' cy='54' r='2.5' fill='%2379D8AF' fill-opacity='.32'/%3E%3Ccircle cx='112' cy='112' r='2.5' fill='%23116149' fill-opacity='.22'/%3E%3Ccircle cx='184' cy='174' r='2.5' fill='%23C6A86A' fill-opacity='.26'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-size: contain;
-  opacity: 0.78;
-  z-index: -1;
-}
-
-.hero-visual-panel {
+.hero-image-card {
   position: relative;
-  isolation: isolate;
   overflow: hidden;
   border: 1px solid rgba(8, 78, 62, 0.14);
-  border-radius: 2rem;
-  background:
-    radial-gradient(ellipse at 82% 18%, rgba(121, 216, 175, 0.34), transparent 40%),
-    radial-gradient(ellipse at 4% 96%, rgba(7, 26, 24, 0.18), transparent 46%),
-    linear-gradient(138deg, rgba(255, 253, 247, 0.95) 0%, rgba(231, 244, 233, 0.94) 48%, rgba(187, 224, 202, 0.78) 100%);
+  border-radius: 20px;
+  background: #fbfaf4;
+  box-shadow: 0 18px 52px rgba(7, 26, 24, 0.16);
+}
+
+/* ─── Hero visual stage (right-column panel) ───────────────────────────── */
+
+.hero-visual-stage {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  overflow: visible;
+  max-width: 39rem;
+  min-height: clamp(420px, 42vw, 540px);
+  padding: clamp(18px, 2.2vw, 28px);
+  border: 1.5px solid rgba(8, 78, 62, 0.50);
+  border-radius: 28px;
+  background: rgba(255, 253, 247, 0.98);
   box-shadow:
-    0 34px 86px rgba(7, 26, 24, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.66);
+    0 40px 110px rgba(7, 26, 24, 0.22),
+    0 8px 28px rgba(7, 26, 24, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 0 0 1px rgba(8, 78, 62, 0.05);
 }
 
-.hero-visual-panel::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(120deg, rgba(255, 253, 247, 0.8), transparent 38%),
-    radial-gradient(ellipse at 76% 62%, rgba(8, 78, 62, 0.12), transparent 48%);
-}
-
-.hero-visual-panel::after {
-  content: "";
-  position: absolute;
-  inset: 0.6rem;
-  z-index: 0;
-  pointer-events: none;
-  border: 1px solid rgba(8, 78, 62, 0.08);
-  border-radius: 1.55rem;
-}
+/* ─── Hero stage shell ─────────────────────────────────────────────────── */
 
 .hero-stage {
   position: relative;
@@ -281,61 +270,7 @@ button {
   overflow: visible;
 }
 
-.hero-stage::before {
-  content: "";
-  position: absolute;
-  right: max(-10vw, -7rem);
-  top: 3.4rem;
-  width: min(50vw, 38rem);
-  height: min(36vw, 27rem);
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse at center, rgba(17, 97, 73, 0.12), rgba(121, 216, 175, 0.06) 34%, transparent 68%),
-    linear-gradient(145deg, rgba(255, 253, 247, 0.42), transparent 44%);
-  opacity: 0.94;
-  z-index: 0;
-}
-
-.hero-stage::after {
-  content: "";
-  position: absolute;
-  inset: auto 0 0 0;
-  height: 1px;
-  pointer-events: none;
-  background: linear-gradient(90deg, transparent, rgba(17, 97, 73, 0.12), transparent);
-  z-index: 0;
-}
-
-.hero-orbits {
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  opacity: 1;
-  transform-origin: 68% 42%;
-  will-change: transform;
-  animation: critiqueOrbitDrift 28s ease-in-out infinite alternate;
-}
-
-.hero-orbits-secondary {
-  transform-box: fill-box;
-  transform-origin: 72% 50%;
-  will-change: transform;
-  animation: critiqueOrbitFloat 38s ease-in-out infinite alternate;
-}
-
-.hero-orbits-technical {
-  transform-box: fill-box;
-  transform-origin: center;
-  will-change: opacity, transform;
-  animation: critiqueTechFloat 18s ease-in-out infinite alternate;
-}
-
-.hero-orbits-nodes {
-  transform-box: fill-box;
-  transform-origin: center;
-  will-change: opacity, transform;
-  animation: critiqueTechFloat 18s ease-in-out infinite alternate;
-}
+/* ─── Arc network section card ─────────────────────────────────────────── */
 
 .arc-network-card {
   position: relative;
@@ -354,125 +289,98 @@ button {
   z-index: -1;
 }
 
+/* ─── Mobile ───────────────────────────────────────────────────────────── */
+
 @media (max-width: 767px) {
   .hero-stage {
     overflow: hidden;
   }
 
-  .home-hero-band::before {
-    right: -28rem;
-    top: 6rem;
-    width: 54rem;
-    height: 36rem;
-    opacity: 0.3;
+  .hero-visual-stage {
+    min-height: clamp(320px, 94vw, 420px);
+    padding: 14px;
+    border-radius: 22px;
   }
 
   .hero-ambient-glow-primary {
-    right: -24%;
-    top: 10%;
-    width: 260px;
-    height: 260px;
-    opacity: 0.28;
-    filter: blur(30px);
+    right: -20%;
+    top: 2%;
+    width: 240px;
+    height: 240px;
+    filter: blur(32px);
   }
 
   .hero-ambient-glow-secondary {
     display: none;
   }
 
-  .hero-orbit-system {
-    inset: -12% -46% -18% -52%;
-    opacity: 0.5;
-  }
-
-  .hero-stage::before {
-    right: -16rem;
-    top: 14rem;
-    width: 34rem;
-    height: 24rem;
-    opacity: 0.45;
-  }
-
-  .hero-image-wrap::before {
-    content: none;
-  }
-
-  .hero-image-wrap::after {
+  /* Hide complex geometry on mobile to keep it clean */
+  .hero-arc-rings {
     display: none;
   }
 
-  .hero-orbits-secondary,
-  .hero-orbits-technical,
-  .hero-orbits-nodes {
+  .hero-scan-line {
     display: none;
   }
 }
 
-@keyframes critiqueOrbitDrift {
-  from {
-    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
-  }
+/* ─── Keyframes ────────────────────────────────────────────────────────── */
 
-  to {
-    transform: translate3d(-34px, 22px, 0) rotate(-2.4deg) scale(1.025);
-  }
+/* Arc rings drift slowly across the hero */
+@keyframes arcRingDrift {
+  from { transform: translate(0px, 0px); }
+  to   { transform: translate(-18px, 12px); }
 }
 
-@keyframes critiqueOrbitFloat {
-  from {
-    transform: translate3d(18px, -10px, 0) rotate(1.2deg);
-  }
-
-  to {
-    transform: translate3d(-22px, 16px, 0) rotate(-1.6deg);
-  }
+/* Node dots pop in and out */
+@keyframes nodePulse {
+  0%, 100% { opacity: 0.22; transform: scale(1); }
+  50%       { opacity: 0.90; transform: scale(1.7); }
 }
 
-@keyframes critiqueTechFloat {
-  from {
-    transform: translate3d(0, 0, 0);
-    opacity: 0.85;
-  }
-
-  to {
-    transform: translate3d(-18px, 12px, 0);
-    opacity: 1;
-  }
+/* Scan line traverses the full hero width */
+@keyframes heroScanLine {
+  0%   { transform: translateX(-220px); opacity: 0; }
+  6%   { opacity: 1; }
+  94%  { opacity: 1; }
+  100% { transform: translateX(1660px); opacity: 0; }
 }
 
-@keyframes critiqueGlowPulse {
+/* Glow blobs breathe: tighter swing than before for visibility */
+@keyframes heroGlowPulse {
   from {
     transform: scale(1) translate3d(0, 0, 0);
-    opacity: 0.32;
+    opacity: 0.18;
   }
-
   to {
-    transform: scale(1.07) translate3d(-18px, 12px, 0);
+    transform: scale(1.12) translate3d(-14px, 8px, 0);
+    opacity: 0.52;
+  }
+}
+
+@keyframes heroGlowPulseSecondary {
+  from {
+    transform: scale(1) translate3d(0, 0, 0);
+    opacity: 0.16;
+  }
+  to {
+    transform: scale(1.08) translate3d(12px, -8px, 0);
     opacity: 0.48;
   }
 }
 
-@keyframes critiqueGlowPulseSecondary {
-  from {
-    transform: scale(1) translate3d(0, 0, 0);
-    opacity: 0.22;
-  }
-
-  to {
-    transform: scale(1.05) translate3d(14px, -10px, 0);
-    opacity: 0.34;
-  }
-}
+/* ─── Reduced motion ───────────────────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
   .hero-ambient-glow,
-  .hero-orbits,
-  .hero-orbits-secondary,
-  .hero-orbits-technical,
-  .hero-orbits-nodes {
+  .hero-arc-rings,
+  .hero-node-pulse,
+  .hero-scan-line {
     animation: none !important;
   }
 }
+
+/* ─── Font weight overrides ────────────────────────────────────────────── */
 
 .font-black {
   font-weight: 760;

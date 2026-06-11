@@ -191,6 +191,7 @@ export default function HomePage() {
       <AppHeader />
       <main>
         <div className="home-hero-band">
+          <HeroMotionBackground />
           <section className="hero-stage mx-auto grid w-full max-w-7xl px-4 pb-12 pt-10 sm:px-6 sm:pb-14 sm:pt-12 lg:px-8 lg:pb-16 lg:pt-14">
             <div className="relative z-10 grid items-center gap-9 lg:grid-cols-[0.95fr_1.05fr] lg:gap-12">
               <div className="max-w-3xl lg:pl-1">
@@ -212,10 +213,22 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="hero-visual-panel relative mx-auto w-full max-w-[36rem] p-3 sm:p-4 lg:max-w-[39rem] lg:justify-self-end">
-                <HeroMotionBackground />
-                <div className="hero-image-wrap relative z-10">
-                  <div className="relative overflow-hidden rounded-[1.45rem] border border-action/15 bg-[#fffdf7]/92 p-1.5 shadow-[0_30px_82px_rgba(7,26,24,0.2)]">
+              <div className="hero-visual-stage mx-auto w-full lg:justify-self-end">
+                {/* Corner bracket markers — signals designed technical panel */}
+                <svg aria-hidden="true" className="absolute left-3 top-3 h-6 w-6" viewBox="0 0 24 24" fill="none">
+                  <path d="M0 20 L0 0 L20 0" stroke="#116149" strokeWidth="2.2" strokeOpacity="0.60" strokeLinecap="square" />
+                </svg>
+                <svg aria-hidden="true" className="absolute right-3 top-3 h-6 w-6" viewBox="0 0 24 24" fill="none">
+                  <path d="M24 20 L24 0 L4 0" stroke="#116149" strokeWidth="2.2" strokeOpacity="0.60" strokeLinecap="square" />
+                </svg>
+                <svg aria-hidden="true" className="absolute bottom-3 left-3 h-6 w-6" viewBox="0 0 24 24" fill="none">
+                  <path d="M0 4 L0 24 L20 24" stroke="#116149" strokeWidth="2.2" strokeOpacity="0.60" strokeLinecap="square" />
+                </svg>
+                <svg aria-hidden="true" className="absolute bottom-3 right-3 h-6 w-6" viewBox="0 0 24 24" fill="none">
+                  <path d="M24 4 L24 24 L4 24" stroke="#116149" strokeWidth="2.2" strokeOpacity="0.60" strokeLinecap="square" />
+                </svg>
+                <div className="hero-image-wrap">
+                  <div className="hero-image-card">
                     <Image
                       src="/images/hero-critique.png"
                       alt="Contributor reviewing product feedback with approved submission badge"
