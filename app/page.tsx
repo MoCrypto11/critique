@@ -172,7 +172,7 @@ export default function HomePage() {
           <section className="hero-stage mx-auto w-full max-w-7xl px-4 pb-12 pt-16 sm:px-6 sm:pb-14 sm:pt-20 lg:px-8 lg:pb-16 lg:pt-24">
             <div className="relative z-10">
               <p className="eyebrow">Feedback bounties on Arc</p>
-              <h1 className="hero-headline font-display mt-5 text-ink">
+              <h1 className="hero-headline font-display mt-6 text-ink">
                 Turn Product Feedback Into Funded Bounties For Smarter Product Decisions
               </h1>
               <p className="hero-subcopy mt-9 font-bold text-[#315145]">
@@ -183,18 +183,16 @@ export default function HomePage() {
           </section>
         </div>
 
-        <section className="home-section mx-auto w-full max-w-6xl px-4 pt-2 pb-10 sm:px-6 sm:pt-4 sm:pb-12 lg:px-8">
-          <div className="surface flex flex-col items-start justify-between gap-5 p-5 sm:p-7 lg:flex-row lg:items-center">
-            <div className="max-w-2xl">
+        <section className="home-section mx-auto w-full max-w-7xl px-4 pt-3 pb-6 sm:px-6 sm:pt-5 sm:pb-8 lg:px-8">
+          <div className="surface flex flex-col items-start justify-between gap-6 p-6 sm:p-8 lg:flex-row lg:items-center lg:gap-10">
+            <div className="max-w-xl">
               <p className="eyebrow">Start focused</p>
-              <h2 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">
-                Create your first feedback bounty
-              </h2>
-              <p className="mt-3 text-base leading-7 text-muted">
+              <h2 className="section-title mt-3 text-ink">Create your first feedback bounty</h2>
+              <p className="section-intro mt-3 text-muted">
                 Set the reward tiers, share one link, and start collecting useful product feedback on Arc.
               </p>
             </div>
-            <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+            <div className="flex w-full shrink-0 flex-col gap-3 sm:w-auto sm:flex-row">
               <Link href="/create" className="btn-primary">
                 Create a bounty
               </Link>
@@ -207,12 +205,12 @@ export default function HomePage() {
 
         <section
           id="how-it-works"
-          className="home-section home-section-soft mx-auto w-full max-w-6xl scroll-mt-24 px-4 pb-14 pt-10 sm:px-6 sm:pb-16 sm:pt-12 lg:px-8"
+          className="home-section home-section-soft home-container section-pad scroll-mt-24"
         >
-          <div className="mb-6 max-w-3xl">
+          <div className="section-head">
             <p className="eyebrow">How it works</p>
-            <h2 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">How Critique works</h2>
-            <p className="mt-3 max-w-2xl text-base leading-7 text-muted">
+            <h2 className="section-title text-ink">How Critique works</h2>
+            <p className="section-intro text-muted">
               A compact flow for funding one bounty, collecting structured feedback, and approving only the responses
               that help.
             </p>
@@ -239,13 +237,11 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="home-section page-shell py-12 sm:py-16">
-          <div className="mb-6 max-w-3xl">
+        <section className="home-section home-container section-pad">
+          <div className="section-head">
             <p className="eyebrow">Feedback formats</p>
-            <h2 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">
-              Choose the kind of feedback you need
-            </h2>
-            <p className="mt-3 max-w-2xl text-base leading-7 text-muted">
+            <h2 className="section-title text-ink">Choose the kind of feedback you need</h2>
+            <p className="section-intro text-muted">
               Set different rewards for different contribution formats, from quick written feedback to deeper product
               and technical reviews.
             </p>
@@ -264,13 +260,11 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="home-section page-shell py-12 sm:py-16">
-          <div className="mb-6 max-w-3xl">
+        <section className="home-section home-container section-pad">
+          <div className="section-head">
             <p className="eyebrow">For founders</p>
-            <h2 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">
-              Use Critique before you ship
-            </h2>
-            <p className="mt-3 max-w-2xl text-base leading-7 text-muted">
+            <h2 className="section-title text-ink">Use Critique before you ship</h2>
+            <p className="section-intro text-muted">
               Create focused bounties for the feedback that usually gets missed before launch.
             </p>
           </div>
@@ -291,14 +285,12 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="home-section page-shell py-12 sm:py-16">
-          <div className="surface grid gap-6 p-5 sm:p-7 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+        <section className="home-section home-container section-pad">
+          <div className="surface grid gap-6 p-6 sm:p-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
             <div>
               <p className="eyebrow">Contributor experience</p>
-              <h2 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">
-                What contributors see
-              </h2>
-              <p className="mt-3 text-base leading-7 text-muted">
+              <h2 className="section-title mt-3 text-ink">What contributors see</h2>
+              <p className="section-intro mt-3 text-muted">
                 Contributors can submit feedback without connecting a wallet.
               </p>
               <p className="mt-4 rounded-lg border border-action/15 bg-action/10 p-3 text-sm font-semibold leading-6 text-action">
@@ -327,10 +319,10 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="faq" className="home-section page-shell scroll-mt-24 py-12 sm:py-16">
-          <div className="mx-auto mb-6 max-w-3xl text-center">
+        <section id="faq" className="home-section home-container section-pad scroll-mt-24">
+          <div className="section-head mx-auto text-center">
             <p className="eyebrow">FAQ</p>
-            <h2 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">Frequently asked questions</h2>
+            <h2 className="section-title mt-3 text-ink">Frequently asked questions</h2>
           </div>
 
           <div className="mx-auto max-w-4xl space-y-3">
@@ -364,10 +356,10 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="home-section page-shell py-12 sm:py-16">
-          <div className="overflow-hidden rounded-3xl border border-[#79D8AF]/25 bg-[#061916] p-6 text-white shadow-[0_24px_64px_rgba(7,26,24,0.2)] sm:p-8">
+        <section className="home-section home-container section-pad">
+          <div className="overflow-hidden rounded-3xl border border-[#79D8AF]/25 bg-[#061916] p-6 text-white shadow-[0_24px_64px_rgba(7,26,24,0.2)] sm:p-8 lg:p-10">
             <div className="max-w-2xl">
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#79D8AF]">Built on Arc testnet</p>
+              <p className="eyebrow text-[#79D8AF]">Built on Arc testnet</p>
               <h2 className="font-display mt-3 text-2xl font-semibold leading-tight text-white sm:text-3xl">
                 USDC rewards, settled on Arc testnet
               </h2>

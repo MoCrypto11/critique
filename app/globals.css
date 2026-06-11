@@ -120,6 +120,68 @@ button {
   min-height: 48px;
 }
 
+/* ─── Layout rhythm — shared container + spacing + heading roles ────────── */
+
+/* One content width for body sections (header/hero/CTA use the wider 80rem). */
+.home-container {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 72rem;
+  padding-inline: 1rem;
+}
+
+@media (min-width: 640px) {
+  .home-container {
+    padding-inline: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .home-container {
+    padding-inline: 2rem;
+  }
+}
+
+/* Consistent vertical rhythm between major sections. */
+.section-pad {
+  padding-block: 3.5rem;
+}
+
+@media (min-width: 640px) {
+  .section-pad {
+    padding-block: 5rem;
+  }
+}
+
+/* Section heading block: eyebrow → title → intro with a set internal rhythm. */
+.section-head {
+  max-width: 44rem;
+  margin-bottom: 2.5rem;
+}
+
+.section-head .section-title {
+  margin-top: 0.85rem;
+}
+
+.section-head .section-intro {
+  margin-top: 0.9rem;
+}
+
+/* Heading role — distinct from the airy hero display; tighter, confident. */
+.section-title {
+  font-size: clamp(1.75rem, 1.2rem + 1.9vw, 2.5rem);
+  font-weight: 600;
+  line-height: 1.14;
+  letter-spacing: -0.02em;
+}
+
+/* Intro paragraph role — readable measure, relaxed leading. */
+.section-intro {
+  max-width: 40rem;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
 /* ─── Hero band ────────────────────────────────────────────────────────── */
 
 .home-hero-band {
