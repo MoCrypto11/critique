@@ -186,37 +186,37 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="home-visual-system">
+    <>
       <AppHeader />
       <main>
-        <section className="hero-stage mx-auto mt-2 grid w-full max-w-6xl px-4 pb-11 pt-12 sm:px-6 sm:pb-14 sm:pt-14 lg:px-8 lg:pb-16 lg:pt-16">
+        <section className="hero-stage mx-auto grid w-full max-w-7xl px-4 pb-12 pt-10 sm:px-6 sm:pb-14 sm:pt-12 lg:px-8 lg:pb-16 lg:pt-14">
           <div className="hero-orbits" aria-hidden="true">
             <svg viewBox="0 0 960 720" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g strokeLinecap="round">
                 <path
                   d="M36 618C188 396 397 278 662 264C795 257 902 291 984 367"
                   stroke="#116149"
-                  strokeOpacity="0.19"
+                  strokeOpacity="0.1"
                   strokeWidth="1.2"
                 />
                 <path
                   d="M4 508C164 316 371 214 625 203C772 197 897 237 1002 323"
                   stroke="#79D8AF"
                   strokeDasharray="18 22"
-                  strokeOpacity="0.24"
+                  strokeOpacity="0.12"
                   strokeWidth="1"
                 />
                 <path
                   d="M142 128C312 51 489 59 676 151C793 209 880 292 936 402"
                   stroke="#071A18"
-                  strokeOpacity="0.11"
+                  strokeOpacity="0.08"
                   strokeWidth="1"
                 />
                 <path
                   d="M288 684C405 529 548 448 716 443C835 440 935 480 1018 561"
                   stroke="#116149"
                   strokeDasharray="5 18"
-                  strokeOpacity="0.18"
+                  strokeOpacity="0.09"
                   strokeWidth="1.1"
                 />
               </g>
@@ -224,32 +224,32 @@ export default function HomePage() {
                 <path
                   d="M346 42C438 162 551 237 685 265C801 289 903 273 990 217"
                   stroke="#071A18"
-                  strokeOpacity="0.09"
+                  strokeOpacity="0.06"
                   strokeWidth="1"
                 />
                 <path
                   d="M210 332C335 256 472 230 621 254C762 277 877 340 966 443"
                   stroke="#79D8AF"
-                  strokeOpacity="0.18"
+                  strokeOpacity="0.1"
                   strokeWidth="0.9"
                 />
               </g>
-              <circle cx="662" cy="264" r="3" fill="#116149" fillOpacity="0.18" />
-              <circle cx="625" cy="203" r="2.5" fill="#79D8AF" fillOpacity="0.28" />
-              <circle cx="716" cy="443" r="2.5" fill="#116149" fillOpacity="0.14" />
+              <circle cx="662" cy="264" r="3" fill="#116149" fillOpacity="0.1" />
+              <circle cx="625" cy="203" r="2.5" fill="#79D8AF" fillOpacity="0.14" />
+              <circle cx="716" cy="443" r="2.5" fill="#116149" fillOpacity="0.08" />
             </svg>
           </div>
-          <div className="relative z-10 grid items-center gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:gap-10">
-            <div className="max-w-3xl">
+          <div className="relative z-10 grid items-center gap-9 lg:grid-cols-[0.95fr_1.05fr] lg:gap-12">
+            <div className="max-w-3xl lg:pl-1">
               <p className="eyebrow">Useful feedback. USDC rewards.</p>
-              <h1 className="font-display mt-4 max-w-3xl text-[clamp(3rem,6.35vw,5.7rem)] leading-[0.98] tracking-normal text-ink">
+              <h1 className="font-display mt-4 max-w-3xl text-[clamp(3.25rem,5.2vw,5.5rem)] leading-[1.02] tracking-normal text-ink">
                 Feedback bounties for early product teams
               </h1>
-              <p className="mt-7 max-w-[39rem] text-lg font-bold leading-8 text-[#315145] sm:text-xl sm:leading-9">
+              <p className="mt-6 max-w-[35rem] text-base font-bold leading-8 text-[#315145] sm:text-lg sm:leading-8">
                 Create a focused bounty, share one public link, review submissions, and approve USDC rewards for useful
                 product feedback.
               </p>
-              <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link href="/create" className="btn-primary transition-transform hover:-translate-y-0.5">
                   Create a bounty
                 </Link>
@@ -259,9 +259,9 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="relative mx-auto w-full max-w-[36rem] lg:max-w-[41rem] lg:justify-self-end">
-              <div className="absolute -inset-6 rounded-[2.4rem] bg-[radial-gradient(ellipse_at_center,rgba(17,97,73,0.16),transparent_66%)]" aria-hidden="true" />
-              <div className="relative overflow-hidden rounded-[1.8rem] border border-action/15 bg-[#fffdf7]/75 p-2 shadow-[0_34px_92px_rgba(7,26,24,0.18)] backdrop-blur-sm">
+            <div className="relative mx-auto w-full max-w-[35rem] lg:max-w-[38rem] lg:justify-self-end">
+              <div className="absolute -inset-4 rounded-[2rem] bg-[radial-gradient(ellipse_at_center,rgba(17,97,73,0.08),transparent_68%)]" aria-hidden="true" />
+              <div className="relative overflow-hidden rounded-[1.55rem] border border-action/10 bg-[#fffdf7]/90 p-1.5 shadow-[0_22px_62px_rgba(7,26,24,0.12)]">
                 <Image
                   src="/images/hero-critique.png"
                   alt="Contributor reviewing product feedback with approved submission badge"
@@ -269,7 +269,7 @@ export default function HomePage() {
                   height={1200}
                   priority
                   sizes="(min-width: 1024px) 52vw, 100vw"
-                  className="block h-auto w-full rounded-[1.5rem] bg-[#fbfaf4] object-contain"
+                  className="block h-auto w-full rounded-[1.35rem] bg-[#fbfaf4] object-contain"
                 />
               </div>
             </div>
@@ -551,6 +551,6 @@ export default function HomePage() {
           </div>
         </section>
       </main>
-    </div>
+    </>
   );
 }
