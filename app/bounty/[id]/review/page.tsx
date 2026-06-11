@@ -7,6 +7,7 @@ import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { AppHeader } from "@/components/AppHeader";
 import { EmptyState } from "@/components/EmptyState";
 import { MockModeBanner } from "@/components/MockModeBanner";
+import { RejectSubmissionModal } from "@/components/RejectSubmissionModal";
 import { SubmissionCard } from "@/components/SubmissionCard";
 import { CRITIQUE_DROP_CONTRACT, ENABLE_MOCK_MODE, critiqueDropBountyAbi } from "@/lib/contracts";
 import { formatUSDC, getFeedbackTypeContractId, getRewardForType, normalizeFeedbackRewards } from "@/lib/feedbackRewards";
@@ -29,6 +30,9 @@ export default function ReviewPage({ params }: { params: { id: string } }) {
   const [error, setError] = useState("");
   const [busyId, setBusyId] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
+  const [rejectTarget, setRejectTarget] = useState<FeedbackSubmission>();
+  const [rejectError, setRejectError] = useState("");
+  const [isRejecting, setIsRejecting] = useState(false);
 
   const refresh = useCallback(async () => {
     const [nextBounty, nextSubmissions] = await Promise.all([getLocalBounty(params.id), listSubmissions(params.id)]);
@@ -103,14 +107,29 @@ export default function ReviewPage({ params }: { params: { id: string } }) {
     }
   }
 
-  async function reject(submission: FeedbackSubmission) {
-    const reason = window.prompt("Rejection reason");
-    if (!reason) return;
+  function openReject(submission: FeedbackSubmission) {
+    setRejectError("");
+    setRejectTarget(submission);
+  }
+
+  function cancelReject() {
+    if (isRejecting) return;
+    setRejectTarget(undefined);
+    setRejectError("");
+  }
+
+  async function confirmReject(reason: string) {
+    if (!rejectTarget) return;
+    setRejectError("");
+    setIsRejecting(true);
     try {
-      await rejectLocalSubmission(params.id, submission.id, reason);
+      await rejectLocalSubmission(params.id, rejectTarget.id, reason);
+      setRejectTarget(undefined);
       await refresh();
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "Could not reject submission.");
+      setRejectError(caught instanceof Error ? caught.message : "Could not reject submission. Please try again.");
+    } finally {
+      setIsRejecting(false);
     }
   }
 
@@ -186,7 +205,7 @@ export default function ReviewPage({ params }: { params: { id: string } }) {
                 rewardLabel={rewardLabelFor(submission)}
                 busy={busyId === submission.id}
                 onApprove={() => approve(submission)}
-                onReject={() => reject(submission)}
+                onReject={() => openReject(submission)}
               />
             ))
           ) : (
@@ -194,6 +213,13 @@ export default function ReviewPage({ params }: { params: { id: string } }) {
           )}
         </div>
       </main>
+      <RejectSubmissionModal
+        open={Boolean(rejectTarget)}
+        busy={isRejecting}
+        error={rejectError}
+        onCancel={cancelReject}
+        onConfirm={confirmReject}
+      />
     </>
   );
 }
