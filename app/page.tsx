@@ -175,7 +175,7 @@ export default function HomePage() {
               <h1 className="hero-headline font-display mt-5 text-ink">
                 Turn Product Feedback Into Funded Bounties For Smarter Product Decisions
               </h1>
-              <p className="hero-subcopy mt-7 font-bold text-[#315145]">
+              <p className="hero-subcopy mt-9 font-bold text-[#315145]">
                 Critique helps teams collect useful product feedback, review submissions, and approve USDC rewards
                 through one focused bounty link.
               </p>
