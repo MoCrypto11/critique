@@ -99,8 +99,8 @@ button {
   overflow: hidden;
   border-top: 1px solid rgba(17, 97, 73, 0.06);
   background:
-    radial-gradient(ellipse at 78% 44%, rgba(17, 97, 73, 0.18), transparent 29rem),
-    radial-gradient(ellipse at 83% 18%, rgba(121, 216, 175, 0.16), transparent 21rem),
+    radial-gradient(ellipse at 78% 44%, rgba(17, 97, 73, 0.2), transparent 30rem),
+    radial-gradient(ellipse at 84% 18%, rgba(121, 216, 175, 0.18), transparent 22rem),
     radial-gradient(ellipse at 12% 18%, rgba(198, 168, 106, 0.13), transparent 22rem),
     linear-gradient(135deg, #fffaf0 0%, #f2f6eb 46%, #eaf4eb 100%);
 }
@@ -108,19 +108,19 @@ button {
 .home-hero-band::before {
   content: "";
   position: absolute;
-  right: max(-17vw, -13rem);
-  top: -7rem;
-  width: min(88vw, 74rem);
-  height: 50rem;
+  right: -12rem;
+  top: 5rem;
+  width: 32rem;
+  height: 22rem;
   pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg width='1300' height='820' viewBox='0 0 1300 820' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg stroke-linecap='round'%3E%3Cpath d='M92 706C294 452 554 313 873 291C1076 277 1241 329 1365 449' stroke='%23116149' stroke-opacity='.16' stroke-width='1.2'/%3E%3Cpath d='M18 596C240 376 516 266 848 268C1088 270 1282 346 1432 493' stroke='%2379D8AF' stroke-opacity='.18' stroke-width='1' stroke-dasharray='18 24'/%3E%3Cpath d='M244 143C434 58 635 64 844 164C993 235 1110 342 1192 485' stroke='%23071A18' stroke-opacity='.09' stroke-width='1'/%3E%3Cpath d='M430 786C560 610 727 514 929 501C1106 490 1255 551 1378 686' stroke='%23116149' stroke-opacity='.12' stroke-width='1' stroke-dasharray='5 18'/%3E%3Cpath d='M548 78C639 188 752 255 887 278C993 297 1083 277 1158 220' stroke='%23C6A86A' stroke-opacity='.16' stroke-width='.9'/%3E%3C/g%3E%3Ccircle cx='873' cy='291' r='3' fill='%23116149' fill-opacity='.16'/%3E%3Ccircle cx='848' cy='268' r='2.5' fill='%2379D8AF' fill-opacity='.22'/%3E%3Ccircle cx='887' cy='278' r='2' fill='%23C6A86A' fill-opacity='.18'/%3E%3C/svg%3E");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  opacity: 0.96;
-  transform-origin: 58% 34%;
+  border: 1px solid rgba(17, 97, 73, 0.08);
+  border-radius: 999px;
+  background:
+    linear-gradient(135deg, rgba(255, 253, 247, 0.28), rgba(17, 97, 73, 0.06)),
+    radial-gradient(ellipse at center, rgba(121, 216, 175, 0.12), transparent 70%);
+  opacity: 0.9;
+  transform: rotate(-8deg);
   z-index: 0;
-  animation: heroBandDrift 38s ease-in-out infinite alternate;
 }
 
 .home-hero-band::after {
@@ -138,6 +138,13 @@ button {
 .home-hero-band > .hero-stage {
   position: relative;
   z-index: 1;
+}
+
+.hero-orbit-system {
+  position: absolute;
+  inset: -7rem -10rem -3rem 35%;
+  z-index: 0;
+  pointer-events: none;
 }
 
 .home-section {
@@ -228,28 +235,24 @@ button {
 }
 
 .hero-orbits {
-  position: absolute;
-  right: clamp(-16rem, -12vw, -4rem);
-  top: clamp(-1rem, 0.5vw, 1.5rem);
-  z-index: 1;
-  width: min(62vw, 51rem);
-  height: min(48vw, 38rem);
-  pointer-events: none;
-  opacity: 0.84;
-  animation: heroArcBreath 30s ease-in-out infinite;
-}
-
-.hero-orbits svg {
   width: 100%;
   height: 100%;
   overflow: visible;
-  transform-origin: 58% 46%;
-  animation: heroArcDrift 34s ease-in-out infinite alternate;
+  opacity: 0.94;
+  transform-origin: 70% 45%;
+  animation: orbitDrift 34s ease-in-out infinite alternate;
 }
 
 .hero-orbits-secondary {
-  transform-origin: 52% 50%;
-  animation: heroArcCounter 42s ease-in-out infinite alternate;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: orbitFloat 44s ease-in-out infinite alternate;
+}
+
+.hero-orbits-technical {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: orbitPulse 30s ease-in-out infinite alternate;
 }
 
 .arc-network-card {
@@ -282,6 +285,11 @@ button {
     opacity: 0.42;
   }
 
+  .hero-orbit-system {
+    inset: 8rem -24rem 2rem 28%;
+    opacity: 0.36;
+  }
+
   .hero-stage::before {
     right: -16rem;
     top: 14rem;
@@ -300,38 +308,41 @@ button {
     display: none;
   }
 
-  .hero-orbits {
+  .hero-orbits-secondary,
+  .hero-orbits-technical {
     display: none;
   }
 }
 
-@keyframes heroBandDrift {
+@keyframes orbitDrift {
   from {
-    transform: translate3d(-12px, -5px, 0) rotate(-0.45deg);
+    transform: translate3d(0, 0, 0) rotate(0deg);
   }
 
   to {
-    transform: translate3d(16px, 9px, 0) rotate(0.65deg);
+    transform: translate3d(-32px, 22px, 0) rotate(-2.2deg);
   }
 }
 
-@keyframes heroArcDrift {
+@keyframes orbitFloat {
   from {
-    transform: translate3d(-9px, -5px, 0) rotate(-0.8deg);
+    transform: translate3d(14px, -8px, 0) rotate(1.1deg);
   }
 
   to {
-    transform: translate3d(13px, 8px, 0) rotate(1.05deg);
+    transform: translate3d(-20px, 14px, 0) rotate(-1.2deg);
   }
 }
 
-@keyframes heroArcCounter {
+@keyframes orbitPulse {
   from {
-    transform: translate3d(10px, 5px, 0) rotate(0.5deg);
+    opacity: 0.76;
+    transform: translate3d(0, 0, 0);
   }
 
   to {
-    transform: translate3d(-8px, -6px, 0) rotate(-0.6deg);
+    opacity: 1;
+    transform: translate3d(-14px, 8px, 0);
   }
 }
 
@@ -347,10 +358,9 @@ button {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .home-hero-band::before,
   .hero-orbits,
-  .hero-orbits svg,
-  .hero-orbits-secondary {
+  .hero-orbits-secondary,
+  .hero-orbits-technical {
     animation: none;
   }
 }
