@@ -47,6 +47,7 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
   const [submissions, setSubmissions] = useState<FeedbackSubmission[]>([]);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoaded, setIsLoaded] = useState(params.id === "demo");
   const [publicLink, setPublicLink] = useState("");
   const [feedbackType, setFeedbackType] = useState<FeedbackType>("quick_written");
@@ -121,6 +122,7 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (isSubmitting) return;
     setError("");
     setMessage("");
 
@@ -199,6 +201,7 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
       return setError("This wallet already submitted feedback for this bounty.");
     }
 
+    setIsSubmitting(true);
     try {
       await addSubmission({
         bountyId: bounty.id,
@@ -233,6 +236,8 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
       setMessage("Feedback submitted. Approved submissions receive the configured reward.");
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Could not submit feedback.");
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -651,10 +656,10 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
             <div className="border-t border-line/70 bg-white/95 pt-4">
               <button
                 type="submit"
-                disabled={status !== "open"}
+                disabled={status !== "open" || isSubmitting}
                 className="btn-primary w-full"
               >
-                Submit Feedback
+                {isSubmitting ? "Submitting..." : "Submit Feedback"}
               </button>
             </div>
           </form>
