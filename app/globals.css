@@ -93,6 +93,26 @@ button {
   @apply rounded-2xl border p-4 text-sm;
 }
 
+/* ─── Hero editorial text ──────────────────────────────────────────────── */
+
+/* Large editorial headline — no max-width; fills the section container naturally */
+.hero-headline {
+  font-size: clamp(2.75rem, 6.8vw, 6.5rem);
+  line-height: 0.97;
+  letter-spacing: -0.028em;
+}
+
+.hero-subcopy {
+  max-width: 42rem;
+  font-size: 1.0625rem;
+  line-height: 1.65;
+}
+
+/* Slightly taller CTA buttons */
+.hero-cta {
+  min-height: 48px;
+}
+
 /* ─── Hero band ────────────────────────────────────────────────────────── */
 
 .home-hero-band {
@@ -103,18 +123,17 @@ button {
   background: linear-gradient(160deg, #f4f1e7 0%, #ece9d5 100%);
 }
 
-/* Bottom fade: blends hero band into the sections below */
+/* Bottom fade blends into sections below */
 .home-hero-band::after {
   content: "";
   position: absolute;
   inset: auto 0 0 0;
-  height: 9rem;
+  height: 10rem;
   pointer-events: none;
-  background: linear-gradient(180deg, transparent, rgba(238, 235, 220, 0.96) 84%);
+  background: linear-gradient(180deg, transparent, rgba(238, 235, 220, 0.97) 88%);
   z-index: 1;
 }
 
-/* Motion background stays behind all hero content */
 .home-hero-band > .hero-motion-background {
   z-index: 0;
 }
@@ -142,13 +161,19 @@ button {
   overflow: visible;
 }
 
-/* Arc ring group: gentle drift animation */
+/* Primary arc rings drift slowly */
 .hero-arc-rings {
   will-change: transform;
-  animation: arcRingDrift 22s ease-in-out infinite alternate;
+  animation: arcRingDrift 28s ease-in-out infinite alternate;
 }
 
-/* Pulse nodes: opacity + scale pop on each dot */
+/* Secondary arcs drift counter to primary */
+.hero-arc-rings-secondary {
+  will-change: transform;
+  animation: arcRingDriftSecondary 36s ease-in-out infinite alternate;
+}
+
+/* Pulse nodes: opacity + scale pop */
 .hero-node-pulse {
   transform-box: fill-box;
   transform-origin: center;
@@ -156,16 +181,16 @@ button {
   animation: nodePulse 3s ease-in-out infinite;
 }
 
-/* Scan line: horizontal gradient line traversing the hero */
+/* Horizontal scan line traverses the full band */
 .hero-scan-line {
   position: absolute;
-  top: 38%;
+  top: 42%;
   left: 0;
   width: 220px;
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(17, 97, 73, 0.50) 50%, transparent);
   pointer-events: none;
-  animation: heroScanLine 7s linear infinite;
+  animation: heroScanLine 8s linear infinite;
 }
 
 /* ─── Ambient glow blobs ───────────────────────────────────────────────── */
@@ -174,27 +199,41 @@ button {
   position: absolute;
   border-radius: 999px;
   pointer-events: none;
-  filter: blur(48px);
+  filter: blur(52px);
   transform-origin: center;
   will-change: opacity, transform;
 }
 
+/* Right-side mint glow — main accent behind arc rings */
 .hero-ambient-glow-primary {
-  width: 480px;
-  height: 480px;
-  right: 10%;
-  top: -10%;
+  width: 580px;
+  height: 580px;
+  right: 4%;
+  top: -18%;
   background: rgba(121, 216, 175, 0.22);
   animation: heroGlowPulse 8s ease-in-out infinite alternate;
 }
 
+/* Lower-left green glow — balances the right-side primary */
 .hero-ambient-glow-secondary {
-  width: 320px;
-  height: 320px;
-  left: 0%;
-  bottom: -12%;
+  width: 380px;
+  height: 380px;
+  left: -4%;
+  bottom: -16%;
   background: rgba(17, 97, 73, 0.18);
-  animation: heroGlowPulseSecondary 11s ease-in-out infinite alternate;
+  animation: heroGlowPulseSecondary 12s ease-in-out infinite alternate;
+}
+
+/* Warm centre-top highlight — subtle ivory lift above the headline */
+.hero-ambient-glow-tertiary {
+  width: 520px;
+  height: 260px;
+  left: 50%;
+  top: -8%;
+  transform: translateX(-50%);
+  background: rgba(255, 253, 245, 0.50);
+  filter: blur(44px);
+  animation: heroGlowPulseTertiary 16s ease-in-out infinite alternate;
 }
 
 /* ─── Home sections ────────────────────────────────────────────────────── */
@@ -220,46 +259,6 @@ button {
 
 .home-section-soft::before {
   opacity: 1;
-}
-
-/* ─── Hero image ───────────────────────────────────────────────────────── */
-
-.hero-image-wrap {
-  position: relative;
-  z-index: 2;
-  isolation: isolate;
-  width: min(94%, 560px);
-  margin: auto;
-}
-
-.hero-image-card {
-  position: relative;
-  overflow: hidden;
-  border: 1px solid rgba(8, 78, 62, 0.14);
-  border-radius: 20px;
-  background: #fbfaf4;
-  box-shadow: 0 18px 52px rgba(7, 26, 24, 0.16);
-}
-
-/* ─── Hero visual stage (right-column panel) ───────────────────────────── */
-
-.hero-visual-stage {
-  position: relative;
-  isolation: isolate;
-  display: flex;
-  align-items: center;
-  overflow: visible;
-  max-width: 39rem;
-  min-height: clamp(420px, 42vw, 540px);
-  padding: clamp(18px, 2.2vw, 28px);
-  border: 1.5px solid rgba(8, 78, 62, 0.50);
-  border-radius: 28px;
-  background: rgba(255, 253, 247, 0.98);
-  box-shadow:
-    0 40px 110px rgba(7, 26, 24, 0.22),
-    0 8px 28px rgba(7, 26, 24, 0.10),
-    inset 0 1px 0 rgba(255, 255, 255, 0.95),
-    inset 0 0 0 1px rgba(8, 78, 62, 0.05);
 }
 
 /* ─── Hero stage shell ─────────────────────────────────────────────────── */
@@ -296,26 +295,29 @@ button {
     overflow: hidden;
   }
 
-  .hero-visual-stage {
-    min-height: clamp(320px, 94vw, 420px);
-    padding: 14px;
-    border-radius: 22px;
-  }
-
+  /* Smaller glows on mobile */
   .hero-ambient-glow-primary {
-    right: -20%;
-    top: 2%;
-    width: 240px;
-    height: 240px;
-    filter: blur(32px);
+    right: -14%;
+    top: -4%;
+    width: 260px;
+    height: 260px;
+    filter: blur(36px);
   }
 
   .hero-ambient-glow-secondary {
     display: none;
   }
 
-  /* Hide complex geometry on mobile to keep it clean */
+  .hero-ambient-glow-tertiary {
+    display: none;
+  }
+
+  /* Hide complex geometry on mobile for clean text readability */
   .hero-arc-rings {
+    display: none;
+  }
+
+  .hero-arc-rings-secondary {
     display: none;
   }
 
@@ -326,19 +328,21 @@ button {
 
 /* ─── Keyframes ────────────────────────────────────────────────────────── */
 
-/* Arc rings drift slowly across the hero */
 @keyframes arcRingDrift {
   from { transform: translate(0px, 0px); }
-  to   { transform: translate(-18px, 12px); }
+  to   { transform: translate(-20px, 13px); }
 }
 
-/* Node dots pop in and out */
+@keyframes arcRingDriftSecondary {
+  from { transform: translate(0px, 0px); }
+  to   { transform: translate(16px, -10px); }
+}
+
 @keyframes nodePulse {
   0%, 100% { opacity: 0.22; transform: scale(1); }
   50%       { opacity: 0.90; transform: scale(1.7); }
 }
 
-/* Scan line traverses the full hero width */
 @keyframes heroScanLine {
   0%   { transform: translateX(-220px); opacity: 0; }
   6%   { opacity: 1; }
@@ -346,7 +350,6 @@ button {
   100% { transform: translateX(1660px); opacity: 0; }
 }
 
-/* Glow blobs breathe: tighter swing than before for visibility */
 @keyframes heroGlowPulse {
   from {
     transform: scale(1) translate3d(0, 0, 0);
@@ -369,11 +372,17 @@ button {
   }
 }
 
+@keyframes heroGlowPulseTertiary {
+  from { opacity: 0.22; transform: translateX(-50%) scale(1); }
+  to   { opacity: 0.52; transform: translateX(-50%) scale(1.08); }
+}
+
 /* ─── Reduced motion ───────────────────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
   .hero-ambient-glow,
   .hero-arc-rings,
+  .hero-arc-rings-secondary,
   .hero-node-pulse,
   .hero-scan-line {
     animation: none !important;

@@ -192,54 +192,23 @@ export default function HomePage() {
       <main>
         <div className="home-hero-band">
           <HeroMotionBackground />
-          <section className="hero-stage mx-auto grid w-full max-w-7xl px-4 pb-12 pt-10 sm:px-6 sm:pb-14 sm:pt-12 lg:px-8 lg:pb-16 lg:pt-14">
-            <div className="relative z-10 grid items-center gap-9 lg:grid-cols-[0.95fr_1.05fr] lg:gap-12">
-              <div className="max-w-3xl lg:pl-1">
-                <p className="eyebrow">Useful feedback. USDC rewards.</p>
-                <h1 className="font-display mt-4 max-w-3xl text-[clamp(3.25rem,5.2vw,5.5rem)] leading-[1.02] tracking-normal text-ink">
-                  Feedback bounties for early product teams
-                </h1>
-                <p className="mt-6 max-w-[35rem] text-base font-bold leading-8 text-[#315145] sm:text-lg sm:leading-8">
-                  Create a focused bounty, share one public link, review submissions, and approve USDC rewards for
-                  useful product feedback.
-                </p>
-                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                  <Link href="/create" className="btn-primary transition-transform hover:-translate-y-0.5">
-                    Create a bounty
-                  </Link>
-                  <Link href="/bounty/demo" className="btn-secondary transition-transform hover:-translate-y-0.5">
-                    Preview bounty link
-                  </Link>
-                </div>
-              </div>
-
-              <div className="hero-visual-stage mx-auto w-full lg:justify-self-end">
-                {/* Corner bracket markers — signals designed technical panel */}
-                <svg aria-hidden="true" className="absolute left-3 top-3 h-6 w-6" viewBox="0 0 24 24" fill="none">
-                  <path d="M0 20 L0 0 L20 0" stroke="#116149" strokeWidth="2.2" strokeOpacity="0.60" strokeLinecap="square" />
-                </svg>
-                <svg aria-hidden="true" className="absolute right-3 top-3 h-6 w-6" viewBox="0 0 24 24" fill="none">
-                  <path d="M24 20 L24 0 L4 0" stroke="#116149" strokeWidth="2.2" strokeOpacity="0.60" strokeLinecap="square" />
-                </svg>
-                <svg aria-hidden="true" className="absolute bottom-3 left-3 h-6 w-6" viewBox="0 0 24 24" fill="none">
-                  <path d="M0 4 L0 24 L20 24" stroke="#116149" strokeWidth="2.2" strokeOpacity="0.60" strokeLinecap="square" />
-                </svg>
-                <svg aria-hidden="true" className="absolute bottom-3 right-3 h-6 w-6" viewBox="0 0 24 24" fill="none">
-                  <path d="M24 4 L24 24 L4 24" stroke="#116149" strokeWidth="2.2" strokeOpacity="0.60" strokeLinecap="square" />
-                </svg>
-                <div className="hero-image-wrap">
-                  <div className="hero-image-card">
-                    <Image
-                      src="/images/hero-critique.png"
-                      alt="Contributor reviewing product feedback with approved submission badge"
-                      width={1600}
-                      height={1200}
-                      priority
-                      sizes="(min-width: 1024px) 52vw, 100vw"
-                      className="block h-auto w-full rounded-[1.25rem] bg-[#fbfaf4] object-contain"
-                    />
-                  </div>
-                </div>
+          <section className="hero-stage mx-auto w-full max-w-7xl px-4 pb-20 pt-16 sm:px-6 sm:pb-24 sm:pt-20 lg:px-8 lg:pb-28 lg:pt-24">
+            <div className="relative z-10">
+              <p className="eyebrow">Useful feedback. USDC rewards.</p>
+              <h1 className="hero-headline font-display mt-5 text-ink">
+                Feedback bounties for early product teams
+              </h1>
+              <p className="hero-subcopy mt-7 font-bold text-[#315145]">
+                Create a focused bounty, share one public link, review submissions, and approve USDC rewards for
+                useful product feedback.
+              </p>
+              <div className="mt-8 flex flex-col gap-[14px] sm:flex-row">
+                <Link href="/create" className="btn-primary hero-cta transition-transform hover:-translate-y-0.5">
+                  Create a bounty
+                </Link>
+                <Link href="/bounty/demo" className="btn-secondary hero-cta transition-transform hover:-translate-y-0.5">
+                  Preview bounty link
+                </Link>
               </div>
             </div>
           </section>
