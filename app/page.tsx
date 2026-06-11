@@ -190,40 +190,40 @@ export default function HomePage() {
       <AppHeader />
       <main>
         <div className="home-hero-band">
-        <section className="hero-stage mx-auto grid w-full max-w-7xl px-4 pb-12 pt-10 sm:px-6 sm:pb-14 sm:pt-12 lg:px-8 lg:pb-16 lg:pt-14">
+          <section className="hero-stage mx-auto grid w-full max-w-7xl px-4 pb-12 pt-10 sm:px-6 sm:pb-14 sm:pt-12 lg:px-8 lg:pb-16 lg:pt-14">
           <div className="hero-orbits" aria-hidden="true">
             <svg viewBox="0 0 960 720" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g strokeLinecap="round">
                 <path
                   d="M24 624C186 402 398 282 662 265C802 256 914 294 998 376"
                   stroke="#116149"
-                  strokeOpacity="0.13"
+                  strokeOpacity="0.2"
                   strokeWidth="1.2"
                 />
                 <path
                   d="M-4 510C164 314 376 210 632 202C786 197 913 241 1014 332"
                   stroke="#79D8AF"
                   strokeDasharray="18 22"
-                  strokeOpacity="0.17"
+                  strokeOpacity="0.22"
                   strokeWidth="1"
                 />
                 <path
                   d="M136 132C312 48 498 55 688 150C811 212 900 303 954 419"
                   stroke="#071A18"
-                  strokeOpacity="0.09"
+                  strokeOpacity="0.12"
                   strokeWidth="1"
                 />
                 <path
                   d="M272 680C394 528 545 448 718 442C845 438 951 482 1036 574"
                   stroke="#116149"
                   strokeDasharray="5 18"
-                  strokeOpacity="0.11"
+                  strokeOpacity="0.15"
                   strokeWidth="1.1"
                 />
                 <path
                   d="M456 74C534 172 634 234 756 258C846 276 925 262 992 218"
                   stroke="#C6A86A"
-                  strokeOpacity="0.13"
+                  strokeOpacity="0.18"
                   strokeWidth="0.9"
                 />
               </g>
@@ -231,20 +231,25 @@ export default function HomePage() {
                 <path
                   d="M342 44C440 166 555 238 690 264C812 287 918 266 1002 202"
                   stroke="#071A18"
-                  strokeOpacity="0.07"
+                  strokeOpacity="0.1"
                   strokeWidth="1"
                 />
                 <path
                   d="M194 338C326 252 470 225 626 253C775 280 894 351 982 462"
                   stroke="#79D8AF"
-                  strokeOpacity="0.13"
+                  strokeOpacity="0.16"
                   strokeWidth="0.9"
                 />
               </g>
-              <circle cx="662" cy="265" r="3" fill="#116149" fillOpacity="0.13" />
-              <circle cx="632" cy="202" r="2.5" fill="#79D8AF" fillOpacity="0.18" />
-              <circle cx="718" cy="442" r="2.5" fill="#116149" fillOpacity="0.11" />
-              <circle cx="756" cy="258" r="2" fill="#C6A86A" fillOpacity="0.16" />
+              <g stroke="#116149" strokeLinecap="round">
+                <path d="M730 126H850" strokeOpacity="0.14" />
+                <path d="M804 126V190" strokeOpacity="0.1" />
+                <path d="M804 190H928" strokeOpacity="0.12" />
+              </g>
+              <circle cx="662" cy="265" r="3" fill="#116149" fillOpacity="0.2" />
+              <circle cx="632" cy="202" r="2.5" fill="#79D8AF" fillOpacity="0.24" />
+              <circle cx="718" cy="442" r="2.5" fill="#116149" fillOpacity="0.16" />
+              <circle cx="756" cy="258" r="2" fill="#C6A86A" fillOpacity="0.2" />
             </svg>
           </div>
           <div className="relative z-10 grid items-center gap-9 lg:grid-cols-[0.95fr_1.05fr] lg:gap-12">
@@ -267,9 +272,9 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="relative mx-auto w-full max-w-[35rem] lg:max-w-[38rem] lg:justify-self-end">
+            <div className="hero-image-wrap relative mx-auto w-full max-w-[35rem] lg:max-w-[38rem] lg:justify-self-end">
               <div className="absolute -inset-4 rounded-[2rem] bg-[radial-gradient(ellipse_at_center,rgba(17,97,73,0.08),transparent_68%)]" aria-hidden="true" />
-              <div className="relative overflow-hidden rounded-[1.55rem] border border-action/10 bg-[#fffdf7]/90 p-1.5 shadow-[0_22px_62px_rgba(7,26,24,0.12)]">
+              <div className="relative overflow-hidden rounded-[1.55rem] border border-action/15 bg-[#fffdf7]/90 p-1.5 shadow-[0_26px_74px_rgba(7,26,24,0.16)]">
                 <Image
                   src="/images/hero-critique.png"
                   alt="Contributor reviewing product feedback with approved submission badge"
@@ -282,7 +287,7 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-        </section>
+          </section>
         </div>
 
         <section

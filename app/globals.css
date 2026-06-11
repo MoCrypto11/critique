@@ -97,25 +97,27 @@ button {
   position: relative;
   isolation: isolate;
   overflow: hidden;
+  border-top: 1px solid rgba(17, 97, 73, 0.06);
   background:
-    linear-gradient(180deg, rgba(255, 254, 249, 0.82), rgba(248, 245, 235, 0.86) 70%),
-    radial-gradient(ellipse at 76% 42%, rgba(17, 97, 73, 0.13), transparent 27rem),
-    radial-gradient(ellipse at 12% 18%, rgba(198, 168, 106, 0.12), transparent 23rem);
+    radial-gradient(ellipse at 78% 44%, rgba(17, 97, 73, 0.18), transparent 29rem),
+    radial-gradient(ellipse at 83% 18%, rgba(121, 216, 175, 0.16), transparent 21rem),
+    radial-gradient(ellipse at 12% 18%, rgba(198, 168, 106, 0.13), transparent 22rem),
+    linear-gradient(135deg, #fffaf0 0%, #f2f6eb 46%, #eaf4eb 100%);
 }
 
 .home-hero-band::before {
   content: "";
   position: absolute;
-  right: max(-20vw, -16rem);
-  top: -8rem;
-  width: min(92vw, 78rem);
-  height: 48rem;
+  right: max(-17vw, -13rem);
+  top: -7rem;
+  width: min(88vw, 74rem);
+  height: 50rem;
   pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg width='1300' height='820' viewBox='0 0 1300 820' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg stroke-linecap='round'%3E%3Cpath d='M92 706C294 452 554 313 873 291C1076 277 1241 329 1365 449' stroke='%23116149' stroke-opacity='.16' stroke-width='1.2'/%3E%3Cpath d='M18 596C240 376 516 266 848 268C1088 270 1282 346 1432 493' stroke='%2379D8AF' stroke-opacity='.18' stroke-width='1' stroke-dasharray='18 24'/%3E%3Cpath d='M244 143C434 58 635 64 844 164C993 235 1110 342 1192 485' stroke='%23071A18' stroke-opacity='.09' stroke-width='1'/%3E%3Cpath d='M430 786C560 610 727 514 929 501C1106 490 1255 551 1378 686' stroke='%23116149' stroke-opacity='.12' stroke-width='1' stroke-dasharray='5 18'/%3E%3Cpath d='M548 78C639 188 752 255 887 278C993 297 1083 277 1158 220' stroke='%23C6A86A' stroke-opacity='.16' stroke-width='.9'/%3E%3C/g%3E%3Ccircle cx='873' cy='291' r='3' fill='%23116149' fill-opacity='.16'/%3E%3Ccircle cx='848' cy='268' r='2.5' fill='%2379D8AF' fill-opacity='.22'/%3E%3Ccircle cx='887' cy='278' r='2' fill='%23C6A86A' fill-opacity='.18'/%3E%3C/svg%3E");
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
-  opacity: 0.78;
+  opacity: 0.96;
   transform-origin: 58% 34%;
   z-index: 0;
   animation: heroBandDrift 38s ease-in-out infinite alternate;
@@ -125,9 +127,11 @@ button {
   content: "";
   position: absolute;
   inset: auto 0 0 0;
-  height: 8rem;
+  height: 9rem;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(248, 245, 235, 0), #f8f5eb 86%);
+  background:
+    linear-gradient(180deg, rgba(248, 245, 235, 0), #f8f5eb 84%),
+    linear-gradient(90deg, transparent, rgba(17, 97, 73, 0.1), transparent);
   z-index: 0;
 }
 
@@ -159,6 +163,39 @@ button {
   opacity: 1;
 }
 
+.hero-image-wrap {
+  position: relative;
+  isolation: isolate;
+}
+
+.hero-image-wrap::before {
+  content: "";
+  position: absolute;
+  inset: -1.8rem -1.4rem -1.6rem 3.5rem;
+  border: 1px solid rgba(17, 97, 73, 0.12);
+  border-radius: 2rem;
+  background:
+    linear-gradient(145deg, rgba(7, 26, 24, 0.12), rgba(121, 216, 175, 0.12) 48%, rgba(255, 253, 247, 0.28)),
+    radial-gradient(ellipse at 78% 22%, rgba(198, 168, 106, 0.12), transparent 58%);
+  transform: rotate(-2.4deg);
+  z-index: -2;
+}
+
+.hero-image-wrap::after {
+  content: "";
+  position: absolute;
+  right: -2.4rem;
+  top: 1.1rem;
+  width: 18rem;
+  height: 14rem;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='320' height='240' viewBox='0 0 320 240' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg stroke='%23116149' stroke-linecap='round'%3E%3Cpath d='M42 54H158' stroke-opacity='.24'/%3E%3Cpath d='M112 54V112' stroke-opacity='.16'/%3E%3Cpath d='M112 112H226' stroke-opacity='.18'/%3E%3Cpath d='M184 112V174' stroke-opacity='.14'/%3E%3Cpath d='M84 176H184' stroke-opacity='.14'/%3E%3C/g%3E%3Ccircle cx='112' cy='54' r='2.5' fill='%2379D8AF' fill-opacity='.32'/%3E%3Ccircle cx='112' cy='112' r='2.5' fill='%23116149' fill-opacity='.22'/%3E%3Ccircle cx='184' cy='174' r='2.5' fill='%23C6A86A' fill-opacity='.26'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: 0.78;
+  z-index: -1;
+}
+
 .hero-stage {
   position: relative;
   isolation: isolate;
@@ -168,15 +205,15 @@ button {
 .hero-stage::before {
   content: "";
   position: absolute;
-  right: max(-12vw, -8rem);
-  top: 4rem;
-  width: min(46vw, 34rem);
-  height: min(34vw, 24rem);
+  right: max(-10vw, -7rem);
+  top: 3.4rem;
+  width: min(50vw, 38rem);
+  height: min(36vw, 27rem);
   pointer-events: none;
   background:
-    radial-gradient(ellipse at center, rgba(17, 97, 73, 0.085), rgba(121, 216, 175, 0.038) 34%, transparent 68%),
+    radial-gradient(ellipse at center, rgba(17, 97, 73, 0.12), rgba(121, 216, 175, 0.06) 34%, transparent 68%),
     linear-gradient(145deg, rgba(255, 253, 247, 0.42), transparent 44%);
-  opacity: 0.9;
+  opacity: 0.94;
   z-index: 0;
 }
 
@@ -198,7 +235,7 @@ button {
   width: min(62vw, 51rem);
   height: min(48vw, 38rem);
   pointer-events: none;
-  opacity: 0.68;
+  opacity: 0.84;
   animation: heroArcBreath 30s ease-in-out infinite;
 }
 
@@ -242,7 +279,7 @@ button {
     top: 6rem;
     width: 54rem;
     height: 36rem;
-    opacity: 0.34;
+    opacity: 0.42;
   }
 
   .hero-stage::before {
@@ -251,6 +288,16 @@ button {
     width: 34rem;
     height: 24rem;
     opacity: 0.45;
+  }
+
+  .hero-image-wrap::before {
+    inset: -1rem -0.6rem -1rem 1.4rem;
+    border-radius: 1.6rem;
+    transform: rotate(-1.4deg);
+  }
+
+  .hero-image-wrap::after {
+    display: none;
   }
 
   .hero-orbits {
