@@ -23,7 +23,7 @@ import type { LucideIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { FeedbackTypeIcon } from "@/components/FeedbackTypeIcon";
-import { HeroMotionBackground } from "@/components/HeroMotionBackground";
+import { HeroArcMotionLayer } from "@/components/HeroArcMotionLayer";
 import type { FeedbackType } from "@/lib/feedbackRewards";
 import { ensureDemoBounty } from "@/lib/storage";
 
@@ -191,7 +191,7 @@ export default function HomePage() {
       <AppHeader />
       <main>
         <div className="home-hero-band">
-          <HeroMotionBackground />
+          <HeroArcMotionLayer />
           <section className="hero-stage mx-auto w-full max-w-7xl px-4 pb-20 pt-16 sm:px-6 sm:pb-24 sm:pt-20 lg:px-8 lg:pb-28 lg:pt-24">
             <div className="relative z-10">
               <p className="eyebrow">Useful feedback. USDC rewards.</p>

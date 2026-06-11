@@ -123,15 +123,6 @@ button {
   background: transparent;
 }
 
-/* Warm ivory tint in the mid-zone only — fades to transparent at all four edges */
-.home-hero-band::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
-  background: radial-gradient(ellipse 130% 80% at 62% 55%, rgba(205, 200, 174, 0.36) 0%, transparent 72%);
-}
 
 /* Bottom fade — matches body background exactly, no colour seam */
 .home-hero-band::after {
@@ -144,7 +135,7 @@ button {
   z-index: 1;
 }
 
-.home-hero-band > .hero-motion-background {
+.home-hero-band > .hero-arc-motion-layer {
   z-index: 0;
 }
 
@@ -153,147 +144,60 @@ button {
   z-index: 2;
 }
 
-/* ─── Hero motion background (full-band geometry layer) ────────────────── */
+/* ─── Hero arc motion layer ────────────────────────────────────────────── */
 
-.hero-motion-background {
+/*
+  Extends -18% beyond the band top/bottom and -10% on sides so the SVG scene
+  is larger than the clip area. The vertical mask fades the geometry to
+  transparent at both the top and bottom edges so the hero dissolves into the
+  page background with no hard rectangular edge.
+*/
+.hero-arc-motion-layer {
   position: absolute;
-  inset: 0;
+  inset: -18% -10%;
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
-  /* Fade geometry/glows at top and bottom — eliminates hard rectangular clip edge */
   -webkit-mask-image: linear-gradient(
     to bottom,
     transparent 0%,
-    rgba(0, 0, 0, 0.75) 8%,
-    black 18%,
-    black 74%,
-    rgba(0, 0, 0, 0.40) 88%,
+    black 14%,
+    black 82%,
     transparent 100%
   );
   mask-image: linear-gradient(
     to bottom,
     transparent 0%,
-    rgba(0, 0, 0, 0.75) 8%,
-    black 18%,
-    black 74%,
-    rgba(0, 0, 0, 0.40) 88%,
+    black 14%,
+    black 82%,
     transparent 100%
   );
 }
 
-.hero-geo-svg {
-  position: absolute;
-  inset: 0;
+/*
+  Horizontal mask on the SVG itself: keeps the left/text zone very faint and
+  ramps to full opacity on the right open side.
+  At 38% (text boundary): mask ≈ 0.22 → arcs read at ~7% effective opacity.
+  At 58%: mask = 0.78; at 70%+: mask = 1.0 — arcs fully legible.
+*/
+.hero-arc-motion-svg {
   width: 100%;
   height: 100%;
-  overflow: visible;
-  /* Faint behind text, full opacity on right. Arc paths now start at x≥600
-     so the left-zone fade mostly just dims the secondary arc bottoms — the
-     primary arc tops at x=1200+ are always at mask=1.0. */
+  display: block;
   -webkit-mask-image: linear-gradient(
-    to right,
-    rgba(0, 0, 0, 0.06) 0%,
+    90deg,
+    rgba(0, 0, 0, 0.08) 0%,
     rgba(0, 0, 0, 0.22) 38%,
-    rgba(0, 0, 0, 0.78) 56%,
+    rgba(0, 0, 0, 0.78) 58%,
     rgba(0, 0, 0, 1.00) 70%
   );
   mask-image: linear-gradient(
-    to right,
-    rgba(0, 0, 0, 0.06) 0%,
+    90deg,
+    rgba(0, 0, 0, 0.08) 0%,
     rgba(0, 0, 0, 0.22) 38%,
-    rgba(0, 0, 0, 0.78) 56%,
+    rgba(0, 0, 0, 0.78) 58%,
     rgba(0, 0, 0, 1.00) 70%
   );
-}
-
-/* Primary sweep — arc tops at x=1200+ are in full-opacity zone; 280px range
-   means ~78px visible shift in 5 s on a 18s period. */
-.orbit-primary {
-  will-change: transform;
-  animation: orbitSweepPrimary 18s linear infinite alternate;
-}
-
-/* Secondary sweep — counter-phase; arc bottoms at x=1176–1250 fully visible. */
-.orbit-secondary {
-  will-change: transform;
-  animation: orbitSweepSecondary 26s linear infinite alternate;
-}
-
-/* Accent group translate + inner path runs dashoffset independently. */
-.orbit-accent {
-  will-change: transform;
-  animation: orbitSweepAccent 22s linear infinite alternate;
-}
-
-/* Flowing dash along the accent arc — dashoffset travels 880 units (≈ arc length)
-   per cycle, creating unmistakable visible motion at 63 units/s. */
-.orbit-dash-flow {
-  will-change: stroke-dashoffset;
-  animation: orbitDashFlow 14s linear infinite;
-}
-
-/* Pulse nodes: opacity + scale pop */
-.hero-node-pulse {
-  transform-box: fill-box;
-  transform-origin: center;
-  will-change: opacity, transform;
-  animation: nodePulse 3s ease-in-out infinite;
-}
-
-/* Horizontal scan line traverses the full band */
-.hero-scan-line {
-  position: absolute;
-  top: 42%;
-  left: 0;
-  width: 220px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(17, 97, 73, 0.50) 50%, transparent);
-  pointer-events: none;
-  animation: heroScanLine 8s linear infinite;
-}
-
-/* ─── Ambient glow blobs ───────────────────────────────────────────────── */
-
-.hero-ambient-glow {
-  position: absolute;
-  border-radius: 999px;
-  pointer-events: none;
-  filter: blur(52px);
-  transform-origin: center;
-  will-change: opacity, transform;
-}
-
-/* Right-side mint glow — main accent behind arc rings */
-.hero-ambient-glow-primary {
-  width: 580px;
-  height: 580px;
-  right: 4%;
-  top: -18%;
-  background: rgba(121, 216, 175, 0.22);
-  animation: heroGlowPulse 8s ease-in-out infinite alternate;
-}
-
-/* Lower-left green glow — balances the right-side primary */
-.hero-ambient-glow-secondary {
-  width: 380px;
-  height: 380px;
-  left: -4%;
-  bottom: -16%;
-  background: rgba(17, 97, 73, 0.18);
-  animation: heroGlowPulseSecondary 12s ease-in-out infinite alternate;
-}
-
-/* Warm centre-top highlight — subtle ivory lift above the headline */
-.hero-ambient-glow-tertiary {
-  width: 520px;
-  height: 260px;
-  left: 50%;
-  top: -8%;
-  transform: translateX(-50%);
-  background: rgba(255, 253, 245, 0.50);
-  filter: blur(44px);
-  animation: heroGlowPulseTertiary 16s ease-in-out infinite alternate;
 }
 
 /* ─── Home sections ────────────────────────────────────────────────────── */
@@ -355,109 +259,36 @@ button {
     overflow: hidden;
   }
 
-  /* Smaller glows on mobile */
-  .hero-ambient-glow-primary {
-    right: -14%;
-    top: -4%;
-    width: 260px;
-    height: 260px;
-    filter: blur(36px);
+  /* Pull arc layer closer to band on small screens; reduce opacity so
+     dense small-viewport layout stays readable */
+  .hero-arc-motion-layer {
+    inset: -8% -50%;
+    opacity: 0.55;
   }
 
-  .hero-ambient-glow-secondary {
-    display: none;
+  .hero-arc-motion-svg {
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.05) 0%,
+      rgba(0, 0, 0, 0.18) 45%,
+      rgba(0, 0, 0, 0.70) 100%
+    );
+    mask-image: linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.05) 0%,
+      rgba(0, 0, 0, 0.18) 45%,
+      rgba(0, 0, 0, 0.70) 100%
+    );
   }
-
-  .hero-ambient-glow-tertiary {
-    display: none;
-  }
-
-  /* Hide orbital geometry on mobile */
-  .orbit-primary,
-  .orbit-secondary,
-  .orbit-accent,
-  .hero-scan-line {
-    display: none;
-  }
-}
-
-/* ─── Keyframes ────────────────────────────────────────────────────────── */
-
-/*
-  Orbital sweep keyframes — pure translate only. The SVG <path> arcs already have
-  the correct curvature; adding rotate would skew them in unnatural directions.
-  280px horizontal range / 18s = 15.6px per second → 78px visible shift by t=5s.
-*/
-@keyframes orbitSweepPrimary {
-  from { transform: translate(-140px,  35px); }
-  to   { transform: translate( 140px, -35px); }
-}
-
-@keyframes orbitSweepSecondary {
-  from { transform: translate( 110px, -30px); }
-  to   { transform: translate(-110px,  50px); }
-}
-
-@keyframes orbitSweepAccent {
-  from { transform: translate( -70px,  50px); }
-  to   { transform: translate(  90px, -40px); }
-}
-
-@keyframes orbitDashFlow {
-  from { stroke-dashoffset:    0; }
-  to   { stroke-dashoffset: -880; }
-}
-
-@keyframes nodePulse {
-  0%, 100% { opacity: 0.22; transform: scale(1); }
-  50%       { opacity: 0.90; transform: scale(1.7); }
-}
-
-@keyframes heroScanLine {
-  0%   { transform: translateX(-220px); opacity: 0; }
-  6%   { opacity: 1; }
-  94%  { opacity: 1; }
-  100% { transform: translateX(1660px); opacity: 0; }
-}
-
-@keyframes heroGlowPulse {
-  from {
-    transform: scale(1) translate3d(0, 0, 0);
-    opacity: 0.18;
-  }
-  to {
-    transform: scale(1.12) translate3d(-14px, 8px, 0);
-    opacity: 0.52;
-  }
-}
-
-@keyframes heroGlowPulseSecondary {
-  from {
-    transform: scale(1) translate3d(0, 0, 0);
-    opacity: 0.16;
-  }
-  to {
-    transform: scale(1.08) translate3d(12px, -8px, 0);
-    opacity: 0.48;
-  }
-}
-
-@keyframes heroGlowPulseTertiary {
-  from { opacity: 0.22; transform: translateX(-50%) scale(1); }
-  to   { opacity: 0.52; transform: translateX(-50%) scale(1.08); }
 }
 
 /* ─── Reduced motion ───────────────────────────────────────────────────── */
 
+/* SVG-native animation (<animate>, <animateTransform>) is not affected by
+   CSS animation: none. Hide the entire layer for users who prefer no motion. */
 @media (prefers-reduced-motion: reduce) {
-  .hero-ambient-glow,
-  .orbit-primary,
-  .orbit-secondary,
-  .orbit-accent,
-  .orbit-dash-flow,
-  .hero-node-pulse,
-  .hero-scan-line {
-    animation: none !important;
+  .hero-arc-motion-layer {
+    display: none;
   }
 }
 
@@ -471,26 +302,3 @@ button {
   font-weight: 650;
 }
 
-/*
-  ─── DEBUG MODE — uncomment to prove animation mechanism locally ─────────────
-  Removes masks, cranks stroke to red at 0.9 opacity, 3s fast sweep.
-  NEVER commit this block. Remove before npm run build.
-
-.hero-geo-svg,
-.hero-motion-background {
-  mask-image: none !important;
-  -webkit-mask-image: none !important;
-}
-.orbit-primary {
-  animation: debugFastSweep 3s linear infinite alternate !important;
-}
-.orbit-primary path {
-  stroke: #cc0000 !important;
-  stroke-opacity: 0.9 !important;
-  stroke-width: 5px !important;
-}
-@keyframes debugFastSweep {
-  from { transform: translateX(-200px); }
-  to   { transform: translateX( 200px); }
-}
-  ─── END DEBUG ───────────────────────────────────────────────────────────── */
