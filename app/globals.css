@@ -93,19 +93,74 @@ button {
   @apply rounded-2xl border p-4 text-sm;
 }
 
+.home-visual-system {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 74% 12%, rgba(121, 216, 175, 0.22), transparent 28rem),
+    radial-gradient(circle at 16% 36%, rgba(17, 97, 73, 0.08), transparent 25rem),
+    linear-gradient(180deg, #fbf8ef 0%, #f5f2e8 48%, #f8f5eb 100%);
+}
+
+.home-visual-system::before {
+  content: "";
+  position: absolute;
+  inset: -8rem -12rem auto -12rem;
+  height: 54rem;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='1500' height='900' viewBox='0 0 1500 900' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg stroke-linecap='round'%3E%3Cpath d='M72 704C288 422 565 270 903 247C1133 232 1312 293 1442 430' stroke='%23116149' stroke-opacity='.13' stroke-width='1.15'/%3E%3Cpath d='M-12 574C220 336 512 218 864 220C1117 221 1322 302 1478 461' stroke='%23071A18' stroke-opacity='.08' stroke-width='1' stroke-dasharray='18 24'/%3E%3Cpath d='M235 103C433 22 640 35 855 141C1014 220 1138 336 1228 491' stroke='%2379D8AF' stroke-opacity='.18' stroke-width='1'/%3E%3Cpath d='M426 854C566 635 746 515 966 499C1164 484 1326 556 1452 713' stroke='%23116149' stroke-opacity='.1' stroke-width='1' stroke-dasharray='5 18'/%3E%3C/g%3E%3Ccircle cx='904' cy='247' r='3' fill='%23116149' fill-opacity='.18'/%3E%3Ccircle cx='864' cy='220' r='2.5' fill='%2379D8AF' fill-opacity='.2'/%3E%3Ccircle cx='966' cy='499' r='2.5' fill='%23116149' fill-opacity='.16'/%3E%3C/svg%3E");
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-size: min(110rem, 145vw) auto;
+  opacity: 0.82;
+  transform-origin: 58% 36%;
+  z-index: 0;
+  animation: homeGeometryDrift 38s ease-in-out infinite alternate;
+}
+
+.home-visual-system::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(251, 248, 239, 0) 0%, rgba(251, 248, 239, 0.72) 46rem, rgba(248, 245, 235, 0.96) 64rem),
+    radial-gradient(ellipse at 82% 25rem, rgba(7, 26, 24, 0.08), transparent 30rem);
+  z-index: 0;
+}
+
+.home-visual-system > header,
+.home-visual-system > main {
+  position: relative;
+  z-index: 1;
+}
+
+.home-visual-system .page-shell {
+  position: relative;
+  z-index: 1;
+}
+
+.home-visual-system .surface {
+  background-color: rgba(255, 253, 247, 0.88);
+  box-shadow:
+    0 16px 42px rgba(23, 32, 29, 0.055),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
 .hero-stage {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  border-radius: 2rem;
-  color: #fff8ec;
+  border: 1px solid rgba(17, 97, 73, 0.12);
+  border-radius: 2.25rem;
   background:
-    radial-gradient(circle at 78% 40%, rgba(15, 107, 86, 0.46), rgba(8, 40, 32, 0.18) 32%, rgba(6, 27, 22, 0) 58%),
-    radial-gradient(ellipse at 18% 16%, rgba(121, 216, 175, 0.13), rgba(6, 27, 22, 0) 36%),
-    linear-gradient(135deg, #061b16 0%, #082820 48%, #03100d 100%);
+    radial-gradient(circle at 78% 40%, rgba(121, 216, 175, 0.23), transparent 25rem),
+    radial-gradient(ellipse at 16% 16%, rgba(255, 253, 247, 0.92), rgba(255, 253, 247, 0.42) 34%, transparent 68%),
+    linear-gradient(135deg, rgba(255, 253, 247, 0.92), rgba(239, 247, 238, 0.86) 48%, rgba(215, 236, 225, 0.82));
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 34px 96px rgba(7, 26, 24, 0.16);
+    0 26px 80px rgba(7, 26, 24, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .hero-stage::before {
@@ -114,8 +169,8 @@ button {
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(120deg, rgba(255, 248, 236, 0.1), rgba(255, 248, 236, 0) 24%),
-    url("data:image/svg+xml,%3Csvg width='1200' height='700' viewBox='0 0 1200 700' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg stroke='%23DDF7E8' stroke-linecap='round'%3E%3Cpath d='M835 86H1114' stroke-opacity='.12'/%3E%3Cpath d='M1018 86V252' stroke-opacity='.08'/%3E%3Cpath d='M934 252H1138' stroke-opacity='.08'/%3E%3Cpath d='M52 540H294' stroke-opacity='.08'/%3E%3Cpath d='M294 540V636' stroke-opacity='.06'/%3E%3Cpath d='M88 618H362' stroke-opacity='.06'/%3E%3C/g%3E%3Ccircle cx='1018' cy='86' r='2' fill='%23DDF7E8' fill-opacity='.16'/%3E%3Ccircle cx='934' cy='252' r='2' fill='%2379D8AF' fill-opacity='.16'/%3E%3Ccircle cx='294' cy='540' r='2' fill='%2379D8AF' fill-opacity='.12'/%3E%3C/svg%3E");
+    linear-gradient(120deg, rgba(255, 255, 255, 0.52), rgba(255, 255, 255, 0) 28%),
+    url("data:image/svg+xml,%3Csvg width='1200' height='720' viewBox='0 0 1200 720' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg stroke='%23116149' stroke-linecap='round'%3E%3Cpath d='M846 92H1118' stroke-opacity='.1'/%3E%3Cpath d='M1020 92V252' stroke-opacity='.08'/%3E%3Cpath d='M934 252H1146' stroke-opacity='.08'/%3E%3Cpath d='M78 552H302' stroke-opacity='.07'/%3E%3Cpath d='M302 552V636' stroke-opacity='.055'/%3E%3Cpath d='M102 618H372' stroke-opacity='.055'/%3E%3C/g%3E%3Ccircle cx='1020' cy='92' r='2' fill='%23116149' fill-opacity='.12'/%3E%3Ccircle cx='934' cy='252' r='2' fill='%2379D8AF' fill-opacity='.14'/%3E%3Ccircle cx='302' cy='552' r='2' fill='%23116149' fill-opacity='.1'/%3E%3C/svg%3E");
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -123,15 +178,28 @@ button {
   z-index: 0;
 }
 
+.hero-stage::after {
+  content: "";
+  position: absolute;
+  inset: auto -10% -28% 28%;
+  height: 34rem;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at center, rgba(17, 97, 73, 0.14), transparent 68%),
+    linear-gradient(90deg, rgba(7, 26, 24, 0.08), transparent 70%);
+  opacity: 0.85;
+  z-index: 0;
+}
+
 .hero-orbits {
   position: absolute;
-  right: clamp(-16rem, -13vw, -5rem);
-  top: clamp(-8rem, -7vw, -3rem);
+  right: clamp(-15rem, -13vw, -5rem);
+  top: clamp(-7rem, -6vw, -2.5rem);
   z-index: 1;
   width: min(76vw, 58rem);
   height: min(68vw, 50rem);
   pointer-events: none;
-  opacity: 0.74;
+  opacity: 0.72;
   animation: heroArcBreath 24s ease-in-out infinite;
 }
 
@@ -166,13 +234,19 @@ button {
 }
 
 @media (max-width: 767px) {
+  .home-visual-system::before {
+    inset: -5rem -18rem auto -18rem;
+    height: 42rem;
+    opacity: 0.42;
+  }
+
   .hero-stage {
     border-radius: 0;
     box-shadow: none;
   }
 
   .hero-stage::before {
-    opacity: 0.36;
+    opacity: 0.42;
   }
 
   .hero-orbits {
@@ -180,7 +254,17 @@ button {
     top: 10rem;
     width: 44rem;
     height: 34rem;
-    opacity: 0.42;
+    opacity: 0.38;
+  }
+}
+
+@keyframes homeGeometryDrift {
+  from {
+    transform: translate3d(-10px, -4px, 0) rotate(-0.5deg);
+  }
+
+  to {
+    transform: translate3d(14px, 8px, 0) rotate(0.7deg);
   }
 }
 
@@ -216,6 +300,7 @@ button {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .home-visual-system::before,
   .hero-orbits,
   .hero-orbits svg,
   .hero-orbits-secondary {

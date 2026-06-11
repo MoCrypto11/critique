@@ -186,7 +186,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <>
+    <div className="home-visual-system">
       <AppHeader />
       <main>
         <section className="hero-stage mx-auto mt-2 grid w-full max-w-6xl px-4 pb-11 pt-12 sm:px-6 sm:pb-14 sm:pt-14 lg:px-8 lg:pb-16 lg:pt-16">
@@ -195,79 +195,73 @@ export default function HomePage() {
               <g strokeLinecap="round">
                 <path
                   d="M36 618C188 396 397 278 662 264C795 257 902 291 984 367"
-                  stroke="#DDF7E8"
-                  strokeOpacity="0.2"
+                  stroke="#116149"
+                  strokeOpacity="0.19"
                   strokeWidth="1.2"
                 />
                 <path
                   d="M4 508C164 316 371 214 625 203C772 197 897 237 1002 323"
                   stroke="#79D8AF"
                   strokeDasharray="18 22"
-                  strokeOpacity="0.22"
+                  strokeOpacity="0.24"
                   strokeWidth="1"
                 />
                 <path
                   d="M142 128C312 51 489 59 676 151C793 209 880 292 936 402"
-                  stroke="#DDF7E8"
-                  strokeOpacity="0.14"
+                  stroke="#071A18"
+                  strokeOpacity="0.11"
                   strokeWidth="1"
                 />
                 <path
                   d="M288 684C405 529 548 448 716 443C835 440 935 480 1018 561"
-                  stroke="#0F6B56"
+                  stroke="#116149"
                   strokeDasharray="5 18"
-                  strokeOpacity="0.28"
+                  strokeOpacity="0.18"
                   strokeWidth="1.1"
                 />
               </g>
               <g className="hero-orbits-secondary" strokeLinecap="round">
                 <path
                   d="M346 42C438 162 551 237 685 265C801 289 903 273 990 217"
-                  stroke="#DDF7E8"
-                  strokeOpacity="0.12"
+                  stroke="#071A18"
+                  strokeOpacity="0.09"
                   strokeWidth="1"
                 />
                 <path
                   d="M210 332C335 256 472 230 621 254C762 277 877 340 966 443"
                   stroke="#79D8AF"
-                  strokeOpacity="0.14"
+                  strokeOpacity="0.18"
                   strokeWidth="0.9"
                 />
               </g>
-              <circle cx="662" cy="264" r="3" fill="#DDF7E8" fillOpacity="0.22" />
+              <circle cx="662" cy="264" r="3" fill="#116149" fillOpacity="0.18" />
               <circle cx="625" cy="203" r="2.5" fill="#79D8AF" fillOpacity="0.28" />
-              <circle cx="716" cy="443" r="2.5" fill="#DDF7E8" fillOpacity="0.18" />
+              <circle cx="716" cy="443" r="2.5" fill="#116149" fillOpacity="0.14" />
             </svg>
           </div>
-          <div className="relative z-10 grid items-center gap-7 lg:grid-cols-[0.92fr_1.08fr] lg:gap-10">
+          <div className="relative z-10 grid items-center gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:gap-10">
             <div className="max-w-3xl">
-              <p className="eyebrow text-[#b7efcf]">Useful feedback. USDC rewards.</p>
-              <h1 className="font-display mt-4 max-w-3xl text-[clamp(3.1rem,6.7vw,6.1rem)] leading-[0.97] tracking-normal text-[#fff8ec]">
+              <p className="eyebrow">Useful feedback. USDC rewards.</p>
+              <h1 className="font-display mt-4 max-w-3xl text-[clamp(3rem,6.35vw,5.7rem)] leading-[0.98] tracking-normal text-ink">
                 Feedback bounties for early product teams
               </h1>
-              <p className="mt-7 max-w-[39rem] text-lg font-bold leading-8 text-[#c9d9d1] sm:text-xl sm:leading-9">
+              <p className="mt-7 max-w-[39rem] text-lg font-bold leading-8 text-[#315145] sm:text-xl sm:leading-9">
                 Create a focused bounty, share one public link, review submissions, and approve USDC rewards for useful
                 product feedback.
               </p>
               <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-                <Link
-                  href="/create"
-                  className="focus-ring inline-flex min-h-12 items-center justify-center rounded-xl bg-[#ddf6e1] px-5 py-3 text-sm font-black text-[#061b16] transition-colors hover:bg-[#fff8ec] focus:ring-offset-[#061b16]"
-                >
+                <Link href="/create" className="btn-primary transition-transform hover:-translate-y-0.5">
                   Create a bounty
                 </Link>
-                <Link
-                  href="/bounty/demo"
-                  className="focus-ring inline-flex min-h-12 items-center justify-center rounded-xl border border-white/20 bg-white/[0.06] px-5 py-3 text-sm font-black text-white transition-colors hover:border-white/[0.35] hover:bg-white/[0.1] focus:ring-offset-[#061b16]"
-                >
+                <Link href="/bounty/demo" className="btn-secondary transition-transform hover:-translate-y-0.5">
                   Preview bounty link
                 </Link>
               </div>
             </div>
 
             <div className="relative mx-auto w-full max-w-[36rem] lg:max-w-[41rem] lg:justify-self-end">
-              <div className="absolute -inset-5 rounded-[2.1rem] bg-[#79d8af]/10" aria-hidden="true" />
-              <div className="relative overflow-hidden rounded-[1.75rem] border border-white/[0.14] bg-white/[0.08] p-2 shadow-[0_34px_92px_rgba(0,0,0,0.36)]">
+              <div className="absolute -inset-6 rounded-[2.4rem] bg-[radial-gradient(ellipse_at_center,rgba(17,97,73,0.16),transparent_66%)]" aria-hidden="true" />
+              <div className="relative overflow-hidden rounded-[1.8rem] border border-action/15 bg-[#fffdf7]/75 p-2 shadow-[0_34px_92px_rgba(7,26,24,0.18)] backdrop-blur-sm">
                 <Image
                   src="/images/hero-critique.png"
                   alt="Contributor reviewing product feedback with approved submission badge"
@@ -275,7 +269,7 @@ export default function HomePage() {
                   height={1200}
                   priority
                   sizes="(min-width: 1024px) 52vw, 100vw"
-                  className="block h-auto w-full rounded-[1.45rem] bg-[#fbfaf4] object-contain"
+                  className="block h-auto w-full rounded-[1.5rem] bg-[#fbfaf4] object-contain"
                 />
               </div>
             </div>
@@ -557,6 +551,6 @@ export default function HomePage() {
           </div>
         </section>
       </main>
-    </>
+    </div>
   );
 }
