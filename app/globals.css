@@ -119,19 +119,28 @@ button {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  /* Transparent: body gradient shows through — no visible top edge */
   background: transparent;
 }
 
+/* Top fade — dissolves the arc layer into the page header area */
+.home-hero-band::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 7rem;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 254, 249, 0.96) 0%, rgba(255, 254, 249, 0.55) 55%, transparent 100%);
+  z-index: 1;
+}
 
 /* Bottom fade — matches body background exactly, no colour seam */
 .home-hero-band::after {
   content: "";
   position: absolute;
   inset: auto 0 0 0;
-  height: 14rem;
+  height: 18rem;
   pointer-events: none;
-  background: linear-gradient(180deg, transparent 0%, rgba(248, 245, 235, 0.86) 72%, rgba(251, 252, 248, 0.99) 100%);
+  background: linear-gradient(180deg, transparent 0%, rgba(248, 245, 235, 0.75) 55%, rgba(248, 245, 235, 1.00) 100%);
   z-index: 1;
 }
 
@@ -160,26 +169,30 @@ button {
   -webkit-mask-image: linear-gradient(
     to bottom,
     transparent 0%,
-    black 12%,
-    black 84%,
+    transparent 10%,
+    black 24%,
+    black 76%,
+    transparent 90%,
     transparent 100%
   );
   mask-image: linear-gradient(
     to bottom,
     transparent 0%,
-    black 12%,
-    black 84%,
+    transparent 10%,
+    black 24%,
+    black 76%,
+    transparent 90%,
     transparent 100%
   );
 }
 
-/* CSS blur glow blob — positioned in the right/open zone of the hero */
+/* CSS blur glow blob — kept within the visible band to avoid blur clip edges */
 .hero-arc-glow {
   position: absolute;
   right: -8%;
-  top: -5%;
+  top: 8%;
   width: 60%;
-  height: 110%;
+  height: 84%;
   background: radial-gradient(
     ellipse 70% 65% at 65% 42%,
     rgba(121, 216, 175, 0.20) 0%,
