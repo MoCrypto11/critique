@@ -1,212 +1,208 @@
-# Critique — Launch QA / Stress-Test Report
+# Critique — Launch QA / Stress-Test Report (v2, real workflow data)
 
 - **Date:** 2026-06-11
-- **Production domain tested:** https://usecritique.xyz (HTTP 200, served by Vercel, no redirect away from the apex domain)
-- **Local project:** D:\CritiqueDrop
-- **Network:** Arc Testnet only (chain id `5042002`, RPC `https://rpc.testnet.arc.network`). Mainnet not used. Mock mode disabled (`NEXT_PUBLIC_ENABLE_MOCK_MODE=false`).
+- **Production URL tested:** https://usecritique.xyz (HTTP 200, Vercel, HSTS present)
+- **Local env tested:** D:\CritiqueDrop on Arc Testnet (chain id `5042002`, RPC `rpc.testnet.arc.network`)
+- **Network:** Arc Testnet only. Mainnet not used. Mock mode off.
+- **Founder/test wallet:** `0x0D9E6a5104770B65417C7B90dfa40f1E677E687A`
+
+> This run executed the **real on-chain + real Supabase workflow** using a local harness
+> (`scripts/qa/stress.mjs`) that calls the **same contract functions with the same arguments**
+> the UI builds (`BountyForm` / review page) and writes through the **same Supabase column
+> mapping** as `lib/storage.ts`. It hits the **same Supabase project** the live site uses
+> (URL confirmed identical to the production bundle). The private key is read from env and is
+> **never printed, logged, or committed**.
+>
+> **Honest limitation:** this drives the actual backend + payment path, but not the literal
+> MetaMask-in-browser click path (no wallet extension to automate). Browser-only checks
+> (invalid-form UX, wallet popups, pixel-level responsive, keyboard a11y) are covered by code
+> review + the contract suite and flagged as manual where DOM is required.
 
 ---
 
-## 0. Scope note — what this pass could and could not do
-
-This pass is a **full automated + static stress audit**: build, lint, contract test suite,
-route health on a real production server, production-domain checks, and a line-by-line audit
-of every product flow (create → submit → review → approve/payout → dashboards → wallet states).
-
-**Not executed here (requires your wallet and a funded Arc testnet account):** creating the 3
-on-chain bounties, the 8 live submissions against a Supabase-backed bounty, real approve→payout
-transactions, and multi-browser testing with live data. These need MetaMask popups, which must
-not be bypassed. The exact manual steps and what to approve are listed in
-**Section 9 — Manual test checklist (you must run)**.
-
-The reason the live data flows can't be exercised locally: `NEXT_PUBLIC_SUPABASE_ANON_KEY` is
-**absent from local `.env.local`**, so the local app falls back to `localStorage` and never
-talks to Supabase. Production presumably has the key set in Vercel (the live site builds and
-serves). See the **risk** in Section 8.
-
----
-
-## 1. Commands run
-
-| Command | Result |
-|---|---|
-| `npm run build` | ✅ Compiled successfully, 8 routes generated, no type errors |
-| `npm run lint` | ✅ No ESLint warnings or errors |
-| `npm test` (`hardhat test`) | ✅ **25/25 passing** (contract logic — see Section 5) |
-| `npm run start` + route probes | ✅ All product routes HTTP 200 (see Section 3) |
-
----
-
-## 2. Environment & config checks
+## 1. Private-key safety — PASS
 
 | Check | Result |
 |---|---|
-| `.env.local` present | ✅ |
-| `.env.local` gitignored | ✅ `git check-ignore` = ignored |
-| `.env.local` tracked by git | ✅ NOT tracked (safe — will not be committed) |
-| Arc chain id | ✅ `5042002` |
-| Arc RPC | ✅ `https://rpc.testnet.arc.network` |
-| Arc explorer | ✅ `https://testnet.arcscan.app` |
-| Mock mode | ✅ `false` (real testnet path) |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` in local `.env.local` | ⚠️ **MISSING locally** (see Section 8 risk) |
-| Stale `critique-drop-nine.vercel.app` references | ✅ None found in source |
-| Hardcoded production domain references | ✅ None — bounty links built from `window.location.origin` (portable) |
-| Production HSTS header | ✅ `Strict-Transport-Security: max-age=63072000` |
-| `/debug/supabase` exposed in production | ✅ Returns **404** in production (debug tooling not publicly reachable) |
+| `.env.local` exists | ✅ |
+| `.env.local` gitignored + untracked | ✅ |
+| Private key only in `hardhat.config.ts` (server-side) | ✅ never in app/frontend code |
+| `NEXT_PUBLIC_PRIVATE_KEY` / public PK var | ✅ none exist |
+| Private key in client bundle | ✅ impossible (only `NEXT_PUBLIC_*` is inlined) |
+| Key printed/logged by harness | ✅ never (env-only) |
+| `.env.qa.local` (recovered public anon key) | ✅ gitignored, value never printed |
 
-No private keys, service-role keys, or secret values were printed, modified, or committed.
+## 2. Production Supabase config — PASS (launch-critical)
 
----
+Confirmed by scanning the production client bundle:
+- ✅ Supabase URL **and** an `anon`-role JWT are present in production JS → **Vercel production
+  has `NEXT_PUBLIC_SUPABASE_ANON_KEY` set; production does NOT fall back to localStorage**.
+- ✅ Production Supabase URL (`ptzjyuwrjjsvyptuwffn.supabase.co`) **matches** local
+  `NEXT_PUBLIC_SUPABASE_URL` → local tests exercise the same DB the live site uses.
+- ⚠️ Local `.env.local` still lacks the anon key; recovered the **public** key into
+  `.env.qa.local` (gitignored) for local testing. *Recommend adding it to `.env.local` too.*
+- ✅ Real bounties/submissions persist through Supabase and are readable cross-session (Section 10).
 
-## 3. Route health (local production server)
+## 3. Technical baseline — PASS
 
-| Route | Status | Notes |
-|---|---|---|
-| `/` | 200 | Hero + "Create a bounty" + "Feedback bounties" render |
-| `/create` | 200 | Bounty form renders |
-| `/dashboard` | 200 | Connect-wallet state renders |
-| `/bounty/demo` | 200 | Demo bounty renders (local-only by design) |
-| `/bounty/not-real-id` | 200 | Renders clean **"Bounty not found"** client state — no crash, no error digest |
-| `/bounty/not-real-id/review` | 200 | Clean not-found state |
-| `/bounty/not-real-id/dashboard` | 200 | Clean not-found state |
-| `/debug/supabase` | 404 (local & prod) | Not part of product flow; harmless that it's inaccessible |
+| Command | Result |
+|---|---|
+| `npm run build` | ✅ success, 8 routes |
+| `npm run lint` | ✅ no warnings/errors |
+| `npm test` (hardhat) | ✅ **25/25 passing** |
 
-No raw stack traces, JSON dumps, "application error", or white screens on any route.
+## 4. Bounties created (real, on-chain + Supabase)
 
----
-
-## 4. Flow-by-flow audit (static)
-
-### Header / navigation
-- Header container width aligned to hero column (`max-w-7xl`, same padding) — earlier fix verified.
-- `AppHeader` has no border/shadow/sticky; nav wraps to its own row on mobile; wallet stays right-aligned with `whitespace-nowrap` (no overflow).
-
-### Wallet UI states — `components/WalletConnect.tsx`
-Exactly **one** control per state, no stacked boxes:
-- Disconnected → single "Connect wallet" button.
-- Connected + wrong network → single "Switch to Arc" button (adds Arc chain via `wallet_addEthereumChain` if missing — code 4902 handled).
-- Connected + Arc → single wallet pill with dropdown (Copy address / Disconnect).
-- Dropdown a11y: `aria-haspopup`, `aria-expanded`, `role="menu"/"menuitem"`, closes on Escape and outside-click.
-- Wallet error messages are humanised (`getWalletErrorMessage`): rejected → "Transaction cancelled."; wrong chain → "Switch to Arc Testnet to continue."; low balance → "Not enough USDC…".
-
-### Create bounty — `components/BountyForm.tsx`
-Validation blocks before any transaction: empty title, invalid URL (`isValidUrl` http/https), no feedback type, reward ≤ 0, slots < 1 / non-integer, past deadline, disconnected wallet, wrong network, unconfigured contract.
-Safety highlights:
-- **`ensureSharedDatabaseReachable()` runs BEFORE any wallet tx** → a Supabase outage cannot produce a paid-but-unsaved bounty.
-- USDC balance pre-check ("Not enough USDC balance").
-- `simulateContract` before the real create/fund tx catches reverts early.
-- Orphaned-bounty edge case (on-chain success + DB save failure) shows the tx hash for support recovery.
-- Submit button `disabled={isSubmitting || !canCreateBounty}` → double-click safe.
-
-### Public submission — `app/bounty/[id]/page.tsx`
-- **No wallet required to submit** (as intended); payout address validated by `looksLikeAddress` (`0x` + 40 hex).
-- Bounty + submissions load from Supabase (`getLocalBounty` / `listSubmissions`) → not localStorage-only → works cross-browser.
-- Per-type required-field validation for written / video / technical formats.
-- Blocks submission when bounty is full / expired / closed.
-- Same payout wallet cannot submit twice (client-side guard).
-- **BUG FOUND & FIXED:** submit button previously had no in-flight guard (`disabled={status !== "open"}` only). A rapid double-click could fire `onSubmit` twice against stale state → duplicate submissions. Fixed (see Section 6).
-
-### Founder review — `app/bounty/[id]/review/page.tsx`
-- Approve/Reject buttons render **only** while `status === "pending"` → an already-approved/rejected item has no action button (no duplicate-approve via UI).
-- In-flight approve guarded by `busyId` (`disabled={busy}`).
-- Per-feedback-type funded-slot check before approval.
-- Founder-mismatch guard before approval; on-chain contract is the hard gate.
-- Pending / Approved / Rejected counts derived live from the submission list.
-
-### Dashboards
-- `app/bounty/[id]/dashboard/page.tsx`: funding, approved/pending/rejected, slots, receipts, tx hashes — all derived from the same `listSubmissions` source as the review page, so **counts stay consistent** across review and dashboard. Close/Refund gated by founder + deadline/closed state.
-- `app/dashboard/page.tsx`: Created vs Contributions tabs; `loadDashboard` **clears all state when wallet is absent** and re-runs on address change → **no stale data after disconnect or wallet switch**.
-
-### FAQ
-- Real `<button aria-expanded>` accordion — keyboard operable (Enter/Space), chevron `aria-hidden`.
-
----
-
-## 5. Smart-contract test suite (read-only, contracts untouched)
-
-`npm test` → **25/25 passing**. Payment-critical guarantees confirmed on-chain:
-- ✅ same tester cannot be paid twice (per bounty)
-- ✅ same submission hash cannot be reused
-- ✅ non-founder cannot approve or refund
-- ✅ cannot approve beyond max submissions / per-type slots
-- ✅ cannot approve without enough funded balance
-- ✅ rejects zero reward / zero slots / past deadline at creation
-- ✅ founder can close and refund unused funds (after close or deadline)
-
-**Implication:** the duplicate-payout concern is backstopped at the contract layer — a repeat
-`approveSubmission` with the same hash/tester reverts, and the review UI surfaces it as a
-human-readable error rather than paying twice.
-
----
-
-## 6. Bugs found & fixed
-
-| # | Severity | Area | Finding | Fix |
+| Title | App ID (public link) | Contract ID | Funded | Create tx |
 |---|---|---|---|---|
-| 1 | **Medium (launch-relevant)** | Public feedback form | Submit button lacked an in-flight guard; rapid double-click could create duplicate submissions for the same wallet (validation re-checked stale state). | Added `isSubmitting` state, `if (isSubmitting) return;` re-entrancy guard, `disabled={status !== "open" \|\| isSubmitting}`, "Submitting…" label, reset in `finally`. `app/bounty/[id]/page.tsx`. Frontend-only; no product/contract/schema change. |
+| QA Normal Bounty - Delete Later | `bounty-mq9okm2r-6fh35q` | 4 | 2.5 USDC | `0x134e129f…ae0bcc` |
+| QA Low Reward Bounty - Delete Later | `bounty-mq9oktl6-hwx81s` | 5 | 0.1 USDC | `0x0f7e456b…9819c6` |
+| QA Edge Case Bounty - Delete Later | `bounty-mq9ol0xz-d87eoy` | 6 | 0.5 USDC | `0xf09477ed…57bd467` |
 
-No other launch blockers found. No contract, Supabase schema, payment-logic, route, or
-production-domain changes were made.
+Public links (resolve 200 on production):
+- https://usecritique.xyz/bounty/bounty-mq9okm2r-6fh35q
+- https://usecritique.xyz/bounty/bounty-mq9oktl6-hwx81s
+- https://usecritique.xyz/bounty/bounty-mq9ol0xz-d87eoy
 
----
+Each: on-chain `createAndFundBounty` succeeded (USDC `approve` → simulate → create → `BountyCreated`
+event parsed for contract id) **and** saved to Supabase with correct `founder_address`. Edge bounty
+used special characters in the product URL and a line break in instructions — saved cleanly.
 
-## 7. Responsive & accessibility (static review)
+## 5. Submissions (10 to the normal bounty)
 
-Reviewed Tailwind breakpoints and markup across homepage, create, dashboard, public bounty,
-review, and bounty dashboard. No overflow risks found:
-- Multi-column grids collapse to single column on mobile (`lg:grid-cols-[…]`).
-- Long addresses/URLs use `break-all`; public-bounty grid uses `minmax(0,1fr)` to prevent blowout.
-- Hero headline uses `clamp()`; wallet pill uses `whitespace-nowrap`.
-- All buttons are real `<button>`, all nav is real `<Link>/<a>`, every input has a `<label>`,
-  focus styles via `.focus-ring` / `focus-within:ring-2`, tap targets `min-h-11` (44px).
+10 submissions inserted via the real storage mapping, all `bounty_id = bounty-mq9okm2r-6fh35q`:
+- Types: **6 written, 2 deep product review, 1 technical proposal, 1 video walkthrough**.
+- Content variety: short, very long (×20/×60 repeats), line breaks, embedded URL, special/unicode
+  chars (`<>&"'` + emoji), harsh-but-valid critique, duplicate-like, realistic.
+- Verified: all linked to same `bounty_id`; every row has a valid `tester_wallet` (EVM regex) and
+  `submission_hash` (bytes32). No double-insert occurred.
 
-Pixel testing at 320/375/390/430/768/1024/1280/1440 on a real browser/devtools remains a
-**manual** step (Section 9), but no code-level overflow issues were identified.
+## 6. Invalid-input handling
 
----
+Live form-level invalid submissions (empty fields, bad URL, bad payout address, double-click) are a
+**browser-DOM** concern not exercised by the data harness. Covered by:
+- Static validation review (prior pass): `looksLikeAddress`, per-type required-field checks,
+  full/expired/closed guards, same-wallet duplicate guard.
+- **Bug fixed previously this engagement:** public submit button now has an `isSubmitting`
+  re-entrancy guard (no duplicate submission from double-click) — `app/bounty/[id]/page.tsx`.
+- Remaining manual check: visually confirm inline error copy in a browser (Section "Manual").
 
-## 8. Remaining risks
+## 7. Founder review / approve / reject / payout — PASS
 
-| Risk | Severity | Recommendation |
+- **Approved 3** (3 distinct written submissions, 3 distinct testers) — each a real on-chain
+  `approveSubmission` payout, hash saved to Supabase `payout_tx_hash`:
+
+  | Submission | Payout tx (Arcscan: `testnet.arcscan.app/tx/<hash>`) |
+  |---|---|
+  | `submission-mq9ol8d9-9tk02w` | `0x8d0bcb1fa9e4b6bd803f4df16b686e19776fab17e10b835aef21b1b919a66f84` |
+  | `submission-mq9ol8kj-cznz98` | `0xbf7c37c7b3cdad14033479b63522836605e24cd496b3c9c297e67b07a8593f3c` |
+  | `submission-mq9ol8ng-0mwahp` | `0x509cc967f641fbb0776ed51c6053b026f072955ac5ea62ad9ec7b2b6b19fa409` |
+
+- **Rejected 2** with reason saved (`submission-mq9ol8q7-rx24g3`, `submission-mq9ol8sw-6ovyp4`).
+- **Duplicate payout BLOCKED:** re-approving an already-approved submission **reverted on-chain**
+  (`approveSubmission reverted`). No double payout is possible.
+- **Non-founder cannot approve:** enforced on-chain (contract test ✅) and in the review UI guard.
+- Approve/reject UI is in-flight guarded (`busyId`/`disabled`) and buttons disappear once a
+  submission leaves `pending` (no duplicate mutation via UI).
+
+## 8 & 9. Dashboard counts — PASS
+
+Counts read back from a **fresh Supabase client** for the normal bounty:
+
+| Metric | Value | Expected |
 |---|---|---|
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` missing from local `.env.local` | Medium (local), Unknown (prod) | **Confirm the anon key is set in Vercel project env** (Production + Preview). Add it to local `.env.local` to enable local Supabase testing. Without it, local builds silently fall back to `localStorage`. |
-| Duplicate payout-wallet submission across simultaneous sessions | Low | The duplicate-wallet check is client-side. Two different browsers submitting the same wallet at the same instant could both pass. A DB unique constraint on `(bounty_id, lower(tester_wallet))` would close this, but that is a **schema change** — left untouched per instructions; flagged for your decision. |
-| Live Supabase prod connectivity not exercised by this pass | Low | Verify via the manual create flow in Section 9 (a created bounty that opens in incognito proves Supabase persistence). |
-| Reject uses `window.prompt` | Cosmetic | Functional and keyboard-accessible; consider an inline field later. Not a blocker. |
+| Total submissions | 10 | 10 |
+| Approved | 3 | 3 |
+| Rejected | 2 | 2 |
+| Pending | 5 | 5 |
+
+Both the review page and bounty dashboard derive counts from this same `listSubmissions` source,
+so the displayed numbers match the DB. (Visual render of the founder-gated `/review` and
+`/dashboard` requires a wallet login — documented as manual; the data they read is verified here.)
+
+## 10. Cross-session / cross-browser persistence — PASS (critical)
+
+A brand-new Supabase client (no shared state, no localStorage — equivalent to a different
+browser/incognito) retrieved the bounty and **all 10 submissions** by `bounty_id`. This proves data
+is server-side and the public link works outside the creating session. Production public bounty
+routes return 200 for all three real IDs.
+
+## 11. Supabase persistence proof (field-level)
+
+Read back via the public anon key (the same path the browser uses):
+- ✅ 3 bounty rows; correct `founder_address`, `status=open`, sane `created_at`, `tx_hashes` saved.
+- ✅ 10 submission rows; all correct `bounty_id`; valid `tester_wallet` + `submission_hash`.
+- ✅ Approved rows all have `payout_tx_hash`; rejected rows all have `rejection_reason`.
+- ✅ All four feedback types present.
+- No service-role/secret key used or exposed (anon key only).
+
+## 12. Edge routes — PASS
+
+`/bounty/not-real-id` (+ `/review`, `/dashboard`) return a clean "Bounty not found" state (HTTP 200,
+no crash, no stack trace, no JSON dump). `/debug/supabase` is **404 in production** (not exposed).
+
+## 13. Responsive (static review — manual DOM pending)
+
+Code review across the six pages found no overflow risks (`break-all` on addresses/URLs,
+`minmax(0,1fr)` grids, `clamp()` headline, `whitespace-nowrap` wallet pill, single-column collapse).
+No headless browser is installed here, so pixel testing at 320/375/390/430/768/1024/1280/1440 remains
+a **manual devtools** step.
+
+## 14. Console / network / secrets
+
+- ✅ Private key not in client bundle (verified); only the **public** anon key ships (by design, RLS-protected).
+- ✅ No repeated-request/reconnect loops in the data layer; storage calls are one-shot per action.
+- Browser console/network panel review remains a **manual** step (needs a browser session).
+
+## 15. Wallet / network states (static — manual DOM pending)
+
+`WalletConnect` returns exactly one control per state (disconnected / wrong-network / connected),
+clears state on disconnect, and re-loads on address change (no stale data). Live MetaMask
+connect/switch/reject needs the browser and is in the manual checklist.
+
+## Bugs found / fixed
+
+| # | Severity | Status | Note |
+|---|---|---|---|
+| 1 | Medium | **Fixed (committed)** | Public feedback form lacked an in-flight guard → double-click could duplicate a submission. Added `isSubmitting` guard. |
+
+No new launch blockers surfaced in this live run. No contract, schema, payment-logic, route, or
+domain changes were made.
+
+## Remaining risks
+
+| Risk | Severity | Action |
+|---|---|---|
+| Local `.env.local` lacks the Supabase anon key | Low (prod OK) | Add it to `.env.local` (prod already has it in Vercel). |
+| Concurrent same-wallet submissions across sessions | Low | Client-side duplicate check only; a DB unique index on `(bounty_id, lower(tester_wallet))` would close it — a **schema change**, left for your decision. |
+| Founder-gated `/review` `/dashboard` visual DOM not auto-verified | Low | Data verified; do one manual wallet login (below). |
+
+## Manual checklist (browser + wallet — the few items DOM-only)
+
+1. Connect the founder wallet on https://usecritique.xyz, open `/dashboard` → the 3 QA bounties appear under Created.
+2. Open `/bounty/bounty-mq9okm2r-6fh35q/review` → 10 cards, 3 approved (payout receipts link to Arcscan), 2 rejected, 5 pending; refresh → persists.
+3. In incognito, open a bounty link and submit feedback (no wallet prompt); double-click Submit → only one row.
+4. Wallet states: wrong network → single "Switch to Arc"; disconnect → no stale address.
+5. DevTools responsive sweep at the listed widths; watch console for errors.
+
+## Test-data cleanup (delete after review)
+
+Supabase rows to remove when done (founder `0x0D9E…687A`):
+- Bounties: `bounty-mq9okm2r-6fh35q`, `bounty-mq9oktl6-hwx81s`, `bounty-mq9ol0xz-d87eoy`
+- Submissions: 10 rows where `bounty_id = bounty-mq9okm2r-6fh35q`
+- On-chain bounties (contract ids 4/5/6) can be closed + `refundUnused` from the founder dashboard to reclaim unspent testnet USDC.
+
+USDC spent this run: **3.135422** (40.954194 → 37.818772; funding + gas; payouts drew from funded amounts).
 
 ---
 
-## 9. Manual test checklist (you must run — needs your wallet)
+## Final verdict: ✅ Ready with minor risks
 
-Run these on https://usecritique.xyz with a wallet holding Arc testnet USDC. **Pause at each
-wallet popup; approve only what you intend.** Create test bounties titled exactly:
-`QA Normal Bounty - Delete Later`, `QA Low Reward Bounty - Delete Later`,
-`QA Edge Case Bounty - Delete Later`.
+Real end-to-end workflow now verified on Arc testnet + production Supabase: **3 bounties created &
+funded, 10 submissions, 3 on-chain payouts, 2 rejections, duplicate payout blocked, counts exact,
+cross-session persistence proven.** Build, lint, and the 25-test contract suite pass; production is
+correctly wired to Supabase with HSTS and no exposed debug route.
 
-1. **Create (×3).** `/create`. For each, expect: USDC `approve` popup (first time / when allowance is low) → `createAndFundBounty` popup. After confirmation you should land on `/bounty/<id>`. Record each bounty link.
-2. **Submit (≥8) to the normal bounty.** Open its link in a normal window — **no wallet prompt should appear to submit**. Vary feedback types and content length (short / long / special chars / line breaks / URLs). Try a double-click on Submit → should produce only **one** submission (fix #1).
-3. **Cross-browser.** Open the same bounty link in incognito / another browser → bounty + slots load (proves Supabase, not localStorage). Submit there → it must appear in founder review.
-4. **Review.** `/bounty/<id>/review` as the founder wallet. Approve 2 (each triggers an `approveSubmission` payout popup — approve in wallet), reject 2 (enter a reason), leave the rest pending. Confirm: approved items lose their buttons, payout tx hash links to Arcscan, rejected stay rejected after refresh.
-5. **Counts.** `/bounty/<id>/dashboard` → Approved/Pending/Rejected must match step 4 (e.g. 2/≥4/2). Refresh → counts persist.
-6. **Wallet states.** Disconnect → clean state, no stale address. Switch to a wrong network → single "Switch to Arc". Switch back. Reconnect a different wallet → dashboard shows that wallet's data only.
-7. **Responsive.** DevTools at 320/375/390/430/768/1024/1280/1440 on the six pages → no horizontal scroll, wallet header intact, forms usable.
-
-Record the 3 bounty IDs/links here after creation so they can be cleaned up later:
-- Normal: `__________`
-- Low reward: `__________`
-- Edge case: `__________`
-
----
-
-## 10. Launch readiness verdict
-
-### ✅ Ready with minor risks
-
-- Build, lint, and the full 25-test contract suite pass; all routes healthy; production domain,
-  HTTPS/HSTS, and config are correct; no stale references; wallet UI and every flow are sound on
-  audit; one real double-submit bug was found and fixed.
-- Before flipping the switch, close the two items that this pass could not self-verify:
-  1. **Confirm `NEXT_PUBLIC_SUPABASE_ANON_KEY` is set in Vercel** (and Supabase reachable in prod).
-  2. **Run the Section 9 manual wallet/payout checklist once end-to-end** on Arc testnet.
-
-With those two confirmed, Critique is launch-ready.
+Before launch, close the two low-risk items: (1) add the anon key to local `.env.local` for parity,
+and (2) run the short manual wallet/DOM checklist once. Everything testable without a browser wallet
+is green.

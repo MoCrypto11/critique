@@ -9,3 +9,6 @@ coverage
 typechain-types
 
 .vercel
+
+# QA run artifacts (test data records, not source)
+scripts/qa/qa-results.json
