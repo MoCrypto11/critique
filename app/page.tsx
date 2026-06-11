@@ -194,49 +194,56 @@ export default function HomePage() {
             <svg viewBox="0 0 960 720" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g strokeLinecap="round">
                 <path
-                  d="M36 618C188 396 397 278 662 264C795 257 902 291 984 367"
+                  d="M24 624C186 402 398 282 662 265C802 256 914 294 998 376"
                   stroke="#116149"
-                  strokeOpacity="0.1"
+                  strokeOpacity="0.13"
                   strokeWidth="1.2"
                 />
                 <path
-                  d="M4 508C164 316 371 214 625 203C772 197 897 237 1002 323"
+                  d="M-4 510C164 314 376 210 632 202C786 197 913 241 1014 332"
                   stroke="#79D8AF"
                   strokeDasharray="18 22"
-                  strokeOpacity="0.12"
+                  strokeOpacity="0.17"
                   strokeWidth="1"
                 />
                 <path
-                  d="M142 128C312 51 489 59 676 151C793 209 880 292 936 402"
+                  d="M136 132C312 48 498 55 688 150C811 212 900 303 954 419"
                   stroke="#071A18"
-                  strokeOpacity="0.08"
+                  strokeOpacity="0.09"
                   strokeWidth="1"
                 />
                 <path
-                  d="M288 684C405 529 548 448 716 443C835 440 935 480 1018 561"
+                  d="M272 680C394 528 545 448 718 442C845 438 951 482 1036 574"
                   stroke="#116149"
                   strokeDasharray="5 18"
-                  strokeOpacity="0.09"
+                  strokeOpacity="0.11"
                   strokeWidth="1.1"
+                />
+                <path
+                  d="M456 74C534 172 634 234 756 258C846 276 925 262 992 218"
+                  stroke="#C6A86A"
+                  strokeOpacity="0.13"
+                  strokeWidth="0.9"
                 />
               </g>
               <g className="hero-orbits-secondary" strokeLinecap="round">
                 <path
-                  d="M346 42C438 162 551 237 685 265C801 289 903 273 990 217"
+                  d="M342 44C440 166 555 238 690 264C812 287 918 266 1002 202"
                   stroke="#071A18"
-                  strokeOpacity="0.06"
+                  strokeOpacity="0.07"
                   strokeWidth="1"
                 />
                 <path
-                  d="M210 332C335 256 472 230 621 254C762 277 877 340 966 443"
+                  d="M194 338C326 252 470 225 626 253C775 280 894 351 982 462"
                   stroke="#79D8AF"
-                  strokeOpacity="0.1"
+                  strokeOpacity="0.13"
                   strokeWidth="0.9"
                 />
               </g>
-              <circle cx="662" cy="264" r="3" fill="#116149" fillOpacity="0.1" />
-              <circle cx="625" cy="203" r="2.5" fill="#79D8AF" fillOpacity="0.14" />
-              <circle cx="716" cy="443" r="2.5" fill="#116149" fillOpacity="0.08" />
+              <circle cx="662" cy="265" r="3" fill="#116149" fillOpacity="0.13" />
+              <circle cx="632" cy="202" r="2.5" fill="#79D8AF" fillOpacity="0.18" />
+              <circle cx="718" cy="442" r="2.5" fill="#116149" fillOpacity="0.11" />
+              <circle cx="756" cy="258" r="2" fill="#C6A86A" fillOpacity="0.16" />
             </svg>
           </div>
           <div className="relative z-10 grid items-center gap-9 lg:grid-cols-[0.95fr_1.05fr] lg:gap-12">

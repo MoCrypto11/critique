@@ -102,13 +102,15 @@ button {
 .hero-stage::before {
   content: "";
   position: absolute;
-  right: max(-18vw, -13rem);
-  top: 2rem;
-  width: min(58vw, 46rem);
-  height: min(44vw, 34rem);
+  right: max(-12vw, -8rem);
+  top: 4rem;
+  width: min(46vw, 34rem);
+  height: min(34vw, 24rem);
   pointer-events: none;
-  background: radial-gradient(ellipse at center, rgba(17, 97, 73, 0.12), rgba(121, 216, 175, 0.06) 34%, transparent 68%);
-  opacity: 0.9;
+  background:
+    radial-gradient(ellipse at center, rgba(17, 97, 73, 0.085), rgba(121, 216, 175, 0.038) 34%, transparent 68%),
+    linear-gradient(145deg, rgba(255, 253, 247, 0.42), transparent 44%);
+  opacity: 0.82;
   z-index: 0;
 }
 
@@ -124,14 +126,14 @@ button {
 
 .hero-orbits {
   position: absolute;
-  right: clamp(-15rem, -12vw, -5rem);
-  top: clamp(1rem, 2vw, 3rem);
+  right: clamp(-14rem, -11vw, -4rem);
+  top: clamp(0.5rem, 1.5vw, 2.5rem);
   z-index: 1;
-  width: min(54vw, 43rem);
-  height: min(42vw, 32rem);
+  width: min(56vw, 45rem);
+  height: min(43vw, 33rem);
   pointer-events: none;
-  opacity: 0.38;
-  animation: heroArcBreath 32s ease-in-out infinite;
+  opacity: 0.52;
+  animation: heroArcBreath 30s ease-in-out infinite;
 }
 
 .hero-orbits svg {
@@ -184,11 +186,11 @@ button {
 
 @keyframes heroArcDrift {
   from {
-    transform: translate3d(-8px, -4px, 0) rotate(-0.7deg);
+    transform: translate3d(-9px, -5px, 0) rotate(-0.8deg);
   }
 
   to {
-    transform: translate3d(12px, 8px, 0) rotate(1deg);
+    transform: translate3d(13px, 8px, 0) rotate(1.05deg);
   }
 }
 
