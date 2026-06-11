@@ -47,11 +47,19 @@ export function HeroMotionBackground() {
             <path d="M978 568V632" strokeOpacity="0.09" />
           </g>
 
+          <g className="hero-orbits-technical" stroke="#084E3E" strokeLinecap="round">
+            <path d="M602 318H748" strokeOpacity="0.14" />
+            <path d="M748 318V388" strokeOpacity="0.1" />
+            <path d="M748 388H924" strokeOpacity="0.13" />
+            <path d="M924 388V454" strokeOpacity="0.09" />
+          </g>
+
           <g className="hero-orbits-nodes">
             <circle cx="1014" cy="154" r="3" fill="#79D8AF" fillOpacity="0.26" />
             <circle cx="1014" cy="226" r="2.5" fill="#116149" fillOpacity="0.2" />
             <circle cx="1136" cy="304" r="2.5" fill="#9D8146" fillOpacity="0.18" />
             <circle cx="978" cy="568" r="2.5" fill="#318B74" fillOpacity="0.18" />
+            <circle cx="748" cy="388" r="2.5" fill="#79D8AF" fillOpacity="0.28" />
           </g>
         </svg>
       </div>

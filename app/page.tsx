@@ -191,43 +191,44 @@ export default function HomePage() {
       <AppHeader />
       <main>
         <div className="home-hero-band">
-          <HeroMotionBackground />
           <section className="hero-stage mx-auto grid w-full max-w-7xl px-4 pb-12 pt-10 sm:px-6 sm:pb-14 sm:pt-12 lg:px-8 lg:pb-16 lg:pt-14">
             <div className="relative z-10 grid items-center gap-9 lg:grid-cols-[0.95fr_1.05fr] lg:gap-12">
-            <div className="max-w-3xl lg:pl-1">
-              <p className="eyebrow">Useful feedback. USDC rewards.</p>
-              <h1 className="font-display mt-4 max-w-3xl text-[clamp(3.25rem,5.2vw,5.5rem)] leading-[1.02] tracking-normal text-ink">
-                Feedback bounties for early product teams
-              </h1>
-              <p className="mt-6 max-w-[35rem] text-base font-bold leading-8 text-[#315145] sm:text-lg sm:leading-8">
-                Create a focused bounty, share one public link, review submissions, and approve USDC rewards for useful
-                product feedback.
-              </p>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <Link href="/create" className="btn-primary transition-transform hover:-translate-y-0.5">
-                  Create a bounty
-                </Link>
-                <Link href="/bounty/demo" className="btn-secondary transition-transform hover:-translate-y-0.5">
-                  Preview bounty link
-                </Link>
+              <div className="max-w-3xl lg:pl-1">
+                <p className="eyebrow">Useful feedback. USDC rewards.</p>
+                <h1 className="font-display mt-4 max-w-3xl text-[clamp(3.25rem,5.2vw,5.5rem)] leading-[1.02] tracking-normal text-ink">
+                  Feedback bounties for early product teams
+                </h1>
+                <p className="mt-6 max-w-[35rem] text-base font-bold leading-8 text-[#315145] sm:text-lg sm:leading-8">
+                  Create a focused bounty, share one public link, review submissions, and approve USDC rewards for
+                  useful product feedback.
+                </p>
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                  <Link href="/create" className="btn-primary transition-transform hover:-translate-y-0.5">
+                    Create a bounty
+                  </Link>
+                  <Link href="/bounty/demo" className="btn-secondary transition-transform hover:-translate-y-0.5">
+                    Preview bounty link
+                  </Link>
+                </div>
               </div>
-            </div>
 
-            <div className="hero-image-wrap relative mx-auto w-full max-w-[35rem] lg:max-w-[38rem] lg:justify-self-end">
-              <div className="absolute -inset-4 rounded-[2rem] bg-[radial-gradient(ellipse_at_center,rgba(17,97,73,0.08),transparent_68%)]" aria-hidden="true" />
-              <div className="relative overflow-hidden rounded-[1.55rem] border border-action/15 bg-[#fffdf7]/90 p-1.5 shadow-[0_26px_74px_rgba(7,26,24,0.16)]">
-                <Image
-                  src="/images/hero-critique.png"
-                  alt="Contributor reviewing product feedback with approved submission badge"
-                  width={1600}
-                  height={1200}
-                  priority
-                  sizes="(min-width: 1024px) 52vw, 100vw"
-                  className="block h-auto w-full rounded-[1.35rem] bg-[#fbfaf4] object-contain"
-                />
+              <div className="hero-visual-panel relative mx-auto w-full max-w-[36rem] p-3 sm:p-4 lg:max-w-[39rem] lg:justify-self-end">
+                <HeroMotionBackground />
+                <div className="hero-image-wrap relative z-10">
+                  <div className="relative overflow-hidden rounded-[1.45rem] border border-action/15 bg-[#fffdf7]/92 p-1.5 shadow-[0_30px_82px_rgba(7,26,24,0.2)]">
+                    <Image
+                      src="/images/hero-critique.png"
+                      alt="Contributor reviewing product feedback with approved submission badge"
+                      width={1600}
+                      height={1200}
+                      priority
+                      sizes="(min-width: 1024px) 52vw, 100vw"
+                      className="block h-auto w-full rounded-[1.25rem] bg-[#fbfaf4] object-contain"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
           </section>
         </div>
 
