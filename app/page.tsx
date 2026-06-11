@@ -196,7 +196,7 @@ export default function HomePage() {
             <div className="relative z-10">
               <p className="eyebrow">Feedback bounties on Arc</p>
               <h1 className="hero-headline font-display mt-5 text-ink">
-                TURN PRODUCT FEEDBACK INTO FUNDED BOUNTIES
+                Turn Product Feedback Into Funded Bounties
               </h1>
               <p className="hero-subcopy mt-7 font-bold text-[#315145]">
                 Critique helps teams collect useful product feedback, review submissions, and approve USDC rewards
