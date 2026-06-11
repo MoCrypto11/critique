@@ -192,7 +192,7 @@ export default function HomePage() {
       <main>
         <div className="home-hero-band">
           <HeroArcMotionLayer />
-          <section className="hero-stage mx-auto w-full max-w-7xl px-4 pb-20 pt-16 sm:px-6 sm:pb-24 sm:pt-20 lg:px-8 lg:pb-28 lg:pt-24">
+          <section className="hero-stage mx-auto w-full max-w-7xl px-4 pb-12 pt-16 sm:px-6 sm:pb-14 sm:pt-20 lg:px-8 lg:pb-16 lg:pt-24">
             <div className="relative z-10">
               <p className="eyebrow">Useful feedback. USDC rewards.</p>
               <h1 className="hero-headline font-display mt-5 text-ink">
@@ -202,17 +202,31 @@ export default function HomePage() {
                 Create a focused bounty, share one public link, review submissions, and approve USDC rewards for
                 useful product feedback.
               </p>
-              <div className="mt-8 flex flex-col gap-[14px] sm:flex-row">
-                <Link href="/create" className="btn-primary hero-cta transition-transform hover:-translate-y-0.5">
-                  Create a bounty
-                </Link>
-                <Link href="/bounty/demo" className="btn-secondary hero-cta transition-transform hover:-translate-y-0.5">
-                  Preview bounty link
-                </Link>
-              </div>
             </div>
           </section>
         </div>
+
+        <section className="home-section mx-auto w-full max-w-7xl px-4 pt-2 pb-10 sm:px-6 sm:pt-4 sm:pb-12 lg:px-8">
+          <div className="surface flex flex-col items-start justify-between gap-5 p-5 sm:p-7 lg:flex-row lg:items-center">
+            <div className="max-w-2xl">
+              <p className="eyebrow">Start focused</p>
+              <h2 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">
+                Create your first feedback bounty
+              </h2>
+              <p className="mt-3 text-base leading-7 text-muted">
+                Set the reward tiers, share one link, and start collecting useful product feedback on Arc.
+              </p>
+            </div>
+            <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+              <Link href="/create" className="btn-primary">
+                Create a bounty
+              </Link>
+              <Link href="/bounty/demo" className="btn-secondary">
+                Preview bounty link
+              </Link>
+            </div>
+          </div>
+        </section>
 
         <section
           id="how-it-works"
@@ -467,27 +481,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="home-section page-shell py-10 sm:py-12">
-          <div className="surface flex flex-col items-start justify-between gap-5 p-5 sm:p-7 lg:flex-row lg:items-center">
-            <div className="max-w-2xl">
-              <p className="eyebrow">Start focused</p>
-              <h2 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">
-                Create your first feedback bounty
-              </h2>
-              <p className="mt-3 text-base leading-7 text-muted">
-                Set the reward tiers, share one link, and start collecting useful product feedback on Arc.
-              </p>
-            </div>
-            <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-              <Link href="/create" className="btn-primary">
-                Create a bounty
-              </Link>
-              <Link href="/bounty/demo" className="btn-secondary">
-                Preview bounty link
-              </Link>
-            </div>
-          </div>
-        </section>
       </main>
     </>
   );
