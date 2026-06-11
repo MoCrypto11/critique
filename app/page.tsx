@@ -4,6 +4,7 @@ import Link from "next/link";
 import {
   ChevronDown,
   CircleDollarSign,
+  Compass,
   ExternalLink,
   FilePlus2,
   LayoutPanelTop,
@@ -147,6 +148,12 @@ const faqs = [
     question: "What happens after feedback is approved?",
     answer: "The submission status updates, the configured reward is paid from the bounty, and the payout transaction is saved as a receipt."
   }
+];
+
+const arcHighlights: { title: string; icon: LucideIcon }[] = [
+  { title: "USDC reward flow", icon: CircleDollarSign },
+  { title: "Founder-approved payouts", icon: UserCheck },
+  { title: "Arc testnet explorer", icon: Compass }
 ];
 
 export default function HomePage() {
@@ -358,29 +365,48 @@ export default function HomePage() {
         </section>
 
         <section className="home-section page-shell py-12 sm:py-16">
-          <div className="surface flex flex-col items-start justify-between gap-4 p-5 sm:flex-row sm:items-center sm:gap-6 sm:p-6">
-            <div className="flex items-start gap-3">
-              <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-action/10 text-action">
-                <CircleDollarSign className="size-5" aria-hidden="true" strokeWidth={2} />
-              </span>
-              <div>
-                <p className="text-xs font-black uppercase tracking-[0.16em] text-action">Built on Arc testnet</p>
-                <p className="mt-1 text-sm leading-6 text-muted">
-                  Built on Arc testnet for USDC-based feedback rewards.
-                </p>
-              </div>
+          <div className="overflow-hidden rounded-3xl border border-[#79D8AF]/25 bg-[#061916] p-6 text-white shadow-[0_24px_64px_rgba(7,26,24,0.2)] sm:p-8">
+            <div className="max-w-2xl">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#79D8AF]">Built on Arc testnet</p>
+              <h2 className="font-display mt-3 text-2xl font-semibold leading-tight text-white sm:text-3xl">
+                USDC rewards, settled on Arc testnet
+              </h2>
+              <p className="mt-3 text-sm leading-7 text-white/65 sm:text-base">
+                Critique uses Arc testnet to demonstrate USDC-based feedback rewards, from bounty funding to approved
+                contributor payouts.
+              </p>
             </div>
-            <div className="flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row">
+
+            <div className="mt-6 grid gap-3 sm:grid-cols-3">
+              {arcHighlights.map(({ title, icon: HighlightIcon }) => (
+                <div
+                  key={title}
+                  className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.05] p-3.5"
+                >
+                  <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-[#79D8AF]/12 text-[#79D8AF]">
+                    <HighlightIcon className="size-4" aria-hidden="true" strokeWidth={2} />
+                  </span>
+                  <span className="text-sm font-bold leading-5 text-white">{title}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <a
                 href="https://testnet.arcscan.app/"
                 target="_blank"
                 rel="noreferrer"
-                className="btn-secondary gap-2"
+                className="focus-ring inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-black text-[#071a18] shadow-sm transition-colors hover:bg-[#f1ede1] sm:w-auto"
               >
                 <ExternalLink className="size-4" aria-hidden="true" strokeWidth={2} />
                 Arc Explorer
               </a>
-              <a href="https://docs.arc.io/" target="_blank" rel="noreferrer" className="btn-secondary gap-2">
+              <a
+                href="https://docs.arc.io/"
+                target="_blank"
+                rel="noreferrer"
+                className="focus-ring inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/16 bg-white/[0.06] px-5 py-3 text-sm font-black text-white transition-colors hover:bg-white/[0.1] sm:w-auto"
+              >
                 <ExternalLink className="size-4" aria-hidden="true" strokeWidth={2} />
                 Arc Docs
               </a>

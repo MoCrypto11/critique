@@ -17,7 +17,7 @@ body {
     linear-gradient(180deg, rgba(255, 254, 249, 0.94), rgba(248, 245, 235, 0.96) 320px),
     #f8f5eb;
   color: #17201d;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-family: var(--font-manrope), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   text-rendering: optimizeLegibility;
 }
@@ -50,9 +50,9 @@ button {
 }
 
 .font-display {
-  font-family: var(--font-geist-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-family: var(--font-manrope), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
   font-weight: 600;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.018em;
 }
 
 .surface {
@@ -99,8 +99,9 @@ button {
    extended copy premium and uncrowded across desktop and mobile. */
 .hero-headline {
   font-size: clamp(2.5rem, 4.5vw, 4rem);
-  line-height: 1.02;
-  letter-spacing: -0.026em;
+  font-weight: 600;
+  line-height: 0.95;
+  letter-spacing: -0.05em;
   text-wrap: balance;
 }
 
@@ -203,6 +204,12 @@ button {
   );
   filter: blur(52px);
   pointer-events: none;
+  animation: heroGlowPulse 7s ease-in-out infinite;
+}
+
+@keyframes heroGlowPulse {
+  0%, 100% { opacity: 0.78; transform: scale(1); }
+  50%      { opacity: 1; transform: scale(1.05); }
 }
 
 /*
@@ -217,72 +224,18 @@ button {
   display: block;
   -webkit-mask-image: linear-gradient(
     90deg,
-    rgba(0, 0, 0, 0.10) 0%,
-    rgba(0, 0, 0, 0.28) 36%,
-    rgba(0, 0, 0, 0.82) 56%,
-    rgba(0, 0, 0, 1.00) 68%
+    rgba(0, 0, 0, 0.06) 0%,
+    rgba(0, 0, 0, 0.20) 32%,
+    rgba(0, 0, 0, 0.88) 54%,
+    rgba(0, 0, 0, 1.00) 64%
   );
   mask-image: linear-gradient(
     90deg,
-    rgba(0, 0, 0, 0.10) 0%,
-    rgba(0, 0, 0, 0.28) 36%,
-    rgba(0, 0, 0, 0.82) 56%,
-    rgba(0, 0, 0, 1.00) 68%
+    rgba(0, 0, 0, 0.06) 0%,
+    rgba(0, 0, 0, 0.20) 32%,
+    rgba(0, 0, 0, 0.88) 54%,
+    rgba(0, 0, 0, 1.00) 64%
   );
-}
-
-/* Primary group — 280px total horizontal range / 18s = 72px shift in 5s */
-.arc-sweep-primary {
-  will-change: transform;
-  animation: arcSweepPrimary 18s linear infinite alternate;
-}
-
-/* Secondary group — counter-phase; contains the dashed paths */
-.arc-sweep-secondary {
-  will-change: transform;
-  animation: arcSweepSecondary 26s linear infinite alternate;
-}
-
-/* Dashed mint arc — 350-unit dash traverses ~1250-unit path in 9s */
-.arc-dash-1 {
-  will-change: stroke-dashoffset;
-  animation: arcDash1 9s linear infinite;
-}
-
-/* Dashed dark-green arc — 300-unit dash traverses ~1180-unit path in 12s */
-.arc-dash-2 {
-  will-change: stroke-dashoffset;
-  animation: arcDash2 12s linear infinite;
-}
-
-/* Pulse nodes */
-.arc-node {
-  animation: arcNodePulse 4s ease-in-out infinite;
-}
-
-@keyframes arcSweepPrimary {
-  from { transform: translate(-140px,   0px); }
-  to   { transform: translate( 120px, -34px); }
-}
-
-@keyframes arcSweepSecondary {
-  from { transform: translate( 80px, -20px); }
-  to   { transform: translate(-90px,  28px); }
-}
-
-@keyframes arcDash1 {
-  from { stroke-dashoffset:    0; }
-  to   { stroke-dashoffset: -1250; }
-}
-
-@keyframes arcDash2 {
-  from { stroke-dashoffset:    0; }
-  to   { stroke-dashoffset: -1180; }
-}
-
-@keyframes arcNodePulse {
-  0%, 100% { opacity: 0.20; }
-  50%       { opacity: 0.52; }
 }
 
 /* ─── Home sections ────────────────────────────────────────────────────── */
@@ -369,14 +322,11 @@ button {
 
 /* ─── Reduced motion ───────────────────────────────────────────────────── */
 
-/* Stop all arc animations — the static geometry stays visible as a subtle
-   background treatment; only motion is disabled. */
+/* Stop motion — the SVG animation is gated in JS (HeroArcMotionLayer reads
+   prefers-reduced-motion); here we also stop the CSS glow pulse. The static
+   geometry stays visible as a subtle background treatment. */
 @media (prefers-reduced-motion: reduce) {
-  .arc-sweep-primary,
-  .arc-sweep-secondary,
-  .arc-dash-1,
-  .arc-dash-2,
-  .arc-node {
+  .hero-arc-glow {
     animation: none !important;
   }
 }

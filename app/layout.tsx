@@ -1,9 +1,15 @@
 import type { Metadata } from "next";
-import { GeistSans } from "geist/font/sans";
+import { Manrope } from "next/font/google";
 import "./globals.css";
 import { BuiltOnArcBadge } from "@/components/BuiltOnArcBadge";
 import { Footer } from "@/components/Footer";
 import { Providers } from "./providers";
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-manrope"
+});
 
 export const metadata: Metadata = {
   title: "Critique",
@@ -15,7 +21,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={GeistSans.variable}>
+    <html lang="en" className={manrope.variable}>
       <body className="bg-[#fbfcf8] antialiased">
         <Providers>
           {children}
