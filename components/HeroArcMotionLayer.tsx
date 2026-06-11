@@ -1,6 +1,9 @@
 export function HeroArcMotionLayer() {
   return (
     <div className="hero-arc-motion-layer" aria-hidden="true">
+      {/* CSS blur glow — guaranteed visible, no SVG gradient dependency */}
+      <div className="hero-arc-glow" />
+
       <svg
         className="hero-arc-motion-svg"
         viewBox="0 0 1800 900"
@@ -8,144 +11,81 @@ export function HeroArcMotionLayer() {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <defs>
-          <radialGradient id="heroMintGlow" cx="72%" cy="34%" r="52%">
-            <stop offset="0%" stopColor="#79D8AF" stopOpacity="0.20" />
-            <stop offset="55%" stopColor="#79D8AF" stopOpacity="0.07" />
-            <stop offset="100%" stopColor="#79D8AF" stopOpacity="0" />
-          </radialGradient>
-        </defs>
-
-        {/* Soft ambient glow — breathes independently of all path motion */}
-        <rect x="0" y="0" width="1800" height="900" fill="url(#heroMintGlow)">
-          <animate
-            attributeName="opacity"
-            values="0.60;0.90;0.60"
-            dur="14s"
-            repeatCount="indefinite"
-          />
-        </rect>
-
         {/*
-          Primary group — three large curves translate together, 18 s cycle.
-          animateTransform is a child of the <g> it targets (valid SVG SMIL).
-          At t=5 s the group has moved ~72 px horizontally: clearly visible.
+          Primary group — 3 large Bézier curves.
+          Paths span viewBox x = -300 to 2180 (oversized by design).
+          The visible right-zone portions (x > 800 viewBox ≈ x > 640 screen)
+          are in the mask's high-opacity region so translate motion is fully
+          visible. CSS animation drives the translate on .arc-sweep-primary.
         */}
-        <g>
-          <animateTransform
-            attributeName="transform"
-            type="translate"
-            values="-140 0; 120 -34; -140 0"
-            dur="18s"
-            repeatCount="indefinite"
-          />
-
-          {/* Signature sweep: lower-left → upper-right through the right zone */}
+        <g className="arc-sweep-primary">
+          {/* Signature sweep: lower-left → upper-right */}
           <path
             d="M -300 900 C 250 560 700 360 1220 280 C 1540 220 1780 180 2120 90"
             stroke="#116149"
-            strokeOpacity="0.30"
-            strokeWidth="1.5"
+            strokeOpacity="0.44"
+            strokeWidth="2.0"
           />
           {/* Counter-arc: above viewport sweeping down-right */}
           <path
             d="M 220 -100 C 580 280 900 460 1360 555 C 1640 615 1870 558 2180 435"
             stroke="#084E3E"
-            strokeOpacity="0.22"
-            strokeWidth="1.2"
+            strokeOpacity="0.32"
+            strokeWidth="1.6"
           />
-          {/* Lower mint arc */}
+          {/* Lower mint sweep */}
           <path
             d="M -160 380 C 280 275 640 380 940 650 C 1140 840 1530 775 1940 645"
             stroke="#79D8AF"
-            strokeOpacity="0.24"
-            strokeWidth="1.1"
+            strokeOpacity="0.34"
+            strokeWidth="1.4"
           />
         </g>
 
         {/*
-          Secondary group — two dashed paths translate in the opposite direction
-          at 26 s, while each path also runs its own stroke-dashoffset animation.
-          The dashoffset gives unmistakable travelling-line motion regardless of
-          whether the CSS transform system is active.
+          Secondary group — counter-phase translate + two dashed paths whose
+          stroke-dashoffset is animated by CSS (class .arc-dash-1 / .arc-dash-2).
+          Paths start at viewBox x = 800+ so they are always in the visible zone.
+          At t=5s the dash has travelled ~694 units (~1.98× its own length):
+          unmistakably visible travelling-line motion.
         */}
-        <g>
-          <animateTransform
-            attributeName="transform"
-            type="translate"
-            values="80 -20; -90 28; 80 -20"
-            dur="26s"
-            repeatCount="indefinite"
-          />
-
-          {/*
-            Dashed mint — upper right zone.
-            stroke-dasharray sum ≈ 1250 (≈ path length).
-            At 9 s the dash completes one full traversal of the path.
-            At t=5 s the dash has travelled ~693 units: visible at x ≈ 1460 viewBox.
-          */}
+        <g className="arc-sweep-secondary">
           <path
+            className="arc-dash-1"
             d="M 800 210 C 1050 158 1268 192 1478 162 C 1668 142 1838 190 2030 252"
             stroke="#79D8AF"
-            strokeOpacity="0.30"
-            strokeWidth="1.2"
+            strokeOpacity="0.38"
+            strokeWidth="1.4"
             strokeDasharray="350 900"
-            strokeDashoffset="0"
-          >
-            <animate
-              attributeName="stroke-dashoffset"
-              values="0;-1250"
-              dur="9s"
-              repeatCount="indefinite"
-            />
-          </path>
-
-          {/*
-            Dashed dark green — lower right zone.
-            At 12 s dash completes one traversal; at t=5 s visible at x ≈ 1580 viewBox.
-          */}
+          />
           <path
+            className="arc-dash-2"
             d="M 820 700 C 1060 545 1290 530 1580 605 C 1752 650 1920 638 2090 568"
             stroke="#116149"
-            strokeOpacity="0.24"
-            strokeWidth="1.0"
+            strokeOpacity="0.30"
+            strokeWidth="1.2"
             strokeDasharray="300 880"
-            strokeDashoffset="0"
-          >
-            <animate
-              attributeName="stroke-dashoffset"
-              values="0;-1180"
-              dur="12s"
-              repeatCount="indefinite"
-            />
-          </path>
+          />
         </g>
 
-        {/* Pulse nodes — all in viewBox x > 1080 (right-zone viewport, mask ≥ 0.78) */}
-        <circle cx="1320" cy="210" r="4" fill="#79D8AF" opacity="0.34">
-          <animate
-            attributeName="opacity"
-            values="0.18;0.48;0.18"
-            dur="7s"
-            repeatCount="indefinite"
-          />
-        </circle>
-        <circle cx="1510" cy="455" r="5" fill="#116149" opacity="0.28">
-          <animate
-            attributeName="opacity"
-            values="0.12;0.38;0.12"
-            dur="9s"
-            repeatCount="indefinite"
-          />
-        </circle>
-        <circle cx="1090" cy="610" r="3.5" fill="#318B74" opacity="0.22">
-          <animate
-            attributeName="opacity"
-            values="0.10;0.32;0.10"
-            dur="11s"
-            repeatCount="indefinite"
-          />
-        </circle>
+        {/* Pulse nodes — all in viewBox x > 1090 (screen x > 870, mask ≥ 0.96) */}
+        <circle
+          cx="1320" cy="210" r="4"
+          fill="#79D8AF" fillOpacity="0.50"
+          className="arc-node"
+        />
+        <circle
+          cx="1510" cy="455" r="5"
+          fill="#116149" fillOpacity="0.40"
+          className="arc-node"
+          style={{ animationDelay: "2.1s" }}
+        />
+        <circle
+          cx="1090" cy="610" r="3.5"
+          fill="#318B74" fillOpacity="0.36"
+          className="arc-node"
+          style={{ animationDelay: "4.3s" }}
+        />
       </svg>
     </div>
   );
