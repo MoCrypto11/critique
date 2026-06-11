@@ -161,6 +161,25 @@ button {
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
+  /* Fade geometry/glows at top and bottom — eliminates hard rectangular clip edge */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.75) 8%,
+    black 18%,
+    black 74%,
+    rgba(0, 0, 0, 0.40) 88%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.75) 8%,
+    black 18%,
+    black 74%,
+    rgba(0, 0, 0, 0.40) 88%,
+    transparent 100%
+  );
 }
 
 .hero-geo-svg {
@@ -169,45 +188,39 @@ button {
   width: 100%;
   height: 100%;
   overflow: visible;
-  /* Near-invisible behind text (left 40%), full opacity on right side */
+  /* Very faint behind text (left 40%), full opacity on right side */
   -webkit-mask-image: linear-gradient(
     to right,
-    rgba(0, 0, 0, 0.05) 0%,
-    rgba(0, 0, 0, 0.11) 42%,
-    rgba(0, 0, 0, 0.68) 64%,
-    rgba(0, 0, 0, 1.00) 82%
+    rgba(0, 0, 0, 0.08) 0%,
+    rgba(0, 0, 0, 0.18) 40%,
+    rgba(0, 0, 0, 0.75) 62%,
+    rgba(0, 0, 0, 1.00) 80%
   );
   mask-image: linear-gradient(
     to right,
-    rgba(0, 0, 0, 0.05) 0%,
-    rgba(0, 0, 0, 0.11) 42%,
-    rgba(0, 0, 0, 0.68) 64%,
-    rgba(0, 0, 0, 1.00) 82%
+    rgba(0, 0, 0, 0.08) 0%,
+    rgba(0, 0, 0, 0.18) 40%,
+    rgba(0, 0, 0, 0.75) 62%,
+    rgba(0, 0, 0, 1.00) 80%
   );
 }
 
-/* Primary orbital layer — rotates around upper-right focal point (84% 18% of SVG viewBox) */
+/* Primary orbital — large translate sweep, clearly visible in 5s */
 .orbit-primary {
-  transform-box: view-box;
-  transform-origin: 84% 18%;
   will-change: transform;
-  animation: orbitalSpin 38s linear infinite;
+  animation: orbitSweepPrimary 20s linear infinite alternate;
 }
 
-/* Secondary orbital — opposite rotation, lower-left focal point, offset phase */
+/* Secondary orbital — opposite direction, slower period */
 .orbit-secondary {
-  transform-box: view-box;
-  transform-origin: 12% 88%;
   will-change: transform;
-  animation: orbitalSpin 56s linear -14s infinite reverse;
+  animation: orbitSweepSecondary 28s linear infinite alternate;
 }
 
-/* Accent orbital — thin dashed strokes, third focal point, different phase */
+/* Accent orbital — dashed strokes, offset phase */
 .orbit-accent {
-  transform-box: view-box;
-  transform-origin: 72% 52%;
   will-change: transform;
-  animation: orbitalSpin 48s linear -8s infinite;
+  animation: orbitSweepAccent 24s linear infinite alternate;
 }
 
 /* Pulse nodes: opacity + scale pop */
@@ -360,9 +373,24 @@ button {
 
 /* ─── Keyframes ────────────────────────────────────────────────────────── */
 
-@keyframes orbitalSpin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+/*
+  Orbital sweep keyframes — each uses translate (primary motion, 75–100px in 5s)
+  combined with a small rotate (for arc curvature) around default fill-box center.
+  Linear + alternate = constant visible drift; no ease-in invisible start.
+*/
+@keyframes orbitSweepPrimary {
+  from { transform: translate(-140px, 55px) rotate(-5deg); }
+  to   { transform: translate(160px, -50px) rotate(6deg); }
+}
+
+@keyframes orbitSweepSecondary {
+  from { transform: translate(110px, -60px) rotate(4deg); }
+  to   { transform: translate(-130px, 80px) rotate(-5deg); }
+}
+
+@keyframes orbitSweepAccent {
+  from { transform: translate(-80px, 90px) rotate(-3.5deg); }
+  to   { transform: translate(120px, -70px) rotate(4deg); }
 }
 
 @keyframes nodePulse {
