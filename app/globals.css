@@ -186,16 +186,28 @@ button {
   );
 }
 
-/* Primary arc rings drift slowly */
-.hero-arc-rings {
+/* Primary orbital layer — rotates around upper-right focal point (84% 18% of SVG viewBox) */
+.orbit-primary {
+  transform-box: view-box;
+  transform-origin: 84% 18%;
   will-change: transform;
-  animation: arcRingDrift 28s ease-in-out infinite alternate;
+  animation: orbitalSpin 38s linear infinite;
 }
 
-/* Secondary arcs drift counter to primary */
-.hero-arc-rings-secondary {
+/* Secondary orbital — opposite rotation, lower-left focal point, offset phase */
+.orbit-secondary {
+  transform-box: view-box;
+  transform-origin: 12% 88%;
   will-change: transform;
-  animation: arcRingDriftSecondary 36s ease-in-out infinite alternate;
+  animation: orbitalSpin 56s linear -14s infinite reverse;
+}
+
+/* Accent orbital — thin dashed strokes, third focal point, different phase */
+.orbit-accent {
+  transform-box: view-box;
+  transform-origin: 72% 52%;
+  will-change: transform;
+  animation: orbitalSpin 48s linear -8s infinite;
 }
 
 /* Pulse nodes: opacity + scale pop */
@@ -337,15 +349,10 @@ button {
     display: none;
   }
 
-  /* Hide complex geometry on mobile for clean text readability */
-  .hero-arc-rings {
-    display: none;
-  }
-
-  .hero-arc-rings-secondary {
-    display: none;
-  }
-
+  /* Hide orbital geometry on mobile */
+  .orbit-primary,
+  .orbit-secondary,
+  .orbit-accent,
   .hero-scan-line {
     display: none;
   }
@@ -353,14 +360,9 @@ button {
 
 /* ─── Keyframes ────────────────────────────────────────────────────────── */
 
-@keyframes arcRingDrift {
-  from { transform: translate(0px, 0px); }
-  to   { transform: translate(-20px, 13px); }
-}
-
-@keyframes arcRingDriftSecondary {
-  from { transform: translate(0px, 0px); }
-  to   { transform: translate(16px, -10px); }
+@keyframes orbitalSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 
 @keyframes nodePulse {
@@ -406,8 +408,9 @@ button {
 
 @media (prefers-reduced-motion: reduce) {
   .hero-ambient-glow,
-  .hero-arc-rings,
-  .hero-arc-rings-secondary,
+  .orbit-primary,
+  .orbit-secondary,
+  .orbit-accent,
   .hero-node-pulse,
   .hero-scan-line {
     animation: none !important;

@@ -12,33 +12,43 @@ export function HeroMotionBackground() {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <g className="hero-arc-rings">
-          <circle cx="1260" cy="-140" r="860" stroke="#116149" strokeOpacity="0.20" strokeWidth="2.5" />
-          <circle cx="1260" cy="-140" r="630" stroke="#116149" strokeOpacity="0.18" strokeWidth="2.0" />
-          <circle cx="1260" cy="-140" r="430" stroke="#79D8AF" strokeOpacity="0.22" strokeWidth="1.6" />
+        {/*
+          Primary orbital layer — 3 concentric circles centered at (1280, -80).
+          Group rotates around focal point at 84%×18% of viewBox = (1210, 122).
+          Distance from focal point to circle center ≈ 214px → center sweeps ~177px in 5s.
+        */}
+        <g className="orbit-primary">
+          <circle cx="1280" cy="-80" r="820" stroke="#116149" strokeOpacity="0.20" strokeWidth="2.0" />
+          <circle cx="1280" cy="-80" r="580" stroke="#116149" strokeOpacity="0.16" strokeWidth="1.5" />
+          <circle cx="1280" cy="-80" r="370" stroke="#79D8AF" strokeOpacity="0.18" strokeWidth="1.2" />
         </g>
 
-        <g className="hero-arc-rings-secondary">
-          <circle cx="-60" cy="820" r="760" stroke="#116149" strokeOpacity="0.12" strokeWidth="1.5" />
-          <circle cx="-60" cy="820" r="550" stroke="#116149" strokeOpacity="0.09" strokeWidth="1.1" />
+        {/*
+          Secondary orbital layer — larger, slower, counter-rotating.
+          Circles centered at (-40, 800); focal point 12%×88% = (173, 598).
+          Distance ≈ 294px → center sweeps ~164px in 5s at 56s period.
+        */}
+        <g className="orbit-secondary">
+          <circle cx="-40" cy="800" r="900"  stroke="#116149" strokeOpacity="0.13" strokeWidth="1.4" />
+          <circle cx="-40" cy="800" r="650"  stroke="#116149" strokeOpacity="0.10" strokeWidth="1.0" />
         </g>
 
-        <line x1="0" y1="560" x2="760" y2="0" stroke="#116149" strokeOpacity="0.16" strokeWidth="1.5" />
-        <line x1="0" y1="340" x2="640" y2="340" stroke="#116149" strokeOpacity="0.13" strokeWidth="1.3" />
-        <line x1="480" y1="0" x2="480" y2="260" stroke="#116149" strokeOpacity="0.12" strokeWidth="1.1" />
+        {/*
+          Accent orbital — thin dashed strokes, distinct focal point.
+          Circles centered at (1400, 200); focal point 72%×52% = (1037, 354).
+          Distance ≈ 394px → fastest visible sweep, ~258px in 5s at 48s period.
+        */}
+        <g className="orbit-accent">
+          <circle cx="1400" cy="200" r="680" stroke="#79D8AF" strokeOpacity="0.15" strokeWidth="1.0" strokeDasharray="5 20" />
+          <circle cx="1400" cy="200" r="480" stroke="#116149" strokeOpacity="0.12" strokeWidth="1.0" strokeDasharray="3 24" />
+        </g>
 
-        <line x1="316" y1="246" x2="520" y2="246" stroke="#116149" strokeOpacity="0.18" strokeWidth="1.6" strokeLinecap="square" />
-        <line x1="520" y1="246" x2="520" y2="342" stroke="#116149" strokeOpacity="0.15" strokeWidth="1.3" strokeLinecap="square" />
-        <line x1="520" y1="342" x2="724" y2="342" stroke="#116149" strokeOpacity="0.16" strokeWidth="1.5" strokeLinecap="square" />
-        <line x1="724" y1="342" x2="724" y2="428" stroke="#116149" strokeOpacity="0.13" strokeWidth="1.2" strokeLinecap="square" />
-
-        <circle cx="480" cy="340" r="5.5" fill="#116149" fillOpacity="0.50" className="hero-node-pulse" style={{ animationDelay: "0s" }} />
-        <circle cx="520" cy="246" r="4.5" fill="#116149" fillOpacity="0.50" className="hero-node-pulse" style={{ animationDelay: "0.8s" }} />
-        <circle cx="520" cy="342" r="4.5" fill="#79D8AF" fillOpacity="0.52" className="hero-node-pulse" style={{ animationDelay: "1.6s" }} />
-        <circle cx="724" cy="342" r="4"   fill="#116149" fillOpacity="0.50" className="hero-node-pulse" style={{ animationDelay: "2.2s" }} />
-        <circle cx="724" cy="428" r="3.5" fill="#116149" fillOpacity="0.50" className="hero-node-pulse" style={{ animationDelay: "0.4s" }} />
-        <circle cx="316" cy="246" r="3"   fill="#116149" fillOpacity="0.50" className="hero-node-pulse" style={{ animationDelay: "1.2s" }} />
-        <circle cx="760" cy="2"   r="3"   fill="#79D8AF" fillOpacity="0.44" className="hero-node-pulse" style={{ animationDelay: "2.8s" }} />
+        {/* Pulse nodes — positioned in the right 40-85% zone where mask is 0.65–1.0 */}
+        <circle cx="960"  cy="300" r="4"   fill="#116149" fillOpacity="0.46" className="hero-node-pulse" style={{ animationDelay: "0s" }} />
+        <circle cx="1100" cy="180" r="3.5" fill="#79D8AF" fillOpacity="0.50" className="hero-node-pulse" style={{ animationDelay: "1.2s" }} />
+        <circle cx="880"  cy="460" r="3"   fill="#116149" fillOpacity="0.40" className="hero-node-pulse" style={{ animationDelay: "2.4s" }} />
+        <circle cx="1220" cy="380" r="4"   fill="#116149" fillOpacity="0.46" className="hero-node-pulse" style={{ animationDelay: "0.7s" }} />
+        <circle cx="1060" cy="80"  r="3"   fill="#79D8AF" fillOpacity="0.42" className="hero-node-pulse" style={{ animationDelay: "1.9s" }} />
       </svg>
     </div>
   );
