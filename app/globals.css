@@ -144,44 +144,44 @@ button {
   position: absolute;
   inset: 0;
   z-index: 0;
-  overflow: hidden;
   pointer-events: none;
+  overflow: hidden;
 }
 
 .hero-ambient-glow {
   position: absolute;
   border-radius: 999px;
   pointer-events: none;
+  filter: blur(36px);
+  opacity: 0.42;
   transform-origin: center;
   will-change: opacity, transform;
-  animation: ambientPulse 14s ease-in-out infinite alternate;
 }
 
 .hero-ambient-glow-primary {
-  right: 4%;
-  top: 12%;
-  width: min(34vw, 28rem);
-  height: min(25vw, 19rem);
-  background: radial-gradient(ellipse at center, rgba(121, 216, 175, 0.24), rgba(17, 97, 73, 0.07) 42%, transparent 70%);
-  opacity: 0.52;
+  width: 520px;
+  height: 520px;
+  right: 8%;
+  top: 18%;
+  background: rgba(121, 216, 175, 0.2);
+  animation: critiqueGlowPulse 14s ease-in-out infinite alternate;
 }
 
 .hero-ambient-glow-secondary {
-  right: 28%;
-  bottom: 3%;
-  width: min(30vw, 23rem);
-  height: min(22vw, 17rem);
-  background: radial-gradient(ellipse at center, rgba(255, 253, 247, 0.48), rgba(198, 168, 106, 0.08) 38%, transparent 72%);
-  opacity: 0.42;
-  animation-duration: 16s;
-  animation-delay: -5s;
+  width: 360px;
+  height: 360px;
+  right: 24%;
+  bottom: 8%;
+  background: rgba(17, 97, 73, 0.12);
+  animation: critiqueGlowPulseSecondary 18s ease-in-out infinite alternate;
 }
 
 .hero-orbit-system {
   position: absolute;
-  inset: -7rem -10rem -3rem 35%;
+  inset: -8% -12% -10% 34%;
   z-index: 0;
   pointer-events: none;
+  opacity: 1;
 }
 
 .home-section {
@@ -276,30 +276,30 @@ button {
   height: 100%;
   overflow: visible;
   opacity: 0.94;
-  transform-origin: 70% 45%;
+  transform-origin: 68% 42%;
   will-change: transform;
-  animation: orbitDrift 28s ease-in-out infinite alternate;
+  animation: critiqueOrbitDrift 28s ease-in-out infinite alternate;
 }
 
 .hero-orbits-secondary {
   transform-box: fill-box;
-  transform-origin: center;
+  transform-origin: 72% 50%;
   will-change: transform;
-  animation: orbitFloat 24s ease-in-out infinite alternate;
+  animation: critiqueOrbitFloat 38s ease-in-out infinite alternate;
 }
 
 .hero-orbits-technical {
   transform-box: fill-box;
   transform-origin: center;
   will-change: opacity, transform;
-  animation: technicalFloat 18s ease-in-out infinite alternate;
+  animation: critiqueTechFloat 18s ease-in-out infinite alternate;
 }
 
 .hero-orbits-nodes {
   transform-box: fill-box;
   transform-origin: center;
-  will-change: transform;
-  animation: nodeFloat 16s ease-in-out infinite alternate;
+  will-change: opacity, transform;
+  animation: critiqueTechFloat 18s ease-in-out infinite alternate;
 }
 
 .arc-network-card {
@@ -334,10 +334,11 @@ button {
 
   .hero-ambient-glow-primary {
     right: -30%;
-    top: 18%;
-    width: 23rem;
-    height: 18rem;
-    opacity: 0.3;
+    top: 22%;
+    width: 280px;
+    height: 280px;
+    opacity: 0.24;
+    filter: blur(28px);
   }
 
   .hero-ambient-glow-secondary {
@@ -345,8 +346,8 @@ button {
   }
 
   .hero-orbit-system {
-    inset: 8rem -24rem 2rem 28%;
-    opacity: 0.42;
+    inset: 12% -38% -12% 18%;
+    opacity: 0.62;
   }
 
   .hero-stage::before {
@@ -374,57 +375,59 @@ button {
   }
 }
 
-@keyframes orbitDrift {
+@keyframes critiqueOrbitDrift {
   from {
-    transform: translate3d(0, 0, 0) rotate(0deg);
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
   }
 
   to {
-    transform: translate3d(-32px, 22px, 0) rotate(-2.2deg);
+    transform: translate3d(-34px, 22px, 0) rotate(-2.4deg) scale(1.025);
   }
 }
 
-@keyframes orbitFloat {
+@keyframes critiqueOrbitFloat {
   from {
-    transform: translate3d(14px, -8px, 0) rotate(1.1deg);
+    transform: translate3d(18px, -10px, 0) rotate(1.2deg);
   }
 
   to {
-    transform: translate3d(-20px, 14px, 0) rotate(-1.2deg);
+    transform: translate3d(-22px, 16px, 0) rotate(-1.6deg);
   }
 }
 
-@keyframes technicalFloat {
+@keyframes critiqueTechFloat {
   from {
-    opacity: 0.76;
     transform: translate3d(0, 0, 0);
+    opacity: 0.85;
   }
 
   to {
+    transform: translate3d(-18px, 12px, 0);
     opacity: 1;
-    transform: translate3d(-14px, 8px, 0);
   }
 }
 
-@keyframes nodeFloat {
+@keyframes critiqueGlowPulse {
   from {
-    transform: translate3d(0, 0, 0);
-  }
-
-  to {
-    transform: translate3d(10px, -7px, 0);
-  }
-}
-
-@keyframes ambientPulse {
-  from {
-    opacity: 0.38;
     transform: scale(1) translate3d(0, 0, 0);
+    opacity: 0.32;
   }
 
   to {
-    opacity: 0.62;
-    transform: scale(1.04) translate3d(-10px, 8px, 0);
+    transform: scale(1.07) translate3d(-18px, 12px, 0);
+    opacity: 0.48;
+  }
+}
+
+@keyframes critiqueGlowPulseSecondary {
+  from {
+    transform: scale(1) translate3d(0, 0, 0);
+    opacity: 0.22;
+  }
+
+  to {
+    transform: scale(1.05) translate3d(14px, -10px, 0);
+    opacity: 0.34;
   }
 }
 
@@ -434,7 +437,7 @@ button {
   .hero-orbits-secondary,
   .hero-orbits-technical,
   .hero-orbits-nodes {
-    animation: none;
+    animation: none !important;
   }
 }
 
