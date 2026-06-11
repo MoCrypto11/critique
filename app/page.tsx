@@ -189,6 +189,7 @@ export default function HomePage() {
     <>
       <AppHeader />
       <main>
+        <div className="home-hero-band">
         <section className="hero-stage mx-auto grid w-full max-w-7xl px-4 pb-12 pt-10 sm:px-6 sm:pb-14 sm:pt-12 lg:px-8 lg:pb-16 lg:pt-14">
           <div className="hero-orbits" aria-hidden="true">
             <svg viewBox="0 0 960 720" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -282,10 +283,11 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+        </div>
 
         <section
           id="how-it-works"
-          className="mx-auto w-full max-w-6xl scroll-mt-24 px-4 pb-10 pt-5 sm:px-6 sm:pb-12 sm:pt-6 lg:px-8"
+          className="home-section home-section-soft mx-auto w-full max-w-6xl scroll-mt-24 px-4 pb-10 pt-7 sm:px-6 sm:pb-12 sm:pt-8 lg:px-8"
         >
           <div className="mb-5 max-w-3xl">
             <p className="eyebrow">How it works</p>
@@ -339,7 +341,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="page-shell py-10 sm:py-12">
+        <section className="home-section page-shell py-10 sm:py-12">
           <div className="mb-6 max-w-3xl">
             <p className="eyebrow">Feedback formats</p>
             <h2 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">
@@ -364,7 +366,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="page-shell py-10 sm:py-12">
+        <section className="home-section page-shell py-10 sm:py-12">
           <div className="mb-6 max-w-3xl">
             <p className="eyebrow">For founders</p>
             <h2 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">
@@ -389,7 +391,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="page-shell py-10 sm:py-12">
+        <section className="home-section page-shell py-10 sm:py-12">
           <div className="surface grid gap-6 p-5 sm:p-7 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
             <div>
               <p className="eyebrow">Contributor experience</p>
@@ -425,7 +427,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="faq" className="page-shell scroll-mt-24 py-10 sm:py-12">
+        <section id="faq" className="home-section page-shell scroll-mt-24 py-10 sm:py-12">
           <div className="mx-auto mb-6 max-w-3xl text-center">
             <p className="eyebrow">FAQ</p>
             <h2 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">Frequently asked questions</h2>
@@ -463,7 +465,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="page-shell py-10 sm:py-12">
+        <section className="home-section home-section-soft page-shell py-10 sm:py-12">
           <div className="arc-network-card overflow-hidden rounded-[1.75rem] border border-white/12 bg-[#061916] text-white shadow-[0_22px_60px_rgba(7,26,24,0.16)]">
             <div className="p-5 sm:p-7 lg:p-8">
               <div className="mx-auto max-w-3xl text-center">
@@ -536,7 +538,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="page-shell py-10 sm:py-12">
+        <section className="home-section page-shell py-10 sm:py-12">
           <div className="surface flex flex-col items-start justify-between gap-5 p-5 sm:p-7 lg:flex-row lg:items-center">
             <div className="max-w-2xl">
               <p className="eyebrow">Start focused</p>
