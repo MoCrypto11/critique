@@ -1,18 +1,12 @@
 import type { Metadata } from "next";
-import { Manrope, Space_Grotesk, Space_Mono } from "next/font/google";
+import { Space_Grotesk, Space_Mono } from "next/font/google";
 import "./globals.css";
 import { BuiltOnArcBadge } from "@/components/BuiltOnArcBadge";
 import { Footer } from "@/components/Footer";
 import { Providers } from "./providers";
 
-// Manrope = body/site default. Space Grotesk = hero display headline only.
-// Space Mono = small uppercase eyebrows/labels.
-const manrope = Manrope({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-manrope"
-});
-
+// Space Grotesk = main site font (body, nav, headings, cards, buttons, forms).
+// Space Mono = small uppercase eyebrows/labels only.
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   display: "swap",
@@ -36,7 +30,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${manrope.variable} ${spaceGrotesk.variable} ${spaceMono.variable}`}>
+    <html lang="en" className={`${spaceGrotesk.variable} ${spaceMono.variable}`}>
       <body className="bg-[#fbfcf8] antialiased">
         <Providers>
           {children}
