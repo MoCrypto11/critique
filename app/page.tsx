@@ -196,7 +196,7 @@ export default function HomePage() {
             <div className="relative z-10">
               <p className="eyebrow">Useful feedback. USDC rewards.</p>
               <h1 className="hero-headline font-display mt-5 text-ink">
-                Feedback bounties for early product teams
+                Feedback bounties for early product teams building better products
               </h1>
               <p className="hero-subcopy mt-7 font-bold text-[#315145]">
                 Create a focused bounty, share one public link, review submissions, and approve USDC rewards for

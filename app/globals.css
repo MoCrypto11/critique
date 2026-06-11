@@ -95,9 +95,9 @@ button {
 
 /* ─── Hero editorial text ──────────────────────────────────────────────── */
 
-/* Large editorial headline — no max-width; fills the section container naturally */
+/* Longer headline — tighter clamp yields clean 2-line wrap at ≥1024px */
 .hero-headline {
-  font-size: clamp(2.75rem, 6.8vw, 6.5rem);
+  font-size: clamp(2.75rem, 5vw, 4.5rem);
   line-height: 0.97;
   letter-spacing: -0.028em;
 }
@@ -119,18 +119,28 @@ button {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  border-top: 1px solid rgba(17, 97, 73, 0.07);
-  background: linear-gradient(160deg, #f4f1e7 0%, #ece9d5 100%);
+  /* Transparent: body gradient shows through — no visible top edge */
+  background: transparent;
 }
 
-/* Bottom fade blends into sections below */
+/* Warm ivory tint in the mid-zone only — fades to transparent at all four edges */
+.home-hero-band::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background: radial-gradient(ellipse 130% 80% at 62% 55%, rgba(205, 200, 174, 0.36) 0%, transparent 72%);
+}
+
+/* Bottom fade — matches body background exactly, no colour seam */
 .home-hero-band::after {
   content: "";
   position: absolute;
   inset: auto 0 0 0;
-  height: 10rem;
+  height: 14rem;
   pointer-events: none;
-  background: linear-gradient(180deg, transparent, rgba(238, 235, 220, 0.97) 88%);
+  background: linear-gradient(180deg, transparent 0%, rgba(248, 245, 235, 0.86) 72%, rgba(251, 252, 248, 0.99) 100%);
   z-index: 1;
 }
 
@@ -159,6 +169,21 @@ button {
   width: 100%;
   height: 100%;
   overflow: visible;
+  /* Near-invisible behind text (left 40%), full opacity on right side */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.05) 0%,
+    rgba(0, 0, 0, 0.11) 42%,
+    rgba(0, 0, 0, 0.68) 64%,
+    rgba(0, 0, 0, 1.00) 82%
+  );
+  mask-image: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.05) 0%,
+    rgba(0, 0, 0, 0.11) 42%,
+    rgba(0, 0, 0, 0.68) 64%,
+    rgba(0, 0, 0, 1.00) 82%
+  );
 }
 
 /* Primary arc rings drift slowly */
