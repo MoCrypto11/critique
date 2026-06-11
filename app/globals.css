@@ -99,9 +99,9 @@ button {
   overflow: hidden;
   border-top: 1px solid rgba(17, 97, 73, 0.06);
   background:
-    radial-gradient(ellipse at 78% 44%, rgba(17, 97, 73, 0.2), transparent 30rem),
-    radial-gradient(ellipse at 84% 18%, rgba(121, 216, 175, 0.18), transparent 22rem),
-    radial-gradient(ellipse at 12% 18%, rgba(198, 168, 106, 0.13), transparent 22rem),
+    radial-gradient(ellipse at 78% 44%, rgba(17, 97, 73, 0.1), transparent 30rem),
+    radial-gradient(ellipse at 84% 18%, rgba(121, 216, 175, 0.1), transparent 24rem),
+    radial-gradient(ellipse at 12% 18%, rgba(198, 168, 106, 0.08), transparent 24rem),
     linear-gradient(135deg, #fffaf0 0%, #f2f6eb 46%, #eaf4eb 100%);
 }
 
@@ -138,6 +138,43 @@ button {
 .home-hero-band > .hero-stage {
   position: relative;
   z-index: 1;
+}
+
+.hero-motion-background {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.hero-ambient-glow {
+  position: absolute;
+  border-radius: 999px;
+  pointer-events: none;
+  transform-origin: center;
+  will-change: opacity, transform;
+  animation: ambientPulse 14s ease-in-out infinite alternate;
+}
+
+.hero-ambient-glow-primary {
+  right: 4%;
+  top: 12%;
+  width: min(34vw, 28rem);
+  height: min(25vw, 19rem);
+  background: radial-gradient(ellipse at center, rgba(121, 216, 175, 0.24), rgba(17, 97, 73, 0.07) 42%, transparent 70%);
+  opacity: 0.52;
+}
+
+.hero-ambient-glow-secondary {
+  right: 28%;
+  bottom: 3%;
+  width: min(30vw, 23rem);
+  height: min(22vw, 17rem);
+  background: radial-gradient(ellipse at center, rgba(255, 253, 247, 0.48), rgba(198, 168, 106, 0.08) 38%, transparent 72%);
+  opacity: 0.42;
+  animation-duration: 16s;
+  animation-delay: -5s;
 }
 
 .hero-orbit-system {
@@ -240,19 +277,29 @@ button {
   overflow: visible;
   opacity: 0.94;
   transform-origin: 70% 45%;
-  animation: orbitDrift 34s ease-in-out infinite alternate;
+  will-change: transform;
+  animation: orbitDrift 28s ease-in-out infinite alternate;
 }
 
 .hero-orbits-secondary {
   transform-box: fill-box;
   transform-origin: center;
-  animation: orbitFloat 44s ease-in-out infinite alternate;
+  will-change: transform;
+  animation: orbitFloat 24s ease-in-out infinite alternate;
 }
 
 .hero-orbits-technical {
   transform-box: fill-box;
   transform-origin: center;
-  animation: orbitPulse 30s ease-in-out infinite alternate;
+  will-change: opacity, transform;
+  animation: technicalFloat 18s ease-in-out infinite alternate;
+}
+
+.hero-orbits-nodes {
+  transform-box: fill-box;
+  transform-origin: center;
+  will-change: transform;
+  animation: nodeFloat 16s ease-in-out infinite alternate;
 }
 
 .arc-network-card {
@@ -282,12 +329,24 @@ button {
     top: 6rem;
     width: 54rem;
     height: 36rem;
-    opacity: 0.42;
+    opacity: 0.3;
+  }
+
+  .hero-ambient-glow-primary {
+    right: -30%;
+    top: 18%;
+    width: 23rem;
+    height: 18rem;
+    opacity: 0.3;
+  }
+
+  .hero-ambient-glow-secondary {
+    display: none;
   }
 
   .hero-orbit-system {
     inset: 8rem -24rem 2rem 28%;
-    opacity: 0.36;
+    opacity: 0.42;
   }
 
   .hero-stage::before {
@@ -309,7 +368,8 @@ button {
   }
 
   .hero-orbits-secondary,
-  .hero-orbits-technical {
+  .hero-orbits-technical,
+  .hero-orbits-nodes {
     display: none;
   }
 }
@@ -334,7 +394,7 @@ button {
   }
 }
 
-@keyframes orbitPulse {
+@keyframes technicalFloat {
   from {
     opacity: 0.76;
     transform: translate3d(0, 0, 0);
@@ -346,21 +406,34 @@ button {
   }
 }
 
-@keyframes heroArcBreath {
-  0%,
-  100% {
-    opacity: 0.78;
+@keyframes nodeFloat {
+  from {
+    transform: translate3d(0, 0, 0);
   }
 
-  50% {
-    opacity: 0.96;
+  to {
+    transform: translate3d(10px, -7px, 0);
+  }
+}
+
+@keyframes ambientPulse {
+  from {
+    opacity: 0.38;
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+
+  to {
+    opacity: 0.62;
+    transform: scale(1.04) translate3d(-10px, 8px, 0);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .hero-ambient-glow,
   .hero-orbits,
   .hero-orbits-secondary,
-  .hero-orbits-technical {
+  .hero-orbits-technical,
+  .hero-orbits-nodes {
     animation: none;
   }
 }
