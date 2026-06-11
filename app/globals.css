@@ -47,6 +47,8 @@ button {
 
 .eyebrow {
   @apply text-xs font-bold uppercase tracking-[0.16em] text-action;
+  font-family: var(--font-space-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.1em;
 }
 
 .font-display {
@@ -98,8 +100,9 @@ button {
 /* Longer headline — slightly reduced clamp + balanced wrapping keep the
    extended copy premium and uncrowded across desktop and mobile. */
 .hero-headline {
+  font-family: var(--font-space-grotesk), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
   font-size: clamp(2.5rem, 4.5vw, 4rem);
-  font-weight: 600;
+  font-weight: 400;
   line-height: 0.95;
   letter-spacing: -0.05em;
   text-wrap: balance;
