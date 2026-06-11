@@ -95,11 +95,13 @@ button {
 
 /* ─── Hero editorial text ──────────────────────────────────────────────── */
 
-/* Longer headline — tighter clamp yields clean 2-line wrap at ≥1024px */
+/* Longer headline — slightly reduced clamp + balanced wrapping keep the
+   extended copy premium and uncrowded across desktop and mobile. */
 .hero-headline {
-  font-size: clamp(2.75rem, 5vw, 4.5rem);
-  line-height: 0.97;
-  letter-spacing: -0.028em;
+  font-size: clamp(2.5rem, 4.5vw, 4rem);
+  line-height: 1.02;
+  letter-spacing: -0.026em;
+  text-wrap: balance;
 }
 
 .hero-subcopy {
