@@ -194,13 +194,13 @@ export default function HomePage() {
           <HeroArcMotionLayer />
           <section className="hero-stage mx-auto w-full max-w-7xl px-4 pb-12 pt-16 sm:px-6 sm:pb-14 sm:pt-20 lg:px-8 lg:pb-16 lg:pt-24">
             <div className="relative z-10">
-              <p className="eyebrow">Useful feedback. USDC rewards.</p>
+              <p className="eyebrow">Feedback bounties on Arc</p>
               <h1 className="hero-headline font-display mt-5 text-ink">
-                Feedback bounties for early product teams building better products
+                TURN PRODUCT FEEDBACK INTO FUNDED BOUNTIES
               </h1>
               <p className="hero-subcopy mt-7 font-bold text-[#315145]">
-                Create a focused bounty, share one public link, review submissions, and approve USDC rewards for
-                useful product feedback.
+                Critique helps teams collect useful product feedback, review submissions, and approve USDC rewards
+                through one focused bounty link.
               </p>
             </div>
           </section>
