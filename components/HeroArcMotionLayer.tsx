@@ -53,13 +53,13 @@ export function HeroArcMotionLayer() {
           ) : null}
           <path
             d="M -300 900 C 250 560 700 360 1220 280 C 1540 220 1780 180 2120 90"
-            stroke="#3fa97e"
-            strokeOpacity="0.34"
+            stroke="#116149"
+            strokeOpacity="0.3"
             strokeWidth="2.1"
           />
           <path
             d="M -160 380 C 280 275 640 380 940 650 C 1140 840 1530 775 1940 645"
-            stroke="#79D8AF"
+            stroke="#3f9e74"
             strokeOpacity="0.28"
             strokeWidth="1.7"
           />
@@ -68,8 +68,8 @@ export function HeroArcMotionLayer() {
         {/* Flowing dashed paths — visible travelling motion on the open right side. */}
         <path
           d="M 760 200 C 1040 150 1270 196 1486 158 C 1690 124 1864 188 2060 250"
-          stroke="#79D8AF"
-          strokeOpacity="0.34"
+          stroke="#116149"
+          strokeOpacity="0.42"
           strokeWidth="2.4"
           strokeDasharray="120 250"
           strokeLinecap="round"
@@ -80,7 +80,7 @@ export function HeroArcMotionLayer() {
         </path>
         <path
           d="M 820 470 C 1080 430 1300 470 1540 430 C 1730 398 1900 452 2080 410"
-          stroke="#3fa97e"
+          stroke="#2f8f66"
           strokeOpacity="0.36"
           strokeWidth="2.1"
           strokeDasharray="90 220"
@@ -92,7 +92,7 @@ export function HeroArcMotionLayer() {
         </path>
         <path
           d="M 800 690 C 1070 545 1300 540 1580 600 C 1760 638 1930 628 2100 565"
-          stroke="#2f9e72"
+          stroke="#1f7a58"
           strokeOpacity="0.32"
           strokeWidth="1.9"
           strokeDasharray="70 200"

@@ -167,36 +167,24 @@ export default function HomePage() {
             <div className="relative z-10">
               <p className="eyebrow">Feedback bounties on Arc</p>
               <h1 className="hero-headline font-display mt-6 text-ink">
-                Turn Product Feedback Into <span className="text-[#7fe0b6]">Funded Bounties</span> For Smarter Product
+                Turn Product Feedback Into <span className="text-[#15835a]">Funded Bounties</span> For Smarter Product
                 Decisions
               </h1>
-              <p className="hero-subcopy mt-9 font-semibold text-[#a9c2b5]">
+              <p className="hero-subcopy mt-7 font-semibold text-[#315145]">
                 Critique helps teams collect useful product feedback, review submissions, and approve USDC rewards
                 through one focused bounty link.
               </p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Link href="/create" className="btn-primary hero-cta">
+                  Create a bounty
+                </Link>
+                <Link href="/bounty/demo" className="btn-secondary hero-cta">
+                  Preview bounty link
+                </Link>
+              </div>
             </div>
           </section>
         </div>
-
-        <section className="home-section mx-auto w-full max-w-7xl px-4 pt-3 pb-6 sm:px-6 sm:pt-5 sm:pb-8 lg:px-8">
-          <div className="surface grid gap-6 p-6 sm:p-8 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-center xl:gap-12">
-            <div>
-              <p className="eyebrow">Start focused</p>
-              <h2 className="section-title mt-3 text-balance text-ink">Create your first feedback bounty</h2>
-              <p className="section-intro mt-3 text-muted">
-                Set the reward tiers, share one link, and start collecting useful product feedback on Arc.
-              </p>
-            </div>
-            <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row xl:shrink-0">
-              <Link href="/create" className="btn-primary">
-                Create a bounty
-              </Link>
-              <Link href="/bounty/demo" className="btn-secondary">
-                Preview bounty link
-              </Link>
-            </div>
-          </div>
-        </section>
 
         <section
           id="how-it-works"
@@ -352,17 +340,27 @@ export default function HomePage() {
         </section>
 
         <section className="home-section home-container section-pad">
-          <div className="arc-badge relative overflow-hidden rounded-3xl border border-[#7fe0b6]/22 bg-[#04130d] px-6 py-10 text-center shadow-[0_30px_80px_rgba(0,0,0,0.45)] sm:px-10 sm:py-12">
+          <div className="relative overflow-hidden rounded-3xl border border-[#7fe0b6]/22 bg-[#061712] px-6 py-9 text-center shadow-[0_26px_64px_rgba(7,26,24,0.22)] sm:px-10 sm:py-10">
             <div className="arc-panel-glow" aria-hidden="true" />
-            <div className="relative mx-auto flex max-w-md flex-col items-center">
-              <p className="eyebrow text-[#7fe0b6]">Built on Arc testnet</p>
-              <h2 className="font-display mt-4 text-3xl font-semibold leading-tight text-white sm:text-4xl">
+            <div className="relative mx-auto flex max-w-lg flex-col items-center">
+              <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#7fe0b6]">Built on Arc testnet</p>
+              <h2 className="font-display mt-3 text-2xl font-semibold leading-tight text-white sm:text-3xl">
                 Arc Network
               </h2>
-              <p className="mt-3 text-sm font-semibold text-[#9fc7b6] sm:text-base">
-                Stablecoin-native infrastructure for onchain settlement.
+              <p className="mt-2 text-sm font-semibold text-[#9fc7b6] sm:text-[15px]">
+                Stablecoin-native infrastructure for USDC settlement.
               </p>
-              <div className="mt-7 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+              <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+                {["USDC rewards", "Fast settlement", "EVM tooling"].map((point) => (
+                  <span
+                    key={point}
+                    className="rounded-full border border-[#7fe0b6]/25 bg-[#7fe0b6]/10 px-3 py-1 text-xs font-bold text-[#bfe6d4]"
+                  >
+                    {point}
+                  </span>
+                ))}
+              </div>
+              <div className="mt-6 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
                 <a
                   href="https://testnet.arcscan.app/"
                   target="_blank"

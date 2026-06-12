@@ -210,32 +210,30 @@ button {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  /* Luminous environment on the open right side over the dark page — the
-     glow layers and dark theme background show through; no cream. */
-  background:
-    radial-gradient(120% 80% at 86% 10%, rgba(127, 224, 182, 0.12) 0%, transparent 54%),
-    radial-gradient(85% 60% at 98% 56%, rgba(86, 196, 196, 0.08) 0%, transparent 60%);
+  /* Transparent — the continuous .home-theme canvas + the glow/line layers
+     show through, so the hero is part of one canvas (no separate rectangle). */
+  background: transparent;
 }
 
-/* Top settle — a faint darkening under the header, dissolving downward. */
+/* Subtle top lift under the header — keeps the canvas continuous. */
 .home-hero-band::before {
   content: "";
   position: absolute;
   inset: 0 0 auto 0;
   height: 7rem;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(3, 13, 9, 0.55) 0%, transparent 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, transparent 100%);
   z-index: 1;
 }
 
-/* Bottom dissolve into the dark page — no hard band edge. */
+/* No bottom band edge — the canvas flows straight into the next section. */
 .home-hero-band::after {
   content: "";
   position: absolute;
   inset: auto 0 0 0;
-  height: 16rem;
+  height: 12rem;
   pointer-events: none;
-  background: linear-gradient(180deg, transparent 0%, rgba(4, 16, 12, 0.0) 60%, rgba(4, 16, 12, 0.35) 100%);
+  background: transparent;
   z-index: 1;
 }
 
@@ -485,105 +483,36 @@ button {
   font-weight: 600;
 }
 
-/* ─── Homepage premium dark theme (scoped — other routes stay light) ─────── */
+/* ─── Homepage premium light canvas (scoped — other routes keep base bg) ── */
 
 .home-theme {
   position: relative;
   min-height: 100vh;
-  color: #e6ede8;
+  /* One continuous, lighter premium canvas: pale green base with soft
+     green/teal glows top + bottom — atmospheric, not cream, not dark. */
   background:
-    radial-gradient(110% 60% at 86% -4%, rgba(127, 224, 182, 0.11) 0%, transparent 52%),
-    radial-gradient(80% 50% at 6% 6%, rgba(86, 196, 196, 0.06) 0%, transparent 52%),
-    linear-gradient(180deg, #07160f 0%, #04100c 52%, #050f0c 100%);
+    radial-gradient(95% 55% at 88% -6%, rgba(121, 216, 175, 0.22) 0%, transparent 55%),
+    radial-gradient(70% 45% at 3% 5%, rgba(86, 196, 196, 0.12) 0%, transparent 55%),
+    radial-gradient(80% 55% at 50% 104%, rgba(121, 216, 175, 0.1) 0%, transparent 60%),
+    linear-gradient(180deg, #f0f7f2 0%, #ecf5ee 46%, #f1f7f3 100%);
 }
 
-/* Text hierarchy — off-white headings, muted body, mint accents/labels. */
-.home-theme .text-ink {
-  color: #eef4ef;
-}
-.home-theme .text-muted {
-  color: rgba(205, 222, 212, 0.6);
-}
-.home-theme .text-action {
-  color: #7fe0b6;
-}
-.home-theme .eyebrow {
-  color: #7fe0b6;
-}
-.home-theme .section-title {
-  color: #f1f7f2;
-}
-.home-theme .section-intro {
-  color: rgba(205, 222, 212, 0.66);
-}
-
-/* Cards → translucent dark glass with soft borders. */
+/* Cards harmonised with the cool canvas (cooler translucent white + soft
+   green-tinted border) so they read crisp, not warm/cream against the green. */
 .home-theme .surface {
-  background-color: rgba(255, 255, 255, 0.045);
-  border-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.34);
-  color: #e7eee9;
+  background-color: rgba(255, 255, 255, 0.82);
+  border-color: rgba(17, 97, 73, 0.12);
+  box-shadow: 0 18px 44px rgba(18, 60, 44, 0.07);
 }
 .home-theme .surface-soft {
-  background-color: rgba(255, 255, 255, 0.035);
-  border-color: rgba(255, 255, 255, 0.09);
-  color: #e7eee9;
+  background-color: rgba(247, 252, 249, 0.72);
+  border-color: rgba(17, 97, 73, 0.1);
 }
 
-/* Borders + chips on dark. */
-.home-theme .border-line,
-.home-theme .border-line\/70,
-.home-theme .border-line\/80 {
-  border-color: rgba(255, 255, 255, 0.12);
-}
-.home-theme .bg-white {
-  background-color: rgba(255, 255, 255, 0.08);
-}
-.home-theme .bg-panel\/70,
-.home-theme .bg-panel\/80 {
-  background-color: rgba(255, 255, 255, 0.04);
-}
-.home-theme .bg-action\/10 {
-  background-color: rgba(127, 224, 182, 0.12);
-}
-.home-theme .bg-action\/15 {
-  background-color: rgba(127, 224, 182, 0.14);
-}
-.home-theme .border-action\/15,
-.home-theme .border-action\/20,
-.home-theme .border-action\/25 {
-  border-color: rgba(127, 224, 182, 0.28);
-}
-
-/* Buttons — brighter green primary that pops on dark; translucent secondary. */
-.home-theme .btn-primary {
-  background-color: #169b66;
-  box-shadow: 0 14px 32px rgba(8, 60, 41, 0.5);
-}
-.home-theme .btn-primary:hover:not(:disabled) {
-  background-color: #14855a;
-}
-.home-theme .btn-secondary {
-  background-color: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.18);
-  color: #eaf1ec;
-  box-shadow: none;
-}
-.home-theme .btn-secondary:hover {
-  background-color: rgba(255, 255, 255, 0.12);
-  border-color: rgba(127, 224, 182, 0.4);
-}
-
-/* Card lift tuned for dark. */
-.home-theme .card-hover:hover {
-  border-color: rgba(127, 224, 182, 0.32);
-  box-shadow: 0 28px 64px rgba(0, 0, 0, 0.5);
-}
-
-/* Soft section glow → mint on dark. */
+/* Subtle mint section glow on the soft section. */
 .home-theme .home-section::before {
   background:
-    radial-gradient(ellipse at 86% 10%, rgba(127, 224, 182, 0.08), transparent 22rem),
-    linear-gradient(180deg, rgba(127, 224, 182, 0.03), transparent);
+    radial-gradient(ellipse at 86% 12%, rgba(121, 216, 175, 0.12), transparent 22rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.4), transparent);
 }
 
