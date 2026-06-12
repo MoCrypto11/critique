@@ -97,7 +97,7 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
   const deadlineLabel = bounty ? new Date(bounty.deadline).toLocaleString() : "";
   const compactField = "field mt-1.5 py-2.5";
   const compactTextarea = "field mt-1.5 min-h-[68px] resize-y py-2.5 leading-6";
-  const formSection = "space-y-3 rounded-xl border border-line/70 bg-panel/45 p-4";
+  const formSection = "space-y-3 rounded-xl border border-white/10 bg-white/[0.025] p-4 sm:p-5";
   const isWrittenFeedback = feedbackType === "quick_written" || feedbackType === "deep_product_review";
   const isFounder = Boolean(
     address && bounty?.founderAddress && bounty.founderAddress.toLowerCase() === address.toLowerCase()
@@ -266,7 +266,7 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
   return (
     <>
       <AppHeader />
-      <main className="page-shell">
+      <main className="mx-auto w-full max-w-5xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8">
         {/* 1. Bounty summary hero — title, product, status, reward/slots/deadline, copy link. */}
         <section className="surface mb-6 p-5 sm:p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -295,22 +295,24 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
             </div>
           </div>
 
-          <div className="mt-5 grid grid-cols-2 items-end gap-4 border-t border-white/10 pt-4 sm:grid-cols-4">
-            <div>
-              <p className="text-[11px] font-black uppercase tracking-[0.12em] text-muted">Reward</p>
-              <p className="mt-1 text-sm font-black text-ink">
+          <div className="mt-5 grid grid-cols-2 gap-3 border-t border-white/10 pt-5 sm:grid-cols-4">
+            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+              <p className="text-[10px] font-black uppercase tracking-[0.14em] text-muted">Reward</p>
+              <p className="mt-1.5 text-base font-black leading-5 text-action">
                 {isDemoBounty ? "Founder-set" : `Up to ${formatUSDC(bounty.rewardUSDC)} USDC`}
               </p>
             </div>
-            <div>
-              <p className="text-[11px] font-black uppercase tracking-[0.12em] text-muted">Slots left</p>
-              <p className="mt-1 text-sm font-black text-ink">{slotsLeft}</p>
+            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+              <p className="text-[10px] font-black uppercase tracking-[0.14em] text-muted">Slots left</p>
+              <p className="mt-1.5 text-base font-black text-ink">{slotsLeft}</p>
             </div>
-            <div>
-              <p className="text-[11px] font-black uppercase tracking-[0.12em] text-muted">Deadline</p>
-              <p className="mt-1 text-sm font-black leading-5 text-ink">{deadlineLabel}</p>
+            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+              <p className="text-[10px] font-black uppercase tracking-[0.14em] text-muted">Deadline</p>
+              <p className="mt-1.5 text-sm font-black leading-5 text-ink">{deadlineLabel}</p>
             </div>
-            <div className="flex sm:justify-end">{publicLink ? <CopyLinkButton href={publicLink} /> : null}</div>
+            <div className="flex items-center sm:justify-end">
+              {publicLink ? <CopyLinkButton href={publicLink} /> : null}
+            </div>
           </div>
 
           {isFounder ? (
@@ -660,24 +662,49 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
           <aside className="hidden lg:sticky lg:top-6 lg:block">
             <div className="surface p-5">
               <p className="text-[11px] font-black uppercase tracking-[0.16em] text-action">Your submission</p>
-              <dl className="mt-4 space-y-3 text-sm">
-                <div>
-                  <dt className="text-xs font-semibold text-muted">Selected format</dt>
-                  <dd className="mt-0.5 font-black text-ink">{getFeedbackTypeLabel(feedbackType)}</dd>
+              <dl className="mt-4 space-y-2.5 text-sm">
+                <div className="flex items-center justify-between gap-3">
+                  <dt className="text-xs font-semibold text-muted">Format</dt>
+                  <dd className="text-right font-black text-ink">{getFeedbackTypeLabel(feedbackType)}</dd>
                 </div>
                 {selectedReward && !isDemoBounty ? (
-                  <div>
+                  <div className="flex items-center justify-between gap-3">
                     <dt className="text-xs font-semibold text-muted">Reward</dt>
-                    <dd className="mt-0.5 font-black text-action">{rewardAmountLabel(selectedReward.rewardUSDC)}</dd>
+                    <dd className="font-black text-action">{rewardAmountLabel(selectedReward.rewardUSDC)}</dd>
                   </div>
                 ) : null}
-                <div>
+                <div className="flex items-center justify-between gap-3">
                   <dt className="text-xs font-semibold text-muted">Slots left</dt>
-                  <dd className="mt-0.5 font-black text-ink">{slotsLeft}</dd>
+                  <dd className="font-black text-ink">{slotsLeft}</dd>
                 </div>
               </dl>
-              <p className="mt-4 rounded-lg border border-white/10 bg-white/[0.03] p-3 text-xs leading-5 text-muted">
-                No wallet connection needed — enter the payout wallet address that should receive approved rewards.
+
+              <div className="mt-5 border-t border-white/10 pt-4">
+                <p className="text-[11px] font-black uppercase tracking-[0.14em] text-muted">What happens next</p>
+                <ol className="mt-3 space-y-2.5 text-xs leading-5 text-muted">
+                  <li className="flex gap-2.5">
+                    <span className="mt-px grid size-4 shrink-0 place-items-center rounded-full border border-action/30 bg-action/10 text-[9px] font-black text-action">
+                      1
+                    </span>
+                    <span>Submit feedback with a payout wallet address.</span>
+                  </li>
+                  <li className="flex gap-2.5">
+                    <span className="mt-px grid size-4 shrink-0 place-items-center rounded-full border border-action/30 bg-action/10 text-[9px] font-black text-action">
+                      2
+                    </span>
+                    <span>The founder reviews each submission.</span>
+                  </li>
+                  <li className="flex gap-2.5">
+                    <span className="mt-px grid size-4 shrink-0 place-items-center rounded-full border border-action/30 bg-action/10 text-[9px] font-black text-action">
+                      3
+                    </span>
+                    <span>Approved feedback is paid the USDC reward.</span>
+                  </li>
+                </ol>
+              </div>
+
+              <p className="mt-4 rounded-lg border border-action/15 bg-action/10 p-3 text-xs leading-5 text-action">
+                The founder reviews and approves useful feedback. No wallet connection is needed to submit.
               </p>
             </div>
           </aside>
