@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useAccount } from "wagmi";
 import { AppHeader } from "@/components/AppHeader";
 import { BountyStatusBadge } from "@/components/BountyStatusBadge";
@@ -51,6 +51,7 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
   const [isLoaded, setIsLoaded] = useState(params.id === "demo");
   const [publicLink, setPublicLink] = useState("");
   const [feedbackType, setFeedbackType] = useState<FeedbackType>("quick_written");
+  const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -79,6 +80,27 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
     };
   }, [params.id]);
 
+  // Auto-grow writing textareas: each long-answer field starts comfortably tall
+  // (via its min-height) and expands with the content so contributors rarely
+  // scroll inside a small box. Purely visual — never touches form values,
+  // validation, names, or submit. Re-runs when the rendered fields change.
+  useEffect(() => {
+    const form = formRef.current;
+    if (!form) return;
+    const textareas = Array.from(form.querySelectorAll<HTMLTextAreaElement>("textarea"));
+    const grow = (el: HTMLTextAreaElement) => {
+      el.style.height = "auto";
+      el.style.height = `${Math.min(el.scrollHeight, 520)}px`;
+    };
+    const handlers = textareas.map((textarea) => {
+      const handle = () => grow(textarea);
+      grow(textarea);
+      textarea.addEventListener("input", handle);
+      return { textarea, handle };
+    });
+    return () => handlers.forEach(({ textarea, handle }) => textarea.removeEventListener("input", handle));
+  }, [feedbackType, isLoaded, bounty]);
+
   const status = useMemo(() => (bounty ? deriveStatus(bounty, submissions) : "open"), [bounty, submissions]);
   const availableRewards = useMemo(
     () =>
@@ -96,7 +118,9 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
   const slotsLeft = bounty ? Math.max(0, bounty.maxSubmissions - slotsUsed) : 0;
   const deadlineLabel = bounty ? new Date(bounty.deadline).toLocaleString() : "";
   const compactField = "field mt-1.5 py-2.5";
-  const compactTextarea = "field mt-1.5 min-h-[68px] resize-y py-2.5 leading-6";
+  // Long-answer writing area: tall by default + relaxed line-height/padding so
+  // detailed feedback is comfortable to write and review (paired with auto-grow).
+  const compactTextarea = "field writing-field mt-1.5 min-h-[150px] resize-y px-3.5 py-3 text-[15px] leading-7";
   const formSection =
     "space-y-3 rounded-xl border border-white/10 border-l-2 border-l-action/35 bg-white/[0.03] p-4 pl-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] sm:p-5 sm:pl-6";
   const isWrittenFeedback = feedbackType === "quick_written" || feedbackType === "deep_product_review";
@@ -234,6 +258,11 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
       });
       setSubmissions(await listSubmissions(bounty.id));
       formElement.reset();
+      // UI only: collapse auto-grown textareas back to their default height
+      // after the values are cleared, so the form doesn't keep tall empty boxes.
+      formElement.querySelectorAll("textarea").forEach((textarea) => {
+        (textarea as HTMLTextAreaElement).style.height = "auto";
+      });
       setMessage("Feedback submitted. Approved submissions receive the configured reward.");
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Could not submit feedback.");
@@ -267,7 +296,7 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
   return (
     <>
       <AppHeader />
-      <main className="mx-auto w-full max-w-5xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8">
+      <main className="mx-auto w-full max-w-6xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8">
         {/* 1. Bounty summary hero — title, product, status, reward/slots/deadline, copy link. */}
         <section className="surface mb-6 p-5 sm:p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -347,8 +376,8 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
         </div>
 
         {/* 3 + 4. Submission form (main, full width) + small sticky summary on desktop. */}
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start">
-          <form onSubmit={onSubmit} className="surface space-y-4 p-5 sm:p-6">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_256px] lg:items-start">
+          <form ref={formRef} onSubmit={onSubmit} className="surface space-y-4 p-5 sm:p-6 lg:p-7">
             <div>
               <h2 className="text-xl font-black text-ink">Submit feedback</h2>
               <p className="mt-1 text-sm leading-6 text-muted">
@@ -491,7 +520,7 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
                     <textarea
                       name="confusionAnswer"
                       rows={2}
-                      className="field mt-1.5 min-h-[84px] resize-y py-2.5 leading-6"
+                      className={compactTextarea}
                       placeholder="Mention unclear copy, layout problems, missing info, broken flow, trust issues, etc."
                       required
                     />
@@ -567,7 +596,7 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
                 </label>
                 <label className="label">
                   Suggested fix
-                  <textarea name="suggestedFix" rows={2} className="field mt-1.5 min-h-[84px] resize-y py-2.5 leading-6" required />
+                  <textarea name="suggestedFix" rows={2} className={compactTextarea} required />
                 </label>
                 <label className="label">
                   Expected impact
