@@ -193,27 +193,79 @@ export default function HomePage() {
         <AppHeader />
         <main>
           <div className="home-hero-band">
-            <section className="hero-stage mx-auto w-full max-w-7xl px-4 pb-12 pt-16 sm:px-6 sm:pb-14 sm:pt-20 lg:px-8 lg:pb-16 lg:pt-24">
-            <div className="relative z-10">
-              <p className="eyebrow">Feedback bounties on Arc</p>
-              <h1 className="hero-headline font-display mt-6 text-ink">
-                Turn Product Feedback Into <span className="text-[#7fe0b6]">Funded Bounties</span> For Smarter Product
-                Decisions
-              </h1>
-              <p className="hero-subcopy mt-7 font-semibold text-[#a9c2b5]">
-                Critique helps teams collect useful product feedback, review submissions, and approve USDC rewards
-                through one focused bounty link.
-              </p>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <Link href="/create" className="btn-primary hero-cta">
-                  Create a bounty
-                </Link>
-                <Link href="/bounty/demo" className="btn-secondary hero-cta">
-                  Preview bounty link
-                </Link>
+            <section className="hero-stage mx-auto w-full max-w-7xl px-4 pb-14 pt-16 sm:px-6 sm:pb-16 sm:pt-20 lg:px-8 lg:pb-20 lg:pt-24">
+              <div className="grid items-center gap-12 lg:grid-cols-[1.12fr_0.88fr] lg:gap-10">
+                <div className="relative z-10">
+                  <p className="eyebrow">Feedback bounties on Arc</p>
+                  <h1 className="hero-headline font-display mt-6 text-ink">
+                    Turn Product Feedback Into <span className="text-[#7fe0b6]">Funded Bounties</span> For Smarter
+                    Product Decisions
+                  </h1>
+                  <p className="hero-subcopy mt-7 font-semibold text-[#a9c2b5]">
+                    Critique helps teams collect useful product feedback, review submissions, and approve USDC rewards
+                    through one focused bounty link.
+                  </p>
+                  <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                    <Link href="/create" className="btn-primary hero-cta">
+                      Create a bounty
+                    </Link>
+                    <Link href="/bounty/demo" className="btn-secondary hero-cta">
+                      Preview bounty link
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Illustrative bounty preview — visual only, not connected to real data. */}
+                <div className="relative z-10">
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute -inset-6 -z-10 rounded-[2.25rem] bg-[#7fe0b6]/12 blur-[72px]"
+                  />
+                  <article className="surface mx-auto w-full max-w-md p-5 sm:p-6">
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="inline-flex items-center rounded-full border border-[#7fe0b6]/25 bg-[#7fe0b6]/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.14em] text-[#7fe0b6]">
+                        Bounty preview
+                      </span>
+                      <span className="inline-flex rounded-full border border-action/30 bg-action/10 px-3 py-1 text-xs font-black text-[#7fe0b6]">
+                        Open
+                      </span>
+                    </div>
+
+                    <div className="mt-5 flex items-start justify-between gap-4">
+                      <div className="min-w-0">
+                        <h3 className="text-lg font-bold leading-snug text-ink">Review my onboarding flow</h3>
+                        <p className="mt-1 text-sm leading-6 text-muted">
+                          Where do new users get confused or drop off?
+                        </p>
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted">Reward</p>
+                        <p className="mt-0.5 text-base font-black text-[#7fe0b6]">USDC</p>
+                      </div>
+                    </div>
+
+                    <div className="mt-5 grid grid-cols-3 gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-3 text-center">
+                      <div>
+                        <p className="text-base font-black text-ink">6</p>
+                        <p className="mt-0.5 text-[11px] font-semibold text-muted">Slots</p>
+                      </div>
+                      <div>
+                        <p className="text-base font-black text-ink">3</p>
+                        <p className="mt-0.5 text-[11px] font-semibold text-muted">Formats</p>
+                      </div>
+                      <div>
+                        <p className="text-base font-black text-ink">USDC</p>
+                        <p className="mt-0.5 text-[11px] font-semibold text-muted">Payout</p>
+                      </div>
+                    </div>
+
+                    <p className="mt-4 text-xs leading-5 text-muted">
+                      Approve the submissions worth paying — rewards settle in USDC on Arc.
+                    </p>
+                  </article>
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
         </div>
 
         <section
