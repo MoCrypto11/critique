@@ -26,9 +26,14 @@ export function HomeAtmosphereBackground() {
   const animate = !reduced;
 
   return (
-    <div className="home-atmosphere" aria-hidden="true">
-      {/* Hero zone — strongest motion at the top of the shared canvas. */}
-      <div className="home-atmosphere-hero">
+    <>
+      {/* Primary motion: a fixed, full-viewport layer of soft light pools that
+          drift via background-position (pure CSS — reliable on desktop). */}
+      <div className="atmosphere-gradient" aria-hidden="true" />
+
+      <div className="home-atmosphere" aria-hidden="true">
+        {/* Hero zone — extra depth + flowing lines on top of the gradient. */}
+        <div className="home-atmosphere-hero">
         <div className="hero-arc-glow" />
         <div className="hero-arc-glow-teal" />
 
@@ -139,9 +144,10 @@ export function HomeAtmosphereBackground() {
         </svg>
       </div>
 
-      {/* Lower-page ambient continuation — softer glow pools behind the sections. */}
-      <div className="atmo-glow atmo-glow-mid" />
-      <div className="atmo-glow atmo-glow-low" />
-    </div>
+        {/* Lower-page ambient continuation — softer glow pools behind the sections. */}
+        <div className="atmo-glow atmo-glow-mid" />
+        <div className="atmo-glow atmo-glow-low" />
+      </div>
+    </>
   );
 }

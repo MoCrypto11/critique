@@ -279,6 +279,35 @@ button {
 
 /* Spans the entire homepage behind all content; the dark .home-theme base
    gradient shows through where the glows fade out. */
+/* Primary motion — a fixed, full-viewport layer of soft light pools whose
+   positions animate via background-position. Pure CSS (no SMIL), GPU-friendly,
+   not masked, not hero-only, not inside any mobile media query: it reliably
+   moves on desktop Chrome/Edge. */
+.atmosphere-gradient {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 50% 50%, rgba(127, 224, 182, 0.2), transparent 30%),
+    radial-gradient(circle at 50% 50%, rgba(86, 196, 196, 0.14), transparent 34%),
+    radial-gradient(circle at 50% 50%, rgba(121, 216, 175, 0.11), transparent 36%);
+  background-size: 70% 70%, 62% 62%, 66% 66%;
+  background-repeat: no-repeat;
+  background-position: 78% 18%, 18% 64%, 58% 92%;
+  will-change: background-position;
+  animation: atmosphereShift 16s ease-in-out infinite alternate;
+}
+
+@keyframes atmosphereShift {
+  0% {
+    background-position: 78% 18%, 18% 64%, 58% 92%;
+  }
+  100% {
+    background-position: 26% 46%, 82% 24%, 22% 60%;
+  }
+}
+
 .home-atmosphere {
   position: absolute;
   inset: 0;
@@ -338,8 +367,8 @@ button {
   height: 86%;
   background: radial-gradient(
     ellipse 70% 65% at 55% 46%,
-    rgba(121, 216, 175, 0.3) 0%,
-    rgba(17, 97, 73, 0.1) 55%,
+    rgba(121, 216, 175, 0.14) 0%,
+    rgba(17, 97, 73, 0.06) 55%,
     transparent 75%
   );
   filter: blur(56px);
@@ -357,8 +386,8 @@ button {
   height: 78%;
   background: radial-gradient(
     ellipse 60% 60% at 58% 50%,
-    rgba(86, 196, 196, 0.2) 0%,
-    rgba(49, 139, 116, 0.08) 52%,
+    rgba(86, 196, 196, 0.1) 0%,
+    rgba(49, 139, 116, 0.05) 52%,
     transparent 72%
   );
   filter: blur(66px);
@@ -533,6 +562,9 @@ button {
    feels alive on devices/OSes with "reduce motion" on, without any jarring
    movement. */
 @media (prefers-reduced-motion: reduce) {
+  .atmosphere-gradient {
+    animation-duration: 30s;
+  }
   .hero-arc-glow {
     animation: heroGlowCalm 24s ease-in-out infinite;
   }
