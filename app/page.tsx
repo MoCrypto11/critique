@@ -9,16 +9,12 @@ import {
   FilePlus2,
   Fuel,
   Gauge,
-  LayoutPanelTop,
   Link2,
   MessageSquareCheck,
-  MousePointerClick,
-  Route,
   Send,
   Target,
   UserCheck,
-  Wallet,
-  Wrench
+  Wallet
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -34,23 +30,23 @@ const steps: {
   icon: LucideIcon;
 }[] = [
   {
-    title: "Create a bounty",
-    body: "Choose the feedback formats, reward amounts, and slots you want to fund.",
+    title: "Create",
+    body: "Set the reward tiers and accepted feedback formats, then fund the bounty.",
     icon: FilePlus2
   },
   {
-    title: "Share one link",
-    body: "Send contributors a public bounty page for your product or feature.",
-    icon: Link2
+    title: "Submit",
+    body: "Contributors open one link and submit structured product feedback.",
+    icon: Send
   },
   {
-    title: "Review submissions",
-    body: "Read structured feedback before deciding what should be approved.",
+    title: "Review",
+    body: "Read each submission and decide what is worth paying for.",
     icon: MessageSquareCheck
   },
   {
-    title: "Approve and pay",
-    body: "Approved submissions receive the configured reward.",
+    title: "Reward",
+    body: "Approved submissions are paid the configured USDC reward.",
     icon: CircleDollarSign
   }
 ];
@@ -79,38 +75,6 @@ const feedbackFormats: {
     type: "technical_proposal",
     title: "Technical improvement proposal",
     body: "Developer-focused suggestions for bugs, UX logic, implementation gaps, or technical improvements."
-  }
-];
-
-const founderUseCases: {
-  title: string;
-  body: string;
-  icon: LucideIcon;
-}[] = [
-  {
-    title: "Landing page review",
-    body: "Check whether your message is clear before sending traffic.",
-    icon: LayoutPanelTop
-  },
-  {
-    title: "Onboarding feedback",
-    body: "Find where new users get confused or drop off.",
-    icon: Route
-  },
-  {
-    title: "Feature validation",
-    body: "See whether a new feature feels useful before investing more time.",
-    icon: Target
-  },
-  {
-    title: "Technical review",
-    body: "Collect implementation suggestions from developers and technical contributors.",
-    icon: Wrench
-  },
-  {
-    title: "Hackathon product feedback",
-    body: "Get fast, structured feedback before a demo, submission, or reveal.",
-    icon: MousePointerClick
   }
 ];
 
@@ -216,12 +180,12 @@ export default function HomePage() {
 
               {/* Focal product preview — a glowing illustrative card under the hero.
                   Visual only, not connected to real data. */}
-              <div className="relative z-10 mx-auto mt-16 w-full max-w-lg sm:mt-20">
+              <div className="relative z-10 mx-auto mt-16 w-full max-w-xl sm:mt-20">
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[460px] w-[780px] max-w-[150%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(127,224,182,0.32),rgba(86,196,196,0.12)_45%,transparent_72%)] blur-[44px]"
+                  className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[540px] w-[900px] max-w-[165%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(127,224,182,0.42),rgba(86,196,196,0.16)_44%,transparent_72%)] blur-[48px]"
                 />
-                <article className="surface relative p-6 text-left shadow-[0_0_50px_rgba(127,224,182,0.18),0_30px_70px_rgba(0,0,0,0.45)] sm:p-7">
+                <article className="surface relative p-6 text-left shadow-[0_0_70px_rgba(127,224,182,0.22),0_30px_80px_rgba(0,0,0,0.5)] sm:p-7">
                   <div className="flex items-center justify-between gap-3">
                     <span className="inline-flex items-center rounded-full border border-[#7fe0b6]/25 bg-[#7fe0b6]/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.14em] text-[#7fe0b6]">
                       Bounty preview
@@ -250,12 +214,12 @@ export default function HomePage() {
                       <p className="mt-0.5 text-[11px] font-semibold text-muted">Slots</p>
                     </div>
                     <div className="border-x border-white/10">
-                      <p className="text-lg font-black text-ink">3</p>
-                      <p className="mt-0.5 text-[11px] font-semibold text-muted">Formats</p>
+                      <p className="text-lg font-black text-ink">4</p>
+                      <p className="mt-0.5 text-[11px] font-semibold text-muted">Submissions</p>
                     </div>
                     <div>
-                      <p className="text-lg font-black text-ink">USDC</p>
-                      <p className="mt-0.5 text-[11px] font-semibold text-muted">Payout</p>
+                      <p className="text-lg font-black text-ink">3</p>
+                      <p className="mt-0.5 text-[11px] font-semibold text-muted">Formats</p>
                     </div>
                   </div>
 
@@ -321,31 +285,6 @@ export default function HomePage() {
                 <p className="mt-2 text-sm leading-6 text-muted">{format.body}</p>
               </article>
             ))}
-          </div>
-        </section>
-
-        <section className="home-section home-container section-pad">
-          <div className="section-head">
-            <p className="eyebrow">For founders</p>
-            <h2 className="section-title text-ink">Use Critique before you ship</h2>
-            <p className="section-intro text-muted">
-              Create focused bounties for the feedback that usually gets missed before launch.
-            </p>
-          </div>
-
-          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-5">
-            {founderUseCases.map((useCase) => {
-              const UseCaseIcon = useCase.icon;
-              return (
-                <article key={useCase.title} className="surface card-hover p-4">
-                  <span className="grid size-10 place-items-center rounded-lg bg-action/10 text-action">
-                    <UseCaseIcon className="size-4" aria-hidden="true" strokeWidth={2} />
-                  </span>
-                  <h3 className="mt-3 text-sm font-black text-ink">{useCase.title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-muted">{useCase.body}</p>
-                </article>
-              );
-            })}
           </div>
         </section>
 
