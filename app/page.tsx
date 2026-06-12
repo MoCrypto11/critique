@@ -178,54 +178,26 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Focal product preview — a glowing illustrative card under the hero.
-                  Visual only, not connected to real data. */}
-              <div className="relative z-10 mx-auto mt-16 w-full max-w-xl sm:mt-20">
+              {/* Cinematic product preview — a small glowing prop suspended in the
+                  aqua halo. Visual only, not connected to real data. */}
+              <div className="relative z-10 mx-auto mt-14 w-full max-w-sm sm:mt-16">
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[540px] w-[900px] max-w-[165%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(92,234,214,0.46),rgba(70,205,220,0.18)_44%,transparent_72%)] blur-[48px]"
+                  className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[420px] w-[760px] max-w-[180%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(92,234,214,0.55),rgba(70,205,220,0.2)_42%,transparent_70%)] blur-[46px]"
                 />
-                <article className="surface relative p-6 text-left shadow-[0_0_70px_rgba(127,224,182,0.22),0_30px_80px_rgba(0,0,0,0.5)] sm:p-7">
+                <article className="surface relative px-5 py-4 text-left shadow-[0_0_60px_rgba(92,234,214,0.28),0_24px_60px_rgba(0,0,0,0.5)]">
                   <div className="flex items-center justify-between gap-3">
-                    <span className="inline-flex items-center rounded-full border border-[#7fe0b6]/25 bg-[#7fe0b6]/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.14em] text-[#7fe0b6]">
-                      Bounty preview
-                    </span>
-                    <span className="inline-flex rounded-full border border-action/30 bg-action/10 px-3 py-1 text-xs font-black text-[#7fe0b6]">
-                      Open
+                    <p className="truncate text-sm font-bold text-ink">Bounty title</p>
+                    <span className="shrink-0 rounded-full border border-[#7fe0b6]/30 bg-[#7fe0b6]/10 px-2.5 py-0.5 text-xs font-black text-[#7fe0b6]">
+                      $500
                     </span>
                   </div>
-
-                  <div className="mt-5 flex items-start justify-between gap-4">
-                    <div className="min-w-0">
-                      <h3 className="text-xl font-bold leading-snug text-ink">Review my onboarding flow</h3>
-                      <p className="mt-1.5 text-sm leading-6 text-muted">
-                        Where do new users get confused or drop off?
-                      </p>
-                    </div>
-                    <div className="shrink-0 text-right">
-                      <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted">Reward</p>
-                      <p className="mt-0.5 text-base font-black text-[#7fe0b6]">USDC</p>
-                    </div>
+                  <p className="mt-2 text-base font-semibold text-ink">Review my onboarding flow</p>
+                  <p className="mt-1 text-xs text-muted">Reward amount to set $500</p>
+                  <div className="mt-3 flex items-center gap-2 border-t border-white/10 pt-2.5 text-xs text-muted">
+                    <span className="font-bold text-[#7fe0b6]">Status</span>
+                    <span>· 4 submissions · approve or reject</span>
                   </div>
-
-                  <div className="mt-6 grid grid-cols-3 gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-3.5 text-center">
-                    <div>
-                      <p className="text-lg font-black text-ink">6</p>
-                      <p className="mt-0.5 text-[11px] font-semibold text-muted">Slots</p>
-                    </div>
-                    <div className="border-x border-white/10">
-                      <p className="text-lg font-black text-ink">4</p>
-                      <p className="mt-0.5 text-[11px] font-semibold text-muted">Submissions</p>
-                    </div>
-                    <div>
-                      <p className="text-lg font-black text-ink">3</p>
-                      <p className="mt-0.5 text-[11px] font-semibold text-muted">Formats</p>
-                    </div>
-                  </div>
-
-                  <p className="mt-4 text-xs leading-5 text-muted">
-                    Approve the submissions worth paying — rewards settle in USDC on Arc.
-                  </p>
                 </article>
               </div>
             </section>
