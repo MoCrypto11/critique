@@ -37,6 +37,24 @@ export function HomeAtmosphereBackground() {
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
+          {/* Subtle contour/wave texture drifting slowly across the canvas. */}
+          <g stroke="#79D8AF" fill="none" strokeWidth="1.1">
+            {animate ? (
+              <animateTransform
+                attributeName="transform"
+                type="translate"
+                values="-26 0; 30 0; -26 0"
+                dur="22s"
+                repeatCount="indefinite"
+              />
+            ) : null}
+            <path d="M -200 170 C 250 120 600 210 950 165 C 1300 120 1650 205 2050 160" strokeOpacity="0.08" />
+            <path d="M -200 330 C 250 285 600 372 950 327 C 1300 282 1650 366 2050 322" strokeOpacity="0.07" />
+            <path d="M -200 500 C 250 452 600 542 950 497 C 1300 452 1650 536 2050 492" strokeOpacity="0.06" />
+            <path d="M -200 670 C 250 622 600 712 950 667 C 1300 622 1650 706 2050 662" strokeOpacity="0.055" />
+            <path d="M -200 830 C 250 786 600 872 950 827 C 1300 782 1650 866 2050 822" strokeOpacity="0.05" />
+          </g>
+
           <g>
             {animate ? (
               <animateTransform
