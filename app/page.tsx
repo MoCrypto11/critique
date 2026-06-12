@@ -2,13 +2,11 @@
 
 import Link from "next/link";
 import {
-  Blocks,
   ChevronDown,
   CircleDollarSign,
   Compass,
   ExternalLink,
   FilePlus2,
-  Gauge,
   LayoutPanelTop,
   Link2,
   MessageSquareCheck,
@@ -152,29 +150,6 @@ const faqs = [
   }
 ];
 
-const arcFeatures: { title: string; body: string; icon: LucideIcon }[] = [
-  {
-    title: "Fast, final settlement",
-    body: "Approved payouts clear quickly with deterministic finality, so contributors are not left waiting on rewards.",
-    icon: Gauge
-  },
-  {
-    title: "USDC-native rewards",
-    body: "Bounties are funded and paid in USDC, keeping every reward in a stable, legible unit.",
-    icon: CircleDollarSign
-  },
-  {
-    title: "Familiar EVM tooling",
-    body: "Funding and approvals run on standard EVM smart contracts — simple to reason about and audit.",
-    icon: Blocks
-  },
-  {
-    title: "Verifiable on-chain payouts",
-    body: "Each approved payout is a real transaction you can open and confirm in the Arc explorer.",
-    icon: Compass
-  }
-];
-
 export default function HomePage() {
   const [openFaq, setOpenFaq] = useState(0);
 
@@ -183,7 +158,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <>
+    <div className="home-theme">
       <AppHeader />
       <main>
         <div className="home-hero-band">
@@ -192,9 +167,10 @@ export default function HomePage() {
             <div className="relative z-10">
               <p className="eyebrow">Feedback bounties on Arc</p>
               <h1 className="hero-headline font-display mt-6 text-ink">
-                Turn Product Feedback Into Funded Bounties For Smarter Product Decisions
+                Turn Product Feedback Into <span className="text-[#7fe0b6]">Funded Bounties</span> For Smarter Product
+                Decisions
               </h1>
-              <p className="hero-subcopy mt-9 font-bold text-[#315145]">
+              <p className="hero-subcopy mt-9 font-semibold text-[#a9c2b5]">
                 Critique helps teams collect useful product feedback, review submissions, and approve USDC rewards
                 through one focused bounty link.
               </p>
@@ -376,43 +352,22 @@ export default function HomePage() {
         </section>
 
         <section className="home-section home-container section-pad">
-          <div className="relative overflow-hidden rounded-[1.75rem] border border-[#79D8AF]/20 bg-[#061916] p-6 text-white shadow-[0_30px_80px_rgba(7,26,24,0.3)] sm:p-9 lg:p-11">
+          <div className="arc-badge relative overflow-hidden rounded-3xl border border-[#7fe0b6]/22 bg-[#04130d] px-6 py-10 text-center shadow-[0_30px_80px_rgba(0,0,0,0.45)] sm:px-10 sm:py-12">
             <div className="arc-panel-glow" aria-hidden="true" />
-
-            <div className="relative">
-              <div className="max-w-2xl">
-                <p className="eyebrow text-[#79D8AF]">Built on Arc testnet</p>
-                <h2 className="section-title mt-3 text-balance text-white">
-                  Settlement infrastructure for real USDC payouts
-                </h2>
-                <p className="section-intro mt-4 text-white/70">
-                  Critique is a feedback bounty workflow, not just a form — approved submissions trigger real USDC
-                  payouts. Arc fits that job: settlement is fast and final, rewards are denominated in USDC, and funding
-                  and approvals use familiar EVM tooling, while feedback content stays off-chain.
-                </p>
-              </div>
-
-              <div className="mt-8 grid gap-3 sm:grid-cols-2">
-                {arcFeatures.map(({ title, body, icon: FeatureIcon }) => (
-                  <div
-                    key={title}
-                    className="rounded-2xl border border-white/10 bg-white/[0.045] p-5 transition-colors hover:border-[#79D8AF]/25 hover:bg-white/[0.07]"
-                  >
-                    <span className="grid size-10 place-items-center rounded-xl bg-[#79D8AF]/12 text-[#79D8AF]">
-                      <FeatureIcon className="size-5" aria-hidden="true" strokeWidth={2} />
-                    </span>
-                    <h3 className="mt-4 text-base font-bold text-white">{title}</h3>
-                    <p className="mt-2 text-sm leading-6 text-white/60">{body}</p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <div className="relative mx-auto flex max-w-md flex-col items-center">
+              <p className="eyebrow text-[#7fe0b6]">Built on Arc testnet</p>
+              <h2 className="font-display mt-4 text-3xl font-semibold leading-tight text-white sm:text-4xl">
+                Arc Network
+              </h2>
+              <p className="mt-3 text-sm font-semibold text-[#9fc7b6] sm:text-base">
+                Stablecoin-native infrastructure for onchain settlement.
+              </p>
+              <div className="mt-7 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
                 <a
                   href="https://testnet.arcscan.app/"
                   target="_blank"
                   rel="noreferrer"
-                  className="focus-ring inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-black text-[#071a18] shadow-sm transition-colors hover:bg-[#f1ede1] sm:w-auto"
+                  className="focus-ring inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#7fe0b6] px-5 py-3 text-sm font-black text-[#04130d] transition-colors hover:bg-[#6fd3a8] sm:w-auto"
                 >
                   <Compass className="size-4" aria-hidden="true" strokeWidth={2} />
                   Arc Explorer
@@ -421,7 +376,7 @@ export default function HomePage() {
                   href="https://docs.arc.io/"
                   target="_blank"
                   rel="noreferrer"
-                  className="focus-ring inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/16 bg-white/[0.06] px-5 py-3 text-sm font-black text-white transition-colors hover:bg-white/[0.1] sm:w-auto"
+                  className="focus-ring inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/18 bg-white/[0.06] px-5 py-3 text-sm font-black text-white transition-colors hover:bg-white/[0.12] sm:w-auto"
                 >
                   <ExternalLink className="size-4" aria-hidden="true" strokeWidth={2} />
                   Arc Docs
@@ -430,8 +385,7 @@ export default function HomePage() {
             </div>
           </div>
         </section>
-
       </main>
-    </>
+    </div>
   );
 }
