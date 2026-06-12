@@ -183,7 +183,7 @@ export default function HomePage() {
               <div className="relative z-10 mx-auto mt-16 w-full max-w-xl sm:mt-20">
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[540px] w-[900px] max-w-[165%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(127,224,182,0.42),rgba(86,196,196,0.16)_44%,transparent_72%)] blur-[48px]"
+                  className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[540px] w-[900px] max-w-[165%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(92,234,214,0.46),rgba(70,205,220,0.18)_44%,transparent_72%)] blur-[48px]"
                 />
                 <article className="surface relative p-6 text-left shadow-[0_0_70px_rgba(127,224,182,0.22),0_30px_80px_rgba(0,0,0,0.5)] sm:p-7">
                   <div className="flex items-center justify-between gap-3">

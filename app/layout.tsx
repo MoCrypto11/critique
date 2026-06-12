@@ -31,7 +31,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${spaceMono.variable}`}>
-      <body className="bg-[#07140f] antialiased">
+      <body className="bg-[#06151b] antialiased">
         <Providers>
           {children}
           <BuiltOnArcBadge />

@@ -4,7 +4,7 @@
 
 :root {
   color: #eaf2ed;
-  background: #07140f;
+  background: #06151b;
 }
 
 html {
@@ -16,10 +16,10 @@ html {
 body {
   min-height: 100vh;
   background:
-    radial-gradient(58% 38% at 88% 0%, rgba(127, 224, 182, 0.1) 0%, transparent 55%),
-    radial-gradient(48% 30% at 4% 28%, rgba(86, 196, 196, 0.06) 0%, transparent 55%),
-    radial-gradient(52% 30% at 96% 82%, rgba(121, 216, 175, 0.06) 0%, transparent 55%),
-    linear-gradient(180deg, #0a1a15 0%, #07140f 52%, #08140f 100%);
+    radial-gradient(58% 38% at 88% 0%, rgba(92, 234, 214, 0.1) 0%, transparent 55%),
+    radial-gradient(48% 30% at 4% 28%, rgba(70, 200, 216, 0.06) 0%, transparent 55%),
+    radial-gradient(52% 30% at 96% 82%, rgba(88, 226, 208, 0.06) 0%, transparent 55%),
+    linear-gradient(155deg, #0a2128 0%, #06151c 50%, #061821 100%);
   background-attachment: fixed;
   color: #eaf2ed;
   font-family: var(--font-space-grotesk), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
@@ -94,7 +94,7 @@ button {
 
 .btn-secondary:hover:not(:disabled) {
   background-color: rgba(255, 255, 255, 0.12);
-  border-color: rgba(127, 224, 182, 0.45);
+  border-color: rgba(92, 234, 214, 0.45);
 }
 
 .btn-subtle {
@@ -223,7 +223,7 @@ button {
 
 .card-hover:hover {
   transform: translateY(-3px);
-  border-color: rgba(127, 224, 182, 0.3);
+  border-color: rgba(92, 234, 214, 0.3);
   box-shadow: 0 28px 64px rgba(0, 0, 0, 0.45);
 }
 
@@ -289,9 +289,9 @@ button {
   z-index: 0;
   pointer-events: none;
   background-image:
-    radial-gradient(circle at 50% 50%, rgba(127, 224, 182, 0.2), transparent 30%),
-    radial-gradient(circle at 50% 50%, rgba(86, 196, 196, 0.14), transparent 34%),
-    radial-gradient(circle at 50% 50%, rgba(121, 216, 175, 0.11), transparent 36%);
+    radial-gradient(circle at 50% 50%, rgba(92, 234, 214, 0.2), transparent 30%),
+    radial-gradient(circle at 50% 50%, rgba(70, 200, 216, 0.14), transparent 34%),
+    radial-gradient(circle at 50% 50%, rgba(88, 226, 208, 0.11), transparent 36%);
   background-size: 70% 70%, 62% 62%, 66% 66%;
   background-repeat: no-repeat;
   background-position: 78% 18%, 18% 64%, 58% 92%;
@@ -367,8 +367,8 @@ button {
   height: 86%;
   background: radial-gradient(
     ellipse 70% 65% at 55% 46%,
-    rgba(121, 216, 175, 0.14) 0%,
-    rgba(17, 97, 73, 0.06) 55%,
+    rgba(88, 226, 208, 0.14) 0%,
+    rgba(14, 92, 98, 0.06) 55%,
     transparent 75%
   );
   filter: blur(56px);
@@ -386,8 +386,8 @@ button {
   height: 78%;
   background: radial-gradient(
     ellipse 60% 60% at 58% 50%,
-    rgba(86, 196, 196, 0.1) 0%,
-    rgba(49, 139, 116, 0.05) 52%,
+    rgba(70, 200, 216, 0.1) 0%,
+    rgba(38, 150, 158, 0.05) 52%,
     transparent 72%
   );
   filter: blur(66px);
@@ -421,7 +421,7 @@ button {
   left: -12%;
   width: 48%;
   height: 26%;
-  background: radial-gradient(ellipse at center, rgba(86, 196, 196, 0.09) 0%, transparent 70%);
+  background: radial-gradient(ellipse at center, rgba(70, 200, 216, 0.09) 0%, transparent 70%);
   animation: atmoDrift1 28s ease-in-out infinite;
 }
 
@@ -430,7 +430,7 @@ button {
   right: -12%;
   width: 52%;
   height: 28%;
-  background: radial-gradient(ellipse at center, rgba(121, 216, 175, 0.08) 0%, transparent 70%);
+  background: radial-gradient(ellipse at center, rgba(88, 226, 208, 0.08) 0%, transparent 70%);
   animation: atmoDrift2 34s ease-in-out infinite;
 }
 
@@ -484,8 +484,8 @@ button {
   pointer-events: none;
   border-radius: 2rem;
   background:
-    radial-gradient(ellipse at 86% 10%, rgba(127, 224, 182, 0.1), transparent 22rem),
-    linear-gradient(180deg, rgba(127, 224, 182, 0.03), transparent);
+    radial-gradient(ellipse at 86% 10%, rgba(92, 234, 214, 0.1), transparent 22rem),
+    linear-gradient(180deg, rgba(92, 234, 214, 0.03), transparent);
   opacity: 0;
   z-index: -1;
   transition: opacity 180ms ease;
@@ -516,7 +516,7 @@ button {
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(circle at 24% 0%, rgba(121, 216, 175, 0.18), transparent 28%),
+    radial-gradient(circle at 24% 0%, rgba(88, 226, 208, 0.18), transparent 28%),
     linear-gradient(120deg, rgba(255, 255, 255, 0.07), transparent 42%);
   opacity: 0.9;
   z-index: -1;
@@ -594,8 +594,8 @@ button {
   height: 130%;
   background: radial-gradient(
     ellipse 58% 55% at 62% 42%,
-    rgba(121, 216, 175, 0.2) 0%,
-    rgba(86, 196, 196, 0.09) 50%,
+    rgba(88, 226, 208, 0.2) 0%,
+    rgba(70, 200, 216, 0.09) 50%,
     transparent 72%
   );
   filter: blur(60px);
