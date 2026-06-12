@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import {
+  Blocks,
   ChevronDown,
   CircleDollarSign,
-  Compass,
-  ExternalLink,
   FilePlus2,
+  Fuel,
+  Gauge,
   LayoutPanelTop,
   Link2,
   MessageSquareCheck,
@@ -147,6 +149,33 @@ const faqs = [
   {
     question: "What happens after feedback is approved?",
     answer: "The submission status updates, the configured reward is paid from the bounty, and the payout transaction is saved as a receipt."
+  }
+];
+
+const arcFeatures: {
+  title: string;
+  body: string;
+  icon: LucideIcon;
+}[] = [
+  {
+    title: "USDC gas",
+    body: "Fees and rewards use USDC, so the payment flow stays easy to understand.",
+    icon: Fuel
+  },
+  {
+    title: "Fast finality",
+    body: "Approved payouts can settle quickly with deterministic finality.",
+    icon: Gauge
+  },
+  {
+    title: "EVM compatible",
+    body: "Critique can use familiar smart-contract tooling for bounty funding and approvals.",
+    icon: Blocks
+  },
+  {
+    title: "Native USDC",
+    body: "Arc is designed around native USDC movement, not fragmented wrapped assets.",
+    icon: CircleDollarSign
   }
 ];
 
@@ -340,45 +369,73 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="home-section home-container section-pad">
-          <div className="arc-card relative mx-auto max-w-2xl overflow-hidden rounded-3xl border border-[#7fe0b6]/25 bg-[#06170f] px-6 py-8 text-center shadow-[0_28px_70px_rgba(0,0,0,0.5)] sm:px-9 sm:py-9">
-            <div className="arc-panel-glow" aria-hidden="true" />
-            <div className="relative mx-auto flex max-w-md flex-col items-center">
-              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#7fe0b6]">Built on Arc testnet</p>
-              <h2 className="font-display mt-3 text-3xl font-semibold leading-tight text-white sm:text-[2.5rem]">
-                Arc Network
-              </h2>
-              <p className="mt-3 text-base font-semibold leading-7 text-[#a9cdbb] sm:text-lg">
-                Stablecoin-native infrastructure for USDC settlement.
-              </p>
-              <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
-                {["USDC rewards", "Fast settlement", "EVM tooling"].map((point) => (
-                  <span
-                    key={point}
-                    className="rounded-full border border-[#7fe0b6]/30 bg-[#7fe0b6]/[0.12] px-3.5 py-1.5 text-sm font-bold text-[#c6ead8]"
+        <section className="home-section home-section-soft home-container section-pad">
+          <div className="arc-network-card overflow-hidden rounded-[1.75rem] border border-white/12 bg-[#061916] text-white shadow-[0_22px_60px_rgba(7,26,24,0.16)]">
+            <div className="p-5 sm:p-7 lg:p-8">
+              <div className="mx-auto max-w-3xl text-center">
+                <div className="flex flex-wrap items-center justify-center gap-3">
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-white/55">BUILT ON</p>
+                  <a
+                    href="https://www.arc.io/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="focus-ring inline-flex w-fit shrink-0 items-center gap-2 rounded-full border border-white/14 bg-white/[0.08] px-3.5 py-2 text-xs font-black text-white transition-colors hover:bg-white/[0.12]"
                   >
-                    {point}
+                    <Image src="/images/arc-icon.svg" alt="" aria-hidden="true" width={14} height={14} className="size-3.5" />
+                    Built on Arc
+                  </a>
+                </div>
+
+                <div className="mt-5 flex items-center justify-center gap-3">
+                  <span className="grid size-11 shrink-0 place-items-center rounded-xl border border-white/12 bg-white/[0.08]">
+                    <Image src="/images/arc-icon.svg" alt="" aria-hidden="true" width={24} height={24} className="size-6" />
                   </span>
-                ))}
+                  <h2 className="font-display text-4xl font-semibold leading-tight tracking-normal text-white sm:text-5xl">
+                    Arc Network
+                  </h2>
+                </div>
+                <p className="mt-4 text-base font-semibold leading-7 text-white/72 sm:text-lg">
+                  Stablecoin-native infrastructure for approval-based payouts.
+                </p>
+                <p className="mt-3 text-sm font-semibold leading-6 text-white/55 sm:text-base">
+                  USDC rewards, fast settlement, and EVM tooling for bounty workflows.
+                </p>
               </div>
-              <div className="mt-7 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+
+              <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                {arcFeatures.map((feature) => {
+                  const FeatureIcon = feature.icon;
+                  return (
+                    <div
+                      key={feature.title}
+                      className="min-w-0 rounded-2xl border border-white/10 bg-white/[0.07] p-4 sm:p-5"
+                    >
+                      <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-[#79D8AF]/15 text-[#7fe0b6]">
+                        <FeatureIcon className="size-4" aria-hidden="true" />
+                      </span>
+                      <h3 className="mt-4 text-base font-black text-white">{feature.title}</h3>
+                      <p className="mt-2 break-words text-sm font-semibold leading-6 text-white/62">{feature.body}</p>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
                 <a
                   href="https://testnet.arcscan.app/"
                   target="_blank"
                   rel="noreferrer"
-                  className="focus-ring inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#7fe0b6] px-6 py-3 text-[15px] font-black text-[#04130d] transition-colors hover:bg-[#6fd3a8] sm:w-auto"
+                  className="focus-ring inline-flex min-h-11 items-center justify-center rounded-xl bg-[#ffffff] px-5 py-3 text-sm font-black text-[#071a18] shadow-sm transition-colors hover:bg-[#f1ede1]"
                 >
-                  <Compass className="size-[18px]" aria-hidden="true" strokeWidth={2} />
                   Arc Explorer
                 </a>
                 <a
                   href="https://docs.arc.io/"
                   target="_blank"
                   rel="noreferrer"
-                  className="focus-ring inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/[0.07] px-6 py-3 text-[15px] font-black text-white transition-colors hover:bg-white/[0.13] sm:w-auto"
+                  className="focus-ring inline-flex min-h-11 items-center justify-center rounded-xl border border-white/16 bg-white/[0.06] px-5 py-3 text-sm font-black text-white transition-colors hover:bg-white/[0.1]"
                 >
-                  <ExternalLink className="size-[18px]" aria-hidden="true" strokeWidth={2} />
-                  Arc Docs
+                  Read Arc docs
                 </a>
               </div>
             </div>
