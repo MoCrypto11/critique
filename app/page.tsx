@@ -184,15 +184,15 @@ export default function HomePage() {
         </div>
 
         <section className="home-section mx-auto w-full max-w-7xl px-4 pt-3 pb-6 sm:px-6 sm:pt-5 sm:pb-8 lg:px-8">
-          <div className="surface flex flex-col items-start justify-between gap-6 p-6 sm:p-8 lg:flex-row lg:items-center lg:gap-10">
-            <div className="max-w-xl">
+          <div className="surface grid gap-6 p-6 sm:p-8 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-center xl:gap-12">
+            <div>
               <p className="eyebrow">Start focused</p>
-              <h2 className="section-title mt-3 text-ink">Create your first feedback bounty</h2>
+              <h2 className="section-title mt-3 text-balance text-ink">Create your first feedback bounty</h2>
               <p className="section-intro mt-3 text-muted">
                 Set the reward tiers, share one link, and start collecting useful product feedback on Arc.
               </p>
             </div>
-            <div className="flex w-full shrink-0 flex-col gap-3 sm:w-auto sm:flex-row">
+            <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row xl:shrink-0">
               <Link href="/create" className="btn-primary">
                 Create a bounty
               </Link>
