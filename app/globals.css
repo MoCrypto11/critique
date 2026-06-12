@@ -63,19 +63,48 @@ button {
   letter-spacing: -0.018em;
 }
 
-/* Translucent dark glass — one card treatment across the whole app. */
+/* Cinematic dark glass — one card treatment across the whole app: a soft
+   top-lit gradient surface, a thin luminous top edge, and layered depth +
+   a faint aqua bloom so cards feel suspended in the atmosphere, not flat. */
 .surface {
-  @apply rounded-2xl border border-white/10 shadow-[0_22px_55px_rgba(0,0,0,0.3)];
-  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 1.1rem;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.062) 0%, rgba(255, 255, 255, 0.026) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    0 1px 30px rgba(92, 234, 214, 0.04),
+    0 24px 56px rgba(0, 0, 0, 0.42);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.surface-soft {
+  border-radius: 1.1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 16px 40px rgba(0, 0, 0, 0.32);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
 
-.surface-soft {
-  @apply rounded-2xl border border-white/10;
-  background-color: rgba(255, 255, 255, 0.04);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+/* Stronger aqua bloom for hero/feature focal cards. */
+.glow-card {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 0 46px rgba(92, 234, 214, 0.12),
+    0 28px 64px rgba(0, 0, 0, 0.5);
+  border-color: rgba(92, 234, 214, 0.18);
+}
+
+/* Glowing mint/aqua icon chip — replaces flat tint chips on cards. */
+.icon-chip {
+  display: grid;
+  place-items: center;
+  border-radius: 0.7rem;
+  border: 1px solid rgba(92, 234, 214, 0.24);
+  background: linear-gradient(180deg, rgba(92, 234, 214, 0.15) 0%, rgba(92, 234, 214, 0.045) 100%);
+  color: #7fe0b6;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 0 16px rgba(92, 234, 214, 0.14);
 }
 
 .btn-primary {

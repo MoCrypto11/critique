@@ -178,26 +178,35 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Cinematic product preview — a small glowing prop suspended in the
-                  aqua halo. Visual only, not connected to real data. */}
-              <div className="relative z-10 mx-auto mt-14 w-full max-w-sm sm:mt-16">
+              {/* Cinematic product preview — a small glowing glass prop suspended in
+                  the aqua halo. Visual only, not connected to real data. */}
+              <div className="relative z-10 mx-auto mt-14 w-full max-w-md sm:mt-16">
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[420px] w-[760px] max-w-[180%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(92,234,214,0.55),rgba(70,205,220,0.2)_42%,transparent_70%)] blur-[46px]"
+                  className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[440px] w-[820px] max-w-[185%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(92,234,214,0.58),rgba(70,205,220,0.22)_42%,transparent_70%)] blur-[46px]"
                 />
-                <article className="surface relative px-5 py-4 text-left shadow-[0_0_60px_rgba(92,234,214,0.28),0_24px_60px_rgba(0,0,0,0.5)]">
+                <article className="surface glow-card relative px-5 py-4 text-left">
                   <div className="flex items-center justify-between gap-3">
-                    <p className="truncate text-sm font-bold text-ink">Bounty title</p>
-                    <span className="shrink-0 rounded-full border border-[#7fe0b6]/30 bg-[#7fe0b6]/10 px-2.5 py-0.5 text-xs font-black text-[#7fe0b6]">
-                      $500
+                    <div className="flex min-w-0 items-center gap-2.5">
+                      <span
+                        aria-hidden="true"
+                        className="size-2 shrink-0 rounded-full bg-[#5fe6cf] shadow-[0_0_10px_rgba(92,234,214,0.9)]"
+                      />
+                      <p className="truncate text-sm font-bold text-ink">Launch readiness review</p>
+                    </div>
+                    <span className="shrink-0 rounded-full border border-[#7fe0b6]/30 bg-[#7fe0b6]/10 px-2.5 py-0.5 text-[11px] font-black text-[#7fe0b6]">
+                      $500 reward
                     </span>
                   </div>
-                  <p className="mt-2 text-base font-semibold text-ink">Review my onboarding flow</p>
-                  <p className="mt-1 text-xs text-muted">Reward amount to set $500</p>
-                  <div className="mt-3 flex items-center gap-2 border-t border-white/10 pt-2.5 text-xs text-muted">
-                    <span className="font-bold text-[#7fe0b6]">Status</span>
-                    <span>· 4 submissions · approve or reject</span>
+                  <p className="mt-2 text-xs leading-5 text-muted">Find friction before your product goes live.</p>
+                  <div className="mt-3 flex items-center gap-2 border-t border-white/10 pt-2.5 text-[11px] font-semibold">
+                    <span className="text-[#7fe0b6]">Open</span>
+                    <span className="text-muted/60">·</span>
+                    <span className="text-muted">4 submissions</span>
                   </div>
+                  <p className="mt-2 text-[11px] leading-5 text-muted/80">
+                    Founder reviews useful feedback and approves USDC rewards.
+                  </p>
                 </article>
               </div>
             </section>
@@ -220,10 +229,10 @@ export default function HomePage() {
             {steps.map((step, index) => {
               const StepIcon = step.icon;
               return (
-                <article key={step.title} className="surface card-hover flex flex-col p-4 sm:p-5">
+                <article key={step.title} className="surface card-hover flex flex-col p-5">
                   <div className="flex items-center justify-between gap-3">
-                    <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-action/10 text-action">
-                      <StepIcon className="size-4" aria-hidden="true" strokeWidth={2} />
+                    <span className="icon-chip size-11 shrink-0">
+                      <StepIcon className="size-[18px]" aria-hidden="true" strokeWidth={2} />
                     </span>
                     <span className="text-[11px] font-black uppercase tracking-[0.14em] text-muted">
                       Step {index + 1}
@@ -249,8 +258,8 @@ export default function HomePage() {
 
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {feedbackFormats.map((format) => (
-              <article key={format.type} className="surface card-hover p-4 sm:p-5">
-                <span className="grid size-10 place-items-center rounded-lg bg-action/10 text-action">
+              <article key={format.type} className="surface card-hover p-5">
+                <span className="icon-chip size-11">
                   <FeedbackTypeIcon type={format.type} />
                 </span>
                 <h3 className="mt-4 text-base font-black text-ink">{format.title}</h3>
@@ -279,7 +288,7 @@ export default function HomePage() {
                 return (
                   <div key={step.title} className="rounded-xl border border-line/70 bg-panel/70 p-4">
                     <div className="flex items-center gap-2 sm:block">
-                      <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-white text-action shadow-sm">
+                      <span className="icon-chip size-9 shrink-0">
                         <ContributorIcon className="size-4" aria-hidden="true" strokeWidth={2} />
                       </span>
                       <span className="text-[11px] font-black uppercase tracking-[0.14em] text-muted sm:mt-3 sm:block">
@@ -370,10 +379,10 @@ export default function HomePage() {
                   return (
                     <div
                       key={feature.title}
-                      className="min-w-0 rounded-2xl border border-white/10 bg-white/[0.07] p-4 sm:p-5"
+                      className="min-w-0 rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.08] to-white/[0.025] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition-colors hover:border-[#7fe0b6]/25"
                     >
-                      <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-[#79D8AF]/15 text-[#7fe0b6]">
-                        <FeatureIcon className="size-4" aria-hidden="true" />
+                      <span className="icon-chip size-10 shrink-0">
+                        <FeatureIcon className="size-[18px]" aria-hidden="true" />
                       </span>
                       <h3 className="mt-4 text-base font-black text-white">{feature.title}</h3>
                       <p className="mt-2 break-words text-sm font-semibold leading-6 text-white/62">{feature.body}</p>
