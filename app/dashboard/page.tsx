@@ -154,7 +154,7 @@ function Panel({
   children: ReactNode;
 }) {
   return (
-    <section className={cn("surface flex flex-col p-5 sm:p-6", className)}>
+    <section className={cn("surface self-start p-5 sm:p-6", className)}>
       <div className="flex items-center gap-2.5 pb-4">
         <h2 className="text-sm font-black uppercase tracking-[0.14em] text-ink">{title}</h2>
         {typeof count === "number" ? (
@@ -163,15 +163,27 @@ function Panel({
           </span>
         ) : null}
       </div>
-      <div className="flex flex-1 flex-col">{children}</div>
+      {children}
     </section>
   );
 }
 
-function PanelEmpty({ message, action }: { message: string; action?: ReactNode }) {
+function PanelEmpty({
+  icon,
+  title,
+  message,
+  action
+}: {
+  icon?: ReactNode;
+  title: string;
+  message: string;
+  action?: ReactNode;
+}) {
   return (
-    <div className="surface-soft flex flex-1 flex-col items-center justify-center rounded-xl border-dashed p-6 text-center">
-      <p className="max-w-xs text-sm leading-6 text-muted">{message}</p>
+    <div className="surface-soft flex flex-col items-center rounded-xl border-dashed px-5 py-7 text-center">
+      {icon ? <span className="icon-chip mb-3 size-10">{icon}</span> : null}
+      <p className="text-sm font-black text-ink">{title}</p>
+      <p className="mt-1.5 max-w-xs text-xs leading-5 text-muted">{message}</p>
       {action ? <div className="mt-4">{action}</div> : null}
     </div>
   );
@@ -326,6 +338,17 @@ export default function WalletDashboardPage() {
   const createdById = useMemo(() => new Map(createdBounties.map((bounty) => [bounty.id, bounty])), [createdBounties]);
   const receivedSubmissions = useMemo(() => Object.values(submissionsByBounty).flat(), [submissionsByBounty]);
 
+  // Display-only ordering (most recent first). The underlying loaded data and
+  // its filtering are untouched — these are copies used purely for rendering.
+  const createdSorted = useMemo(
+    () => [...createdBounties].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+    [createdBounties]
+  );
+  const contributionsSorted = useMemo(
+    () => [...contributions].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+    [contributions]
+  );
+
   // All four stats come only from real loaded data — open bounties, real
   // received submissions, and the configured rewards of the submissions the
   // founder actually approved. Nothing is hard-coded or invented.
@@ -475,11 +498,11 @@ export default function WalletDashboardPage() {
               <StatTile icon={<IconDoc />} label="Pending reviews" value={stats.pending} />
             </div>
 
-            <div className="mt-5 grid gap-5 lg:grid-cols-2 xl:grid-cols-[minmax(0,1.55fr)_minmax(0,1.15fr)_minmax(0,0.95fr)]">
+            <div className="mt-5 grid items-start gap-5 lg:grid-cols-2 xl:grid-cols-[minmax(0,1.55fr)_minmax(0,1.15fr)_minmax(0,0.95fr)]">
               <Panel title="Created bounties" count={loading ? undefined : createdBounties.length}>
                 {loading ? (
                   <PanelLoading />
-                ) : createdBounties.length ? (
+                ) : createdSorted.length ? (
                   <div>
                     <div
                       className={cn(
@@ -493,8 +516,8 @@ export default function WalletDashboardPage() {
                       <span className="text-center">Subs</span>
                       <span className="text-right">Actions</span>
                     </div>
-                    <div className="space-y-2.5 md:space-y-0">
-                      {createdBounties.map((bounty) => (
+                    <div className="thin-scroll max-h-[26rem] space-y-2.5 overflow-y-auto pr-1 md:space-y-0">
+                      {createdSorted.map((bounty) => (
                         <CreatedBountyRow
                           key={bounty.id}
                           bounty={bounty}
@@ -506,7 +529,9 @@ export default function WalletDashboardPage() {
                   </div>
                 ) : (
                   <PanelEmpty
-                    message="You have not created any bounties yet. Launch a focused feedback bounty and it will appear here."
+                    icon={<IconChart />}
+                    title="No bounties yet"
+                    message="Launch a focused feedback bounty and it will appear here."
                     action={
                       <Link href="/create" className="btn-primary">
                         Create a bounty
@@ -519,7 +544,7 @@ export default function WalletDashboardPage() {
               <Panel title="My contributions" count={loading ? undefined : contributions.length}>
                 {loading ? (
                   <PanelLoading />
-                ) : contributions.length ? (
+                ) : contributionsSorted.length ? (
                   <div>
                     <div
                       className={cn(
@@ -531,8 +556,8 @@ export default function WalletDashboardPage() {
                       <span className="text-center">Status</span>
                       <span className="text-right">Payout TX</span>
                     </div>
-                    <div className="space-y-2.5 md:space-y-0">
-                      {contributions.map((submission) => (
+                    <div className="thin-scroll max-h-[26rem] space-y-2.5 overflow-y-auto pr-1 md:space-y-0">
+                      {contributionsSorted.map((submission) => (
                         <ContributionRow
                           key={submission.id}
                           submission={submission}
@@ -543,7 +568,9 @@ export default function WalletDashboardPage() {
                   </div>
                 ) : (
                   <PanelEmpty
-                    message="You have not submitted feedback yet. Preview the example bounty to see how contributions are tracked."
+                    icon={<IconChat />}
+                    title="No contributions yet"
+                    message="Submitted feedback will appear here once this wallet contributes to a bounty."
                     action={
                       <Link href="/bounty/demo" className="btn-secondary">
                         Preview bounty
@@ -557,13 +584,17 @@ export default function WalletDashboardPage() {
                 {loading ? (
                   <PanelLoading />
                 ) : activity.length ? (
-                  <ul className="-my-1 max-h-[28rem] overflow-y-auto pr-1">
+                  <ul className="thin-scroll -mr-1 max-h-[26rem] overflow-y-auto pr-1">
                     {activity.map((event) => (
                       <ActivityItem key={event.id} event={event} />
                     ))}
                   </ul>
                 ) : (
-                  <PanelEmpty message="No activity yet. Created bounties, new submissions, and approvals will show up here." />
+                  <PanelEmpty
+                    icon={<IconDoc />}
+                    title="No activity yet"
+                    message="Created bounties, new submissions, and approvals will show up here."
+                  />
                 )}
               </Panel>
             </div>
