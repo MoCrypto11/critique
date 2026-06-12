@@ -3,20 +3,25 @@
 @tailwind utilities;
 
 :root {
-  color: #17201d;
-  background: #f8f5eb;
+  color: #eaf2ed;
+  background: #07140f;
 }
 
 html {
   scroll-behavior: smooth;
 }
 
+/* One shared dark atmospheric canvas behind every page (homepage layers
+   animated motion on top via HomeAtmosphereBackground). */
 body {
   min-height: 100vh;
   background:
-    linear-gradient(180deg, rgba(255, 254, 249, 0.94), rgba(248, 245, 235, 0.96) 320px),
-    #f8f5eb;
-  color: #17201d;
+    radial-gradient(58% 38% at 88% 0%, rgba(127, 224, 182, 0.1) 0%, transparent 55%),
+    radial-gradient(48% 30% at 4% 28%, rgba(86, 196, 196, 0.06) 0%, transparent 55%),
+    radial-gradient(52% 30% at 96% 82%, rgba(121, 216, 175, 0.06) 0%, transparent 55%),
+    linear-gradient(180deg, #0a1a15 0%, #07140f 52%, #08140f 100%);
+  background-attachment: fixed;
+  color: #eaf2ed;
   font-family: var(--font-space-grotesk), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
   font-weight: 400;
   text-rendering: optimizeLegibility;
@@ -25,7 +30,7 @@ body {
 input,
 textarea,
 select {
-  color: #17201d;
+  color: #eaf2ed;
   font: inherit;
 }
 
@@ -38,7 +43,7 @@ button {
 }
 
 .focus-ring:focus {
-  --tw-ring-offset-color: #f8f5eb;
+  --tw-ring-offset-color: #08140f;
 }
 
 .page-shell {
@@ -46,9 +51,10 @@ button {
 }
 
 .eyebrow {
-  @apply text-xs font-bold uppercase tracking-[0.16em] text-action;
+  @apply text-xs font-bold uppercase tracking-[0.16em];
   font-family: var(--font-space-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
   letter-spacing: 0.1em;
+  color: #7fe0b6;
 }
 
 .font-display {
@@ -57,34 +63,61 @@ button {
   letter-spacing: -0.018em;
 }
 
+/* Translucent dark glass — one card treatment across the whole app. */
 .surface {
-  @apply rounded-2xl border border-line/70 shadow-[0_12px_34px_rgba(23,32,29,0.045)];
-  background-color: #fffdf7;
+  @apply rounded-2xl border border-white/10 shadow-[0_22px_55px_rgba(0,0,0,0.3)];
+  background-color: rgba(255, 255, 255, 0.05);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
 }
 
 .surface-soft {
-  @apply rounded-2xl border border-line/70;
-  background-color: #fbfaf4;
+  @apply rounded-2xl border border-white/10;
+  background-color: rgba(255, 255, 255, 0.04);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
 }
 
 .btn-primary {
-  @apply focus-ring inline-flex min-h-11 items-center justify-center rounded-xl bg-action px-5 py-3 text-sm font-bold text-white shadow-[0_10px_24px_rgba(17,97,73,0.16)] transition-colors disabled:cursor-not-allowed disabled:opacity-55;
+  @apply focus-ring inline-flex min-h-11 items-center justify-center rounded-xl bg-action px-5 py-3 text-sm font-bold text-white shadow-[0_12px_30px_rgba(8,60,41,0.4)] transition-colors disabled:cursor-not-allowed disabled:opacity-55;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background-color: #0d513d;
+  background-color: #17875b;
 }
 
 .btn-secondary {
-  @apply focus-ring inline-flex min-h-11 items-center justify-center rounded-xl border border-line bg-white px-5 py-3 text-sm font-bold text-ink shadow-sm transition-colors hover:border-action/40 hover:bg-panel disabled:cursor-not-allowed disabled:opacity-55;
+  @apply focus-ring inline-flex min-h-11 items-center justify-center rounded-xl border px-5 py-3 text-sm font-bold text-ink transition-colors disabled:cursor-not-allowed disabled:opacity-55;
+  border-color: rgba(255, 255, 255, 0.18);
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(127, 224, 182, 0.45);
 }
 
 .btn-subtle {
-  @apply focus-ring inline-flex min-h-10 items-center justify-center rounded-xl border border-transparent px-4 py-2 text-sm font-bold text-muted transition-colors hover:bg-panel hover:text-ink disabled:cursor-not-allowed disabled:opacity-55;
+  @apply focus-ring inline-flex min-h-10 items-center justify-center rounded-xl border border-transparent px-4 py-2 text-sm font-bold text-muted transition-colors hover:text-ink disabled:cursor-not-allowed disabled:opacity-55;
+}
+
+.btn-subtle:hover {
+  background-color: rgba(255, 255, 255, 0.06);
 }
 
 .field {
-  @apply focus-ring mt-2 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm shadow-inner shadow-ink/[0.02] placeholder:text-muted/60;
+  @apply focus-ring mt-2 w-full rounded-xl border px-3 py-3 text-sm transition-colors;
+  border-color: rgba(255, 255, 255, 0.14);
+  background-color: rgba(255, 255, 255, 0.04);
+  color: #eaf2ed;
+}
+
+.field:focus {
+  border-color: rgba(27, 160, 108, 0.55);
+}
+
+.field::placeholder {
+  color: rgba(155, 176, 165, 0.7);
 }
 
 .label {
@@ -190,8 +223,8 @@ button {
 
 .card-hover:hover {
   transform: translateY(-3px);
-  border-color: rgba(17, 97, 73, 0.28);
-  box-shadow: 0 18px 44px rgba(23, 32, 29, 0.08);
+  border-color: rgba(127, 224, 182, 0.3);
+  box-shadow: 0 28px 64px rgba(0, 0, 0, 0.45);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -421,8 +454,8 @@ button {
   pointer-events: none;
   border-radius: 2rem;
   background:
-    radial-gradient(ellipse at 88% 12%, rgba(121, 216, 175, 0.08), transparent 20rem),
-    linear-gradient(180deg, rgba(255, 253, 247, 0.42), rgba(255, 253, 247, 0));
+    radial-gradient(ellipse at 86% 10%, rgba(127, 224, 182, 0.1), transparent 22rem),
+    linear-gradient(180deg, rgba(127, 224, 182, 0.03), transparent);
   opacity: 0;
   z-index: -1;
   transition: opacity 180ms ease;
@@ -539,111 +572,18 @@ button {
 
 /* ─── Homepage premium dark atmosphere (scoped — other routes stay light) ─ */
 
+/* Homepage wrapper — positioning context for the animated atmosphere layer.
+   The dark canvas, colors, and component styles now come from the global
+   theme (body + flipped tokens + base classes), so every page is consistent. */
 .home-theme {
   position: relative;
-  min-height: 100vh;
-  color: #e7eee9;
-  /* One continuous dark teal-green canvas. Glow pools are distributed down
-     the page (hero top-right strongest, then mid-left + lower-right) so the
-     whole page shares the same environment — no hard cut below the hero. */
-  background:
-    radial-gradient(60% 38% at 88% 2%, rgba(127, 224, 182, 0.15) 0%, transparent 58%),
-    radial-gradient(50% 26% at 3% 40%, rgba(86, 196, 196, 0.08) 0%, transparent 60%),
-    radial-gradient(52% 26% at 95% 74%, rgba(121, 216, 175, 0.07) 0%, transparent 60%),
-    linear-gradient(180deg, #0a1a15 0%, #07140f 50%, #08140f 100%);
 }
 
-/* Text hierarchy — off-white headings, muted off-white body, mint accents. */
-.home-theme .text-ink {
-  color: #eef4ef;
-}
-.home-theme .text-muted {
-  color: rgba(202, 220, 210, 0.6);
-}
-.home-theme .text-action {
-  color: #7fe0b6;
-}
-.home-theme .eyebrow {
-  color: #7fe0b6;
-}
-.home-theme .section-title {
-  color: #f2f7f3;
-}
-.home-theme .section-intro {
-  color: rgba(202, 220, 210, 0.66);
-}
-
-/* Cards → translucent dark glass sitting on the shared canvas. */
-.home-theme .surface {
-  background-color: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  color: #e7eee9;
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-}
-.home-theme .surface-soft {
-  background-color: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.1);
-  color: #e7eee9;
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-}
-
-/* Borders + chips on dark. */
-.home-theme .border-line,
-.home-theme .border-line\/70,
-.home-theme .border-line\/80 {
-  border-color: rgba(255, 255, 255, 0.12);
-}
-.home-theme .bg-white {
-  background-color: rgba(255, 255, 255, 0.08);
-}
-.home-theme .bg-panel\/70,
-.home-theme .bg-panel\/80 {
-  background-color: rgba(255, 255, 255, 0.04);
-}
-.home-theme .bg-action\/10 {
-  background-color: rgba(127, 224, 182, 0.12);
-}
-.home-theme .bg-action\/15 {
-  background-color: rgba(127, 224, 182, 0.14);
-}
-.home-theme .border-action\/15,
-.home-theme .border-action\/20,
-.home-theme .border-action\/25 {
-  border-color: rgba(127, 224, 182, 0.28);
-}
-
-/* Buttons — bright green primary; clean outlined secondary. */
-.home-theme .btn-primary {
-  background-color: #18a06a;
-  box-shadow: 0 14px 32px rgba(8, 60, 41, 0.45);
-}
-.home-theme .btn-primary:hover:not(:disabled) {
-  background-color: #149161;
-}
-.home-theme .btn-secondary {
-  background-color: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.2);
-  color: #eaf1ec;
-  box-shadow: none;
-}
-.home-theme .btn-secondary:hover {
-  background-color: rgba(255, 255, 255, 0.12);
-  border-color: rgba(127, 224, 182, 0.42);
-}
-
-/* Card lift tuned for dark. */
-.home-theme .card-hover:hover {
-  border-color: rgba(127, 224, 182, 0.3);
-  box-shadow: 0 28px 64px rgba(0, 0, 0, 0.45);
-}
-
-/* Soft section glow → mint ambient continuation on dark. */
-.home-theme .home-section::before {
-  background:
-    radial-gradient(ellipse at 86% 10%, rgba(127, 224, 182, 0.08), transparent 22rem),
-    linear-gradient(180deg, rgba(127, 224, 182, 0.03), transparent);
+/* Literal-white chips/bars from shared components → glass on the dark canvas.
+   (Arbitrary low-opacity bg-white/[0.0x] utilities are left untouched.) */
+.bg-white,
+.bg-white\/75,
+.bg-white\/95 {
+  background-color: rgba(255, 255, 255, 0.07);
 }
 

@@ -40,7 +40,7 @@ export function RejectSubmissionModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-ink/40 p-4 backdrop-blur-sm sm:items-center"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-4 backdrop-blur-sm sm:items-center"
       onMouseDown={(event) => {
         // Close only on a genuine backdrop click and only when it is safe to do so.
         if (event.target === event.currentTarget && !busy) onCancel();
@@ -51,7 +51,7 @@ export function RejectSubmissionModal({
         aria-modal="true"
         aria-labelledby="reject-modal-title"
         aria-describedby="reject-modal-desc"
-        className="w-full max-w-md rounded-2xl border border-line/70 bg-[#fffdf7] p-5 shadow-[0_24px_60px_rgba(21,45,36,0.18)] sm:p-6"
+        className="w-full max-w-md rounded-2xl border border-white/12 bg-[#0e1c16] p-5 shadow-[0_30px_70px_rgba(0,0,0,0.5)] sm:p-6"
       >
         <h2 id="reject-modal-title" className="text-lg font-black text-ink">
           Reject submission

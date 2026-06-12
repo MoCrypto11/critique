@@ -5,14 +5,14 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ink: "#17201d",
-        muted: "#5f6f68",
-        panel: "#f7f8f4",
-        background: "#f6f7f2",
-        line: "#d8ded5",
-        action: "#116149",
-        actionHover: "#0d513d",
-        accent: "#b54708"
+        ink: "#eaf2ed",
+        muted: "#9bb0a5",
+        panel: "#15241d",
+        background: "#07140f",
+        line: "#36473e",
+        action: "#1ba06c",
+        actionHover: "#17875b",
+        accent: "#d9963f"
       }
     }
   },

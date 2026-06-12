@@ -370,7 +370,7 @@ export default function HomePage() {
         </section>
 
         <section className="home-section home-section-soft home-container section-pad">
-          <div className="arc-network-card overflow-hidden rounded-[1.75rem] border border-white/12 bg-[#061916] text-white shadow-[0_22px_60px_rgba(7,26,24,0.16)]">
+          <div className="arc-network-card overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.035] text-white shadow-[0_18px_50px_rgba(0,0,0,0.28)] backdrop-blur-md">
             <div className="p-5 sm:p-7 lg:p-8">
               <div className="mx-auto max-w-3xl text-center">
                 <div className="flex flex-wrap items-center justify-center gap-3">
