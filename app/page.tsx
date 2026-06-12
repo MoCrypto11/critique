@@ -22,7 +22,7 @@ import type { LucideIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { FeedbackTypeIcon } from "@/components/FeedbackTypeIcon";
-import { HeroArcMotionLayer } from "@/components/HeroArcMotionLayer";
+import { HomeAtmosphereBackground } from "@/components/HomeAtmosphereBackground";
 import type { FeedbackType } from "@/lib/feedbackRewards";
 import { ensureDemoBounty } from "@/lib/storage";
 
@@ -159,11 +159,12 @@ export default function HomePage() {
 
   return (
     <div className="home-theme">
-      <AppHeader />
-      <main>
-        <div className="home-hero-band">
-          <HeroArcMotionLayer />
-          <section className="hero-stage mx-auto w-full max-w-7xl px-4 pb-12 pt-16 sm:px-6 sm:pb-14 sm:pt-20 lg:px-8 lg:pb-16 lg:pt-24">
+      <HomeAtmosphereBackground />
+      <div className="relative z-10">
+        <AppHeader />
+        <main>
+          <div className="home-hero-band">
+            <section className="hero-stage mx-auto w-full max-w-7xl px-4 pb-12 pt-16 sm:px-6 sm:pb-14 sm:pt-20 lg:px-8 lg:pb-16 lg:pt-24">
             <div className="relative z-10">
               <p className="eyebrow">Feedback bounties on Arc</p>
               <h1 className="hero-headline font-display mt-6 text-ink">
@@ -383,7 +384,8 @@ export default function HomePage() {
             </div>
           </div>
         </section>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }

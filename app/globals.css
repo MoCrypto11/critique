@@ -237,44 +237,46 @@ button {
   z-index: 1;
 }
 
-.home-hero-band > .hero-arc-motion-layer {
-  z-index: 0;
-}
-
 .home-hero-band > .hero-stage {
   position: relative;
   z-index: 2;
 }
 
-/* ─── Hero arc motion layer ────────────────────────────────────────────── */
+/* ─── Page atmosphere — whole-homepage background layer ─────────────────── */
 
-/*
-  Oversized (inset: -15% -10%) so the SVG scene is larger than the hero band.
-  Vertical mask fades to transparent at top+bottom — no hard rectangular edge.
-  The layer itself has no explicit opacity so it is always rendered.
-*/
-.hero-arc-motion-layer {
+/* Spans the entire homepage behind all content; the dark .home-theme base
+   gradient shows through where the glows fade out. */
+.home-atmosphere {
   position: absolute;
-  inset: -15% -10%;
+  inset: 0;
   z-index: 0;
+  overflow: hidden;
   pointer-events: none;
+}
+
+/* Hero zone — the strongest motion (glows + flowing lines) lives at the top
+   of the canvas and fades downward, so there is no hard cut after the hero. */
+.home-atmosphere-hero {
+  position: absolute;
+  top: 0;
+  left: -10%;
+  right: -10%;
+  height: clamp(660px, 90vh, 1020px);
   overflow: hidden;
   -webkit-mask-image: linear-gradient(
     to bottom,
     transparent 0%,
-    transparent 10%,
-    black 24%,
-    black 76%,
-    transparent 90%,
+    transparent 5%,
+    black 20%,
+    black 68%,
     transparent 100%
   );
   mask-image: linear-gradient(
     to bottom,
     transparent 0%,
-    transparent 10%,
-    black 24%,
-    black 76%,
-    transparent 90%,
+    transparent 5%,
+    black 20%,
+    black 68%,
     transparent 100%
   );
 }
@@ -329,6 +331,43 @@ button {
 @keyframes heroGlowDriftTeal {
   0%, 100% { opacity: 0.7; transform: translate3d(0, 0, 0) scale(1.05); }
   50%      { opacity: 0.95; transform: translate3d(6%, -4%, 0) scale(1); }
+}
+
+/* Lower-page ambient glow pools — soft, slow, distributed down the canvas so
+   the sections below the hero share the same atmosphere (no flat dark zone). */
+.atmo-glow {
+  position: absolute;
+  pointer-events: none;
+  filter: blur(90px);
+  will-change: transform, opacity;
+}
+
+.atmo-glow-mid {
+  top: 40%;
+  left: -12%;
+  width: 48%;
+  height: 26%;
+  background: radial-gradient(ellipse at center, rgba(86, 196, 196, 0.09) 0%, transparent 70%);
+  animation: atmoDrift1 28s ease-in-out infinite;
+}
+
+.atmo-glow-low {
+  top: 72%;
+  right: -12%;
+  width: 52%;
+  height: 28%;
+  background: radial-gradient(ellipse at center, rgba(121, 216, 175, 0.08) 0%, transparent 70%);
+  animation: atmoDrift2 34s ease-in-out infinite;
+}
+
+@keyframes atmoDrift1 {
+  0%, 100% { opacity: 0.7; transform: translate3d(0, 0, 0); }
+  50%      { opacity: 1; transform: translate3d(7%, -3%, 0); }
+}
+
+@keyframes atmoDrift2 {
+  0%, 100% { opacity: 0.7; transform: translate3d(0, 0, 0); }
+  50%      { opacity: 0.95; transform: translate3d(-7%, 3%, 0); }
 }
 
 /*
@@ -416,10 +455,12 @@ button {
     overflow: hidden;
   }
 
-  /* Pull arc layer closer to band on small screens; reduce opacity so
-     dense small-viewport layout stays readable */
-  .hero-arc-motion-layer {
-    inset: -8% -50%;
+  /* Soften the atmosphere on small screens so dense layouts stay readable. */
+  .home-atmosphere-hero {
+    opacity: 0.6;
+  }
+
+  .atmo-glow {
     opacity: 0.55;
   }
 
@@ -441,12 +482,14 @@ button {
 
 /* ─── Reduced motion ───────────────────────────────────────────────────── */
 
-/* Stop motion — the SVG animation is gated in JS (HeroArcMotionLayer reads
-   prefers-reduced-motion); here we also stop the CSS glow pulse. The static
-   geometry stays visible as a subtle background treatment. */
+/* Stop motion — the SVG animation is gated in JS (HomeAtmosphereBackground
+   reads prefers-reduced-motion); here we also stop the CSS glow drifts. The
+   static glows stay visible as a subtle background treatment. */
 @media (prefers-reduced-motion: reduce) {
   .hero-arc-glow,
-  .hero-arc-glow-teal {
+  .hero-arc-glow-teal,
+  .atmo-glow-mid,
+  .atmo-glow-low {
     animation: none !important;
   }
 }
