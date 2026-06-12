@@ -187,26 +187,38 @@ export default function HomePage() {
                 />
                 <article className="surface glow-card relative px-5 py-4 text-left">
                   <div className="flex items-center justify-between gap-3">
-                    <div className="flex min-w-0 items-center gap-2.5">
-                      <span
-                        aria-hidden="true"
-                        className="size-2 shrink-0 rounded-full bg-[#5fe6cf] shadow-[0_0_10px_rgba(92,234,214,0.9)]"
-                      />
-                      <p className="truncate text-sm font-bold text-ink">Launch readiness review</p>
-                    </div>
-                    <span className="shrink-0 rounded-full border border-[#7fe0b6]/30 bg-[#7fe0b6]/10 px-2.5 py-0.5 text-[11px] font-black text-[#7fe0b6]">
-                      $500 reward
+                    <span className="text-[10px] font-black uppercase tracking-[0.18em] text-[#7fe0b6]">
+                      Bounty preview
+                    </span>
+                    <span className="rounded-full border border-[#7fe0b6]/30 bg-[#7fe0b6]/10 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.12em] text-[#7fe0b6]">
+                      Open
                     </span>
                   </div>
-                  <p className="mt-2 text-xs leading-5 text-muted">Find friction before your product goes live.</p>
-                  <div className="mt-3 flex items-center gap-2 border-t border-white/10 pt-2.5 text-[11px] font-semibold">
-                    <span className="text-[#7fe0b6]">Open</span>
-                    <span className="text-muted/60">·</span>
-                    <span className="text-muted">4 submissions</span>
+
+                  <div className="mt-3 flex items-center gap-2.5">
+                    <span
+                      aria-hidden="true"
+                      className="size-2 shrink-0 rounded-full bg-[#5fe6cf] shadow-[0_0_10px_rgba(92,234,214,0.9)]"
+                    />
+                    <span className="text-sm font-bold text-ink">Critique</span>
+                    <span className="truncate text-xs text-muted">usecritique.xyz</span>
                   </div>
-                  <p className="mt-2 text-[11px] leading-5 text-muted/80">
-                    Founder reviews useful feedback and approves USDC rewards.
+
+                  <p className="mt-2 text-base font-semibold leading-snug text-ink">
+                    Review Critique&rsquo;s founder onboarding UX
                   </p>
+                  <p className="mt-1.5 text-xs leading-5 text-muted">
+                    Feedback on the design, clarity, and trust of the founder setup flow — the homepage-to-create-bounty
+                    journey, reward setup, and any confusing steps.
+                  </p>
+
+                  <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-white/10 pt-2.5 text-[11px] font-semibold">
+                    <span className="text-[#7fe0b6]">$5,000 USDC reward pool</span>
+                    <span className="text-muted/50">·</span>
+                    <span className="text-muted">50 submissions</span>
+                    <span className="text-muted/50">·</span>
+                    <span className="text-muted">3 feedback types</span>
+                  </div>
                 </article>
               </div>
             </section>
