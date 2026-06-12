@@ -97,7 +97,8 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
   const deadlineLabel = bounty ? new Date(bounty.deadline).toLocaleString() : "";
   const compactField = "field mt-1.5 py-2.5";
   const compactTextarea = "field mt-1.5 min-h-[68px] resize-y py-2.5 leading-6";
-  const formSection = "space-y-3 rounded-xl border border-white/10 bg-white/[0.025] p-4 sm:p-5";
+  const formSection =
+    "space-y-3 rounded-xl border border-white/10 border-l-2 border-l-action/35 bg-white/[0.03] p-4 pl-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] sm:p-5 sm:pl-6";
   const isWrittenFeedback = feedbackType === "quick_written" || feedbackType === "deep_product_review";
   const isFounder = Boolean(
     address && bounty?.founderAddress && bounty.founderAddress.toLowerCase() === address.toLowerCase()
