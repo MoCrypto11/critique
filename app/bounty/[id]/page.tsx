@@ -267,92 +267,85 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
     <>
       <AppHeader />
       <main className="page-shell">
-        <div className="mb-6 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <p className="eyebrow">Public bounty</p>
-            <h1 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">{bounty.title}</h1>
-            <p className="mt-3 text-base font-semibold text-action">
-              {isDemoBounty
-                ? "Example reward configured by founder"
-                : hasVariableRewards
-                  ? "Founder-configured rewards by feedback type"
-                  : `${rewardAmountLabel(bounty.rewardUSDC)} per approved response`}
+        {/* 1. Bounty summary hero — title, product, status, reward/slots/deadline, copy link. */}
+        <section className="surface mb-6 p-5 sm:p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
+              <p className="eyebrow">Public bounty</p>
+              <h1 className="font-display mt-2 text-2xl tracking-normal text-ink sm:text-3xl">{bounty.title}</h1>
+              <p className="mt-2 break-all text-sm text-muted">{bounty.productUrl}</p>
+              <p className="mt-2 text-sm font-semibold text-action">
+                {isDemoBounty
+                  ? "Example reward configured by founder"
+                  : hasVariableRewards
+                    ? "Founder-configured rewards by feedback type"
+                    : `${rewardAmountLabel(bounty.rewardUSDC)} per approved response`}
+              </p>
+            </div>
+            <div className="flex shrink-0 flex-col items-stretch gap-2.5 sm:items-end">
+              <BountyStatusBadge status={status} />
+              <a
+                href={bounty.productUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="btn-primary w-full sm:w-auto"
+              >
+                Open product
+              </a>
+            </div>
+          </div>
+
+          <div className="mt-5 grid grid-cols-2 items-end gap-4 border-t border-white/10 pt-4 sm:grid-cols-4">
+            <div>
+              <p className="text-[11px] font-black uppercase tracking-[0.12em] text-muted">Reward</p>
+              <p className="mt-1 text-sm font-black text-ink">
+                {isDemoBounty ? "Founder-set" : `Up to ${formatUSDC(bounty.rewardUSDC)} USDC`}
+              </p>
+            </div>
+            <div>
+              <p className="text-[11px] font-black uppercase tracking-[0.12em] text-muted">Slots left</p>
+              <p className="mt-1 text-sm font-black text-ink">{slotsLeft}</p>
+            </div>
+            <div>
+              <p className="text-[11px] font-black uppercase tracking-[0.12em] text-muted">Deadline</p>
+              <p className="mt-1 text-sm font-black leading-5 text-ink">{deadlineLabel}</p>
+            </div>
+            <div className="flex sm:justify-end">{publicLink ? <CopyLinkButton href={publicLink} /> : null}</div>
+          </div>
+
+          {isFounder ? (
+            <div className="mt-4 flex flex-col gap-3 border-t border-white/10 pt-4 sm:flex-row">
+              <Link href={`/bounty/${bounty.id}/review`} className="btn-secondary">
+                Review submissions
+              </Link>
+              <Link href={`/bounty/${bounty.id}/dashboard`} className="btn-secondary">
+                View dashboard
+              </Link>
+            </div>
+          ) : null}
+        </section>
+
+        {/* 2. Instructions + how approval works (short row). */}
+        <div className="mb-8 grid gap-4 lg:grid-cols-[1.5fr_1fr] lg:items-stretch">
+          <section className="surface p-5 sm:p-6">
+            <h2 className="text-base font-black text-ink">Feedback instructions</h2>
+            <p className="mt-3 whitespace-pre-wrap leading-7 text-muted">{bounty.instructions}</p>
+          </section>
+          <section className="surface-soft p-5 sm:p-6">
+            <h2 className="text-base font-black text-ink">How approval works</h2>
+            <p className="mt-2 text-sm leading-6 text-muted">
+              Submit feedback with the payout wallet address where approved rewards should be sent. The founder reviews
+              submissions before any reward is released.
             </p>
-          </div>
-          <div className="flex flex-col gap-3 sm:items-end">
-            <BountyStatusBadge status={status} />
-            {publicLink ? <CopyLinkButton href={publicLink} /> : null}
-          </div>
+            <p className="mt-3 rounded-lg border border-action/15 bg-action/10 p-3 text-sm font-semibold leading-5 text-action">
+              Useful feedback is more likely to be approved.
+            </p>
+          </section>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_450px] lg:items-start">
-          <div className="space-y-4 lg:self-start">
-            <section className="surface p-5 sm:p-6">
-              <div className="grid gap-5 text-sm">
-                <div className="flex flex-col gap-3 border-b border-line/70 pb-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <h2 className="text-lg font-black text-ink">Product to review</h2>
-                    <p className="mt-1 break-all text-muted">{bounty.productUrl}</p>
-                  </div>
-                  <a
-                    href={bounty.productUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="btn-primary w-full sm:w-auto"
-                  >
-                    Open product
-                  </a>
-                </div>
-                <div>
-                  <h2 className="text-lg font-black text-ink">Feedback instructions</h2>
-                  <p className="mt-3 whitespace-pre-wrap rounded-xl border border-line/70 bg-panel/70 p-4 leading-7 text-muted">
-                    {bounty.instructions}
-                  </p>
-                </div>
-                <div className="surface-soft p-4 text-sm leading-6 text-muted">
-                  <p className="font-black text-ink">How approval works</p>
-                  <p className="mt-1">
-                    Submit feedback with the payout wallet address where approved rewards should be sent. The founder
-                    reviews submissions before any reward is released.
-                  </p>
-                </div>
-                {isFounder ? (
-                  <div className="flex flex-col gap-3 sm:flex-row">
-                    <Link href={`/bounty/${bounty.id}/review`} className="btn-secondary">
-                      Review submissions
-                    </Link>
-                    <Link href={`/bounty/${bounty.id}/dashboard`} className="btn-secondary">
-                      View dashboard
-                    </Link>
-                  </div>
-                ) : null}
-              </div>
-            </section>
-
-            <aside className="surface p-4">
-              <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4 lg:grid-cols-2">
-                <div>
-                  <p className="text-xs font-black uppercase tracking-[0.12em] text-muted">Reward</p>
-                  <p className="mt-1 font-black text-ink">
-                    {isDemoBounty ? "Founder-set reward" : `Up to ${formatUSDC(bounty.rewardUSDC)} testnet USDC`}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs font-black uppercase tracking-[0.12em] text-muted">Slots left</p>
-                  <p className="mt-1 font-black text-ink">{slotsLeft}</p>
-                </div>
-                <div className="sm:col-span-2 lg:col-span-2">
-                  <p className="text-xs font-black uppercase tracking-[0.12em] text-muted">Deadline</p>
-                  <p className="mt-1 font-black leading-5 text-ink">{deadlineLabel}</p>
-                </div>
-              </div>
-              <p className="mt-3 rounded-lg border border-action/15 bg-action/10 p-3 text-sm font-semibold leading-5 text-action">
-                Useful feedback is more likely to be approved.
-              </p>
-            </aside>
-          </div>
-
-          <form onSubmit={onSubmit} className="surface space-y-4 p-4 sm:p-5 lg:self-start">
+        {/* 3 + 4. Submission form (main, full width) + small sticky summary on desktop. */}
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start">
+          <form onSubmit={onSubmit} className="surface space-y-4 p-5 sm:p-6">
             <div>
               <h2 className="text-xl font-black text-ink">Submit feedback</h2>
               <p className="mt-1 text-sm leading-6 text-muted">
@@ -663,6 +656,31 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
               </button>
             </div>
           </form>
+
+          <aside className="hidden lg:sticky lg:top-6 lg:block">
+            <div className="surface p-5">
+              <p className="text-[11px] font-black uppercase tracking-[0.16em] text-action">Your submission</p>
+              <dl className="mt-4 space-y-3 text-sm">
+                <div>
+                  <dt className="text-xs font-semibold text-muted">Selected format</dt>
+                  <dd className="mt-0.5 font-black text-ink">{getFeedbackTypeLabel(feedbackType)}</dd>
+                </div>
+                {selectedReward && !isDemoBounty ? (
+                  <div>
+                    <dt className="text-xs font-semibold text-muted">Reward</dt>
+                    <dd className="mt-0.5 font-black text-action">{rewardAmountLabel(selectedReward.rewardUSDC)}</dd>
+                  </div>
+                ) : null}
+                <div>
+                  <dt className="text-xs font-semibold text-muted">Slots left</dt>
+                  <dd className="mt-0.5 font-black text-ink">{slotsLeft}</dd>
+                </div>
+              </dl>
+              <p className="mt-4 rounded-lg border border-white/10 bg-white/[0.03] p-3 text-xs leading-5 text-muted">
+                No wallet connection needed — enter the payout wallet address that should receive approved rewards.
+              </p>
+            </div>
+          </aside>
         </div>
       </main>
     </>
