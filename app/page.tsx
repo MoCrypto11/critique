@@ -239,7 +239,7 @@ export default function HomePage() {
             {steps.map((step, index) => {
               const StepIcon = step.icon;
               return (
-                <article key={step.title} className="surface flex flex-col p-4 sm:p-5">
+                <article key={step.title} className="surface card-hover flex flex-col p-4 sm:p-5">
                   <div className="flex items-center justify-between gap-3">
                     <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-action/10 text-action">
                       <StepIcon className="size-4" aria-hidden="true" strokeWidth={2} />
@@ -268,7 +268,7 @@ export default function HomePage() {
 
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {feedbackFormats.map((format) => (
-              <article key={format.type} className="surface p-4 sm:p-5">
+              <article key={format.type} className="surface card-hover p-4 sm:p-5">
                 <span className="grid size-10 place-items-center rounded-lg bg-action/10 text-action">
                   <FeedbackTypeIcon type={format.type} />
                 </span>
@@ -292,7 +292,7 @@ export default function HomePage() {
             {founderUseCases.map((useCase) => {
               const UseCaseIcon = useCase.icon;
               return (
-                <article key={useCase.title} className="surface p-4">
+                <article key={useCase.title} className="surface card-hover p-4">
                   <span className="grid size-10 place-items-center rounded-lg bg-action/10 text-action">
                     <UseCaseIcon className="size-4" aria-hidden="true" strokeWidth={2} />
                   </span>

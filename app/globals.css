@@ -182,13 +182,41 @@ button {
   line-height: 1.7;
 }
 
+/* Premium card depth — subtle lift + warmer border + softer elevation on
+   hover, applied to homepage info-card grids for cohesion (not forms). */
+.card-hover {
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-3px);
+  border-color: rgba(17, 97, 73, 0.28);
+  box-shadow: 0 18px 44px rgba(23, 32, 29, 0.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-hover {
+    transition: none;
+  }
+
+  .card-hover:hover {
+    transform: none;
+  }
+}
+
 /* ─── Hero band ────────────────────────────────────────────────────────── */
 
 .home-hero-band {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  background: transparent;
+  /* Lit environment: a soft luminous wash anchored on the open right side
+     plus a faint lift behind the text — depth without going dark. The body
+     cream shows through where the radials fade out. */
+  background:
+    radial-gradient(118% 82% at 86% 14%, rgba(121, 216, 175, 0.13) 0%, transparent 56%),
+    radial-gradient(85% 65% at 96% 60%, rgba(86, 196, 196, 0.08) 0%, transparent 62%),
+    radial-gradient(90% 70% at 20% 26%, rgba(255, 255, 255, 0.45) 0%, transparent 64%);
 }
 
 /* Top fade — dissolves the arc layer into the page header area */
