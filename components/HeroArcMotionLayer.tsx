@@ -28,6 +28,7 @@ export function HeroArcMotionLayer() {
   return (
     <div className="hero-arc-motion-layer" aria-hidden="true">
       <div className="hero-arc-glow" />
+      <div className="hero-arc-glow-teal" />
 
       <svg
         className="hero-arc-motion-svg"

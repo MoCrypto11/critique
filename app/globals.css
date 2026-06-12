@@ -255,27 +255,56 @@ button {
   );
 }
 
-/* CSS blur glow blob — kept within the visible band to avoid blur clip edges */
+/*
+  Layered ambient glows — two soft, slowly drifting light pools at different
+  speeds give the hero luminous depth (premium "alive" feel) without going
+  dark. Both sit on the right/open side so the text zone stays clean.
+*/
 .hero-arc-glow {
   position: absolute;
   right: -8%;
-  top: 8%;
-  width: 60%;
-  height: 84%;
+  top: 6%;
+  width: 62%;
+  height: 88%;
   background: radial-gradient(
     ellipse 70% 65% at 65% 42%,
-    rgba(121, 216, 175, 0.20) 0%,
-    rgba(17, 97, 73, 0.08) 55%,
+    rgba(121, 216, 175, 0.24) 0%,
+    rgba(17, 97, 73, 0.09) 55%,
     transparent 75%
   );
-  filter: blur(52px);
+  filter: blur(54px);
   pointer-events: none;
-  animation: heroGlowPulse 7s ease-in-out infinite;
+  will-change: transform, opacity;
+  animation: heroGlowDrift 22s ease-in-out infinite;
 }
 
-@keyframes heroGlowPulse {
-  0%, 100% { opacity: 0.78; transform: scale(1); }
-  50%      { opacity: 1; transform: scale(1.05); }
+/* Second, cooler teal pool — slower, offset, for green/teal interplay + depth. */
+.hero-arc-glow-teal {
+  position: absolute;
+  right: 0%;
+  top: 26%;
+  width: 48%;
+  height: 74%;
+  background: radial-gradient(
+    ellipse 60% 60% at 60% 50%,
+    rgba(86, 196, 196, 0.18) 0%,
+    rgba(49, 139, 116, 0.07) 52%,
+    transparent 72%
+  );
+  filter: blur(66px);
+  pointer-events: none;
+  will-change: transform, opacity;
+  animation: heroGlowDriftTeal 30s ease-in-out infinite;
+}
+
+@keyframes heroGlowDrift {
+  0%, 100% { opacity: 0.8; transform: translate3d(0, 0, 0) scale(1); }
+  50%      { opacity: 1; transform: translate3d(-5%, 3%, 0) scale(1.08); }
+}
+
+@keyframes heroGlowDriftTeal {
+  0%, 100% { opacity: 0.7; transform: translate3d(0, 0, 0) scale(1.05); }
+  50%      { opacity: 0.95; transform: translate3d(6%, -4%, 0) scale(1); }
 }
 
 /*
@@ -392,9 +421,30 @@ button {
    prefers-reduced-motion); here we also stop the CSS glow pulse. The static
    geometry stays visible as a subtle background treatment. */
 @media (prefers-reduced-motion: reduce) {
-  .hero-arc-glow {
+  .hero-arc-glow,
+  .hero-arc-glow-teal {
     animation: none !important;
   }
+}
+
+/* ─── Built-on-Arc panel ───────────────────────────────────────────────── */
+
+/* Soft luminous pool inside the dark Arc card — adds depth/atmosphere
+   (XyloNet-style lighting) in a restrained, static way. */
+.arc-panel-glow {
+  position: absolute;
+  top: -28%;
+  right: -8%;
+  width: 56%;
+  height: 130%;
+  background: radial-gradient(
+    ellipse 58% 55% at 62% 42%,
+    rgba(121, 216, 175, 0.2) 0%,
+    rgba(86, 196, 196, 0.09) 50%,
+    transparent 72%
+  );
+  filter: blur(60px);
+  pointer-events: none;
 }
 
 /* ─── Font weight overrides ────────────────────────────────────────────── */
