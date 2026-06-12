@@ -3,7 +3,15 @@
 import { useState } from "react";
 import { copyText } from "@/lib/utils";
 
-export function CopyLinkButton({ href, label = "Copy Bounty Link" }: { href: string; label?: string }) {
+export function CopyLinkButton({
+  href,
+  label = "Copy Bounty Link",
+  className
+}: {
+  href: string;
+  label?: string;
+  className?: string;
+}) {
   const [copied, setCopied] = useState(false);
 
   async function onCopy() {
@@ -13,7 +21,7 @@ export function CopyLinkButton({ href, label = "Copy Bounty Link" }: { href: str
   }
 
   return (
-    <button type="button" onClick={onCopy} className="btn-secondary w-full sm:w-auto">
+    <button type="button" onClick={onCopy} className={className ?? "btn-secondary w-full sm:w-auto"}>
       {copied ? "Link copied" : label}
     </button>
   );
