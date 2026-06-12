@@ -8,7 +8,9 @@ import { useEffect, useState } from "react";
   are one continuous canvas — not a hero-only banner.
     - hero zone (top): strongest motion — drifting glows + flowing SVG lines
     - lower page: soft ambient glow pools that continue the same environment
-  prefers-reduced-motion disables the animation; the static glows remain.
+  Under prefers-reduced-motion the flowing SVG lines are removed (here),
+  while the glows keep only a gentle low-amplitude drift (see globals.css)
+  so the canvas still feels alive without jarring motion.
 */
 export function HomeAtmosphereBackground() {
   const [reduced, setReduced] = useState(false);

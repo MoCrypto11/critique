@@ -332,49 +332,50 @@ button {
 */
 .hero-arc-glow {
   position: absolute;
-  right: -8%;
+  left: 10%;
+  right: 4%;
   top: 6%;
-  width: 62%;
-  height: 88%;
+  height: 86%;
   background: radial-gradient(
-    ellipse 70% 65% at 65% 42%,
-    rgba(121, 216, 175, 0.24) 0%,
-    rgba(17, 97, 73, 0.09) 55%,
+    ellipse 70% 65% at 55% 46%,
+    rgba(121, 216, 175, 0.3) 0%,
+    rgba(17, 97, 73, 0.1) 55%,
     transparent 75%
   );
-  filter: blur(54px);
+  filter: blur(56px);
   pointer-events: none;
   will-change: transform, opacity;
-  animation: heroGlowDrift 22s ease-in-out infinite;
+  animation: heroGlowDrift 18s ease-in-out infinite;
 }
 
 /* Second, cooler teal pool — slower, offset, for green/teal interplay + depth. */
 .hero-arc-glow-teal {
   position: absolute;
+  left: 22%;
   right: 0%;
-  top: 26%;
-  width: 48%;
-  height: 74%;
+  top: 22%;
+  height: 78%;
   background: radial-gradient(
-    ellipse 60% 60% at 60% 50%,
-    rgba(86, 196, 196, 0.18) 0%,
-    rgba(49, 139, 116, 0.07) 52%,
+    ellipse 60% 60% at 58% 50%,
+    rgba(86, 196, 196, 0.2) 0%,
+    rgba(49, 139, 116, 0.08) 52%,
     transparent 72%
   );
   filter: blur(66px);
   pointer-events: none;
   will-change: transform, opacity;
-  animation: heroGlowDriftTeal 30s ease-in-out infinite;
+  animation: heroGlowDriftTeal 24s ease-in-out infinite;
 }
 
+/* Larger drift so the slow movement reads clearly on big desktop screens. */
 @keyframes heroGlowDrift {
-  0%, 100% { opacity: 0.8; transform: translate3d(0, 0, 0) scale(1); }
-  50%      { opacity: 1; transform: translate3d(-5%, 3%, 0) scale(1.08); }
+  0%, 100% { opacity: 0.78; transform: translate3d(0, 0, 0) scale(1); }
+  50%      { opacity: 1; transform: translate3d(-9%, 4%, 0) scale(1.12); }
 }
 
 @keyframes heroGlowDriftTeal {
-  0%, 100% { opacity: 0.7; transform: translate3d(0, 0, 0) scale(1.05); }
-  50%      { opacity: 0.95; transform: translate3d(6%, -4%, 0) scale(1); }
+  0%, 100% { opacity: 0.68; transform: translate3d(0, 0, 0) scale(1.06); }
+  50%      { opacity: 0.95; transform: translate3d(10%, -5%, 0) scale(1); }
 }
 
 /* Lower-page ambient glow pools — soft, slow, distributed down the canvas so
@@ -406,12 +407,12 @@ button {
 
 @keyframes atmoDrift1 {
   0%, 100% { opacity: 0.7; transform: translate3d(0, 0, 0); }
-  50%      { opacity: 1; transform: translate3d(7%, -3%, 0); }
+  50%      { opacity: 1; transform: translate3d(10%, -4%, 0); }
 }
 
 @keyframes atmoDrift2 {
   0%, 100% { opacity: 0.7; transform: translate3d(0, 0, 0); }
-  50%      { opacity: 0.95; transform: translate3d(-7%, 3%, 0); }
+  50%      { opacity: 0.95; transform: translate3d(-10%, 4%, 0); }
 }
 
 /*
@@ -526,16 +527,27 @@ button {
 
 /* ─── Reduced motion ───────────────────────────────────────────────────── */
 
-/* Stop motion — the SVG animation is gated in JS (HomeAtmosphereBackground
-   reads prefers-reduced-motion); here we also stop the CSS glow drifts. The
-   static glows stay visible as a subtle background treatment. */
+/* Reduce (not kill) motion — the SVG line flows are removed in JS
+   (HomeAtmosphereBackground reads prefers-reduced-motion); here the glows
+   keep only a very slow, gentle, low-amplitude drift so the canvas still
+   feels alive on devices/OSes with "reduce motion" on, without any jarring
+   movement. */
 @media (prefers-reduced-motion: reduce) {
-  .hero-arc-glow,
-  .hero-arc-glow-teal,
+  .hero-arc-glow {
+    animation: heroGlowCalm 24s ease-in-out infinite;
+  }
+  .hero-arc-glow-teal {
+    animation: heroGlowCalm 30s ease-in-out infinite;
+  }
   .atmo-glow-mid,
   .atmo-glow-low {
-    animation: none !important;
+    animation: heroGlowCalm 34s ease-in-out infinite;
   }
+}
+
+@keyframes heroGlowCalm {
+  0%, 100% { opacity: 0.7; transform: translate3d(0, 0, 0) scale(1); }
+  50%      { opacity: 0.94; transform: translate3d(3%, -1.5%, 0) scale(1.04); }
 }
 
 /* ─── Built-on-Arc panel ───────────────────────────────────────────────── */
