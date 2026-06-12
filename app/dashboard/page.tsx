@@ -63,7 +63,7 @@ const tableBtn =
 
 // Shared grid templates so each table header lines up with its rows.
 const createdGrid =
-  "md:grid md:grid-cols-[minmax(0,1fr)_3.25rem_5rem_2.75rem_7rem] md:items-center md:gap-2.5";
+  "md:grid md:grid-cols-[minmax(0,1fr)_3.5rem_5rem_3rem_8rem] md:items-center md:gap-3";
 const contribGrid = "md:grid md:grid-cols-[minmax(0,1fr)_5.5rem_minmax(0,5.5rem)] md:items-center md:gap-2.5";
 const rowShell =
   "rounded-xl border border-white/[0.08] bg-white/[0.025] p-3.5 md:rounded-none md:border-0 md:border-t md:border-white/[0.06] md:bg-transparent md:p-2.5 md:first:border-t-0 md:hover:bg-white/[0.03]";
@@ -108,6 +108,19 @@ function CheckBadge() {
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" className="size-3">
         <path d="m5 12 5 5L20 7" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
+    </span>
+  );
+}
+
+function TabCount({ active, children }: { active: boolean; children: ReactNode }) {
+  return (
+    <span
+      className={cn(
+        "rounded-full px-1.5 py-0.5 text-[10px] font-black leading-none",
+        active ? "bg-white/20 text-white" : "bg-white/10 text-muted"
+      )}
+    >
+      {children}
     </span>
   );
 }
@@ -327,6 +340,7 @@ function ActivityItem({ event }: { event: ActivityEvent }) {
 export default function WalletDashboardPage() {
   const { address, isConnected } = useAccount();
   const walletConnected = Boolean(address) || isConnected;
+  const [view, setView] = useState<"created" | "contributions">("created");
   const [createdBounties, setCreatedBounties] = useState<BountyMetadata[]>([]);
   const [contributions, setContributions] = useState<FeedbackSubmission[]>([]);
   const [submissionsByBounty, setSubmissionsByBounty] = useState<Record<string, FeedbackSubmission[]>>({});
@@ -470,16 +484,42 @@ export default function WalletDashboardPage() {
           </section>
         ) : (
           <>
-            <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <header className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
               <div>
                 <h1 className="font-display text-4xl tracking-normal text-ink sm:text-5xl">Dashboard</h1>
                 <p className="mt-2 max-w-2xl text-base leading-7 text-muted">
                   Track your created bounties, submissions, and payout activity.
                 </p>
               </div>
-              <Link href="/create" className="btn-primary w-full sm:w-auto">
-                Create bounty
-              </Link>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <div className="inline-flex w-full rounded-xl border border-white/10 bg-white/[0.04] p-1 sm:w-auto">
+                  <button
+                    type="button"
+                    onClick={() => setView("created")}
+                    className={cn(
+                      "focus-ring inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-black transition-colors sm:flex-none",
+                      view === "created" ? "bg-action text-white" : "text-muted hover:text-ink"
+                    )}
+                  >
+                    Created bounties
+                    {!loading ? <TabCount active={view === "created"}>{createdBounties.length}</TabCount> : null}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setView("contributions")}
+                    className={cn(
+                      "focus-ring inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-black transition-colors sm:flex-none",
+                      view === "contributions" ? "bg-action text-white" : "text-muted hover:text-ink"
+                    )}
+                  >
+                    My contributions
+                    {!loading ? <TabCount active={view === "contributions"}>{contributions.length}</TabCount> : null}
+                  </button>
+                </div>
+                <Link href="/create" className="btn-primary w-full sm:w-auto">
+                  Create bounty
+                </Link>
+              </div>
             </header>
 
             {error ? (
@@ -498,93 +538,95 @@ export default function WalletDashboardPage() {
               <StatTile icon={<IconDoc />} label="Pending reviews" value={stats.pending} />
             </div>
 
-            <div className="mt-5 grid items-start gap-5 lg:grid-cols-2 xl:grid-cols-[minmax(0,1.55fr)_minmax(0,1.15fr)_minmax(0,0.95fr)]">
-              <Panel title="Created bounties" count={loading ? undefined : createdBounties.length}>
-                {loading ? (
-                  <PanelLoading />
-                ) : createdSorted.length ? (
-                  <div>
-                    <div
-                      className={cn(
-                        "hidden px-2.5 pb-2.5 text-[10px] font-black uppercase tracking-[0.1em] text-muted",
-                        createdGrid
-                      )}
-                    >
-                      <span>Bounty title</span>
-                      <span className="text-center">Reward</span>
-                      <span className="text-center">Status</span>
-                      <span className="text-center">Subs</span>
-                      <span className="text-right">Actions</span>
+            <div className="mt-5 grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
+              {view === "created" ? (
+                <Panel title="Created bounties" count={loading ? undefined : createdBounties.length}>
+                  {loading ? (
+                    <PanelLoading />
+                  ) : createdSorted.length ? (
+                    <div>
+                      <div
+                        className={cn(
+                          "hidden px-2.5 pb-2.5 text-[10px] font-black uppercase tracking-[0.1em] text-muted",
+                          createdGrid
+                        )}
+                      >
+                        <span>Bounty title</span>
+                        <span className="text-center">Reward</span>
+                        <span className="text-center">Status</span>
+                        <span className="text-center">Subs</span>
+                        <span className="text-right">Actions</span>
+                      </div>
+                      <div className="thin-scroll max-h-[30rem] space-y-2.5 overflow-y-auto pr-1 md:space-y-0">
+                        {createdSorted.map((bounty) => (
+                          <CreatedBountyRow
+                            key={bounty.id}
+                            bounty={bounty}
+                            submissions={submissionsByBounty[bounty.id] || []}
+                            publicLink={`${origin || ""}/bounty/${bounty.id}`}
+                          />
+                        ))}
+                      </div>
                     </div>
-                    <div className="thin-scroll max-h-[26rem] space-y-2.5 overflow-y-auto pr-1 md:space-y-0">
-                      {createdSorted.map((bounty) => (
-                        <CreatedBountyRow
-                          key={bounty.id}
-                          bounty={bounty}
-                          submissions={submissionsByBounty[bounty.id] || []}
-                          publicLink={`${origin || ""}/bounty/${bounty.id}`}
-                        />
-                      ))}
+                  ) : (
+                    <PanelEmpty
+                      icon={<IconChart />}
+                      title="No bounties yet"
+                      message="Launch a focused feedback bounty and it will appear here."
+                      action={
+                        <Link href="/create" className="btn-primary">
+                          Create a bounty
+                        </Link>
+                      }
+                    />
+                  )}
+                </Panel>
+              ) : (
+                <Panel title="My contributions" count={loading ? undefined : contributions.length}>
+                  {loading ? (
+                    <PanelLoading />
+                  ) : contributionsSorted.length ? (
+                    <div>
+                      <div
+                        className={cn(
+                          "hidden px-2.5 pb-2.5 text-[10px] font-black uppercase tracking-[0.1em] text-muted",
+                          contribGrid
+                        )}
+                      >
+                        <span>Submitted feedback</span>
+                        <span className="text-center">Status</span>
+                        <span className="text-right">Payout TX</span>
+                      </div>
+                      <div className="thin-scroll max-h-[30rem] space-y-2.5 overflow-y-auto pr-1 md:space-y-0">
+                        {contributionsSorted.map((submission) => (
+                          <ContributionRow
+                            key={submission.id}
+                            submission={submission}
+                            bounty={bountiesById[submission.bountyId]}
+                          />
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ) : (
-                  <PanelEmpty
-                    icon={<IconChart />}
-                    title="No bounties yet"
-                    message="Launch a focused feedback bounty and it will appear here."
-                    action={
-                      <Link href="/create" className="btn-primary">
-                        Create a bounty
-                      </Link>
-                    }
-                  />
-                )}
-              </Panel>
+                  ) : (
+                    <PanelEmpty
+                      icon={<IconChat />}
+                      title="No contributions yet"
+                      message="Submitted feedback will appear here once this wallet contributes to a bounty."
+                      action={
+                        <Link href="/bounty/demo" className="btn-secondary">
+                          Preview bounty
+                        </Link>
+                      }
+                    />
+                  )}
+                </Panel>
+              )}
 
-              <Panel title="My contributions" count={loading ? undefined : contributions.length}>
-                {loading ? (
-                  <PanelLoading />
-                ) : contributionsSorted.length ? (
-                  <div>
-                    <div
-                      className={cn(
-                        "hidden px-2.5 pb-2.5 text-[10px] font-black uppercase tracking-[0.1em] text-muted",
-                        contribGrid
-                      )}
-                    >
-                      <span>Submitted feedback</span>
-                      <span className="text-center">Status</span>
-                      <span className="text-right">Payout TX</span>
-                    </div>
-                    <div className="thin-scroll max-h-[26rem] space-y-2.5 overflow-y-auto pr-1 md:space-y-0">
-                      {contributionsSorted.map((submission) => (
-                        <ContributionRow
-                          key={submission.id}
-                          submission={submission}
-                          bounty={bountiesById[submission.bountyId]}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <PanelEmpty
-                    icon={<IconChat />}
-                    title="No contributions yet"
-                    message="Submitted feedback will appear here once this wallet contributes to a bounty."
-                    action={
-                      <Link href="/bounty/demo" className="btn-secondary">
-                        Preview bounty
-                      </Link>
-                    }
-                  />
-                )}
-              </Panel>
-
-              <Panel title="Activity feed" className="lg:col-span-2 xl:col-span-1">
+              <Panel title="Activity feed" count={loading ? undefined : activity.length}>
                 {loading ? (
                   <PanelLoading />
                 ) : activity.length ? (
-                  <ul className="thin-scroll -mr-1 max-h-[26rem] overflow-y-auto pr-1">
+                  <ul className="thin-scroll -mr-1 max-h-[30rem] overflow-y-auto pr-1">
                     {activity.map((event) => (
                       <ActivityItem key={event.id} event={event} />
                     ))}
