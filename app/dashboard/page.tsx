@@ -225,6 +225,7 @@ function CreatedBountyRow({
   publicLink: string;
 }) {
   const rewardValue = formatUSDC(bountyRewardTotal(bounty));
+  const hasReceipts = (bounty.txHashes?.length ?? 0) > 0 || submissions.some((submission) => Boolean(submission.payoutTxHash));
 
   return (
     <div className={cn(rowShell, createdGrid)}>
@@ -253,6 +254,15 @@ function CreatedBountyRow({
         <Link href={`/bounty/${bounty.id}/dashboard`} className={tableBtn} title="Open bounty dashboard">
           Open
         </Link>
+        {hasReceipts ? (
+          <Link
+            href={`/bounty/${bounty.id}/dashboard#on-chain-receipts`}
+            className={tableBtn}
+            title="On-chain receipts"
+          >
+            Receipts
+          </Link>
+        ) : null}
       </div>
     </div>
   );

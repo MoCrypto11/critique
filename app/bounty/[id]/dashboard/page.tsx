@@ -8,9 +8,8 @@ import { AppHeader } from "@/components/AppHeader";
 import { CopyLinkButton } from "@/components/CopyLinkButton";
 import { EmptyState } from "@/components/EmptyState";
 import { MockModeBanner } from "@/components/MockModeBanner";
-import { ReceiptCard } from "@/components/ReceiptCard";
+import { OnChainReceipts } from "@/components/OnChainReceipts";
 import { StatCard } from "@/components/StatCard";
-import { TxHashLink } from "@/components/TxHashLink";
 import { CRITIQUE_DROP_CONTRACT, ENABLE_MOCK_MODE, critiqueDropBountyAbi } from "@/lib/contracts";
 import {
   feedbackTypeOptions,
@@ -190,7 +189,7 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
         </div>
 
         {!CRITIQUE_DROP_CONTRACT && ENABLE_MOCK_MODE ? <MockModeBanner className="mb-5" /> : null}
-        {error ? <div className="notice mb-5 border-red-200 bg-red-50 font-semibold text-red-700">{error}</div> : null}
+        {error ? <div className="notice mb-5 border-red-400/30 bg-red-500/10 font-semibold text-red-200">{error}</div> : null}
         {status ? <div className="notice mb-5 border-action/20 bg-action/10 font-semibold text-action">{status}</div> : null}
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -229,17 +228,6 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
               </button>
             </div>
           </div>
-          <div className="mt-5 space-y-3 rounded-xl border border-line/70 bg-panel/70 p-4 text-sm text-muted">
-            {bounty.txHashes.length ? (
-              bounty.txHashes.map((hash) => (
-                <div key={hash}>
-                  Transaction: <TxHashLink hash={hash} />
-                </div>
-              ))
-            ) : (
-              <p>No transaction hashes yet.</p>
-            )}
-          </div>
         </section>
 
         <section className="surface mt-6 p-5 sm:p-6">
@@ -272,24 +260,9 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
           </div>
         </section>
 
-        <section className="mt-6">
-          <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h2 className="text-lg font-black text-ink">Receipts</h2>
-              <p className="mt-1 text-sm text-muted">Approved submissions become payout receipts here.</p>
-            </div>
-            <p className="text-sm font-bold text-action">{approved.length} paid</p>
-          </div>
-          <div className="grid gap-4 lg:grid-cols-2">
-            {approved.length ? (
-              approved.map((submission) => (
-                <ReceiptCard key={submission.id} submission={submission} amount={rewardAmountForSubmission(submission)} />
-              ))
-            ) : (
-              <EmptyState title="No paid receipts" body="Approved feedback payouts will appear here." />
-            )}
-          </div>
-        </section>
+        <div className="mt-6">
+          <OnChainReceipts bounty={bounty} submissions={submissions} rewardFor={rewardAmountForSubmission} />
+        </div>
       </main>
     </>
   );
