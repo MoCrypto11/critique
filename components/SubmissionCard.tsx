@@ -87,7 +87,7 @@ export function SubmissionCard({
   const rows = detailRows(submission);
 
   return (
-    <article className="surface p-5 sm:p-6">
+    <article id={`submission-${submission.id}`} className="surface scroll-mt-24 p-5 sm:p-6">
       <div className="flex flex-wrap items-start justify-between gap-3 border-b border-line/70 pb-4">
         <div>
           <div className="flex flex-wrap items-center gap-2">
@@ -124,7 +124,7 @@ export function SubmissionCard({
         </div>
 
         {submission.rejectionReason ? (
-          <p className="rounded-lg border border-red-200 bg-red-50 p-3 font-semibold text-red-700">
+          <p className="rounded-lg border border-red-400/30 bg-red-500/10 p-3 font-semibold text-red-200">
             Rejected: {submission.rejectionReason}
           </p>
         ) : null}

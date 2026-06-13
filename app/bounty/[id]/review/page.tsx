@@ -177,7 +177,7 @@ export default function ReviewPage({ params }: { params: { id: string } }) {
         {!CRITIQUE_DROP_CONTRACT && ENABLE_MOCK_MODE ? (
           <MockModeBanner className="mb-5" />
         ) : null}
-        {error ? <div className="notice mb-5 border-red-200 bg-red-50 font-semibold text-red-700">{error}</div> : null}
+        {error ? <div className="notice mb-5 border-red-400/30 bg-red-500/10 font-semibold text-red-200">{error}</div> : null}
         {isLoaded ? (
           <div className="mb-5 grid gap-3 sm:grid-cols-3">
             <div className="surface-soft p-4">

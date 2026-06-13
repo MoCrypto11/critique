@@ -63,7 +63,7 @@ const tableBtn =
 
 // Shared grid templates so each table header lines up with its rows.
 const createdGrid =
-  "md:grid md:grid-cols-[minmax(0,1fr)_3.5rem_5rem_3rem_8rem] md:items-center md:gap-3";
+  "md:grid md:grid-cols-[minmax(0,1fr)_3.5rem_5rem_3rem_7rem] md:items-center md:gap-3";
 const contribGrid = "md:grid md:grid-cols-[minmax(0,1fr)_5.5rem_minmax(0,5.5rem)] md:items-center md:gap-2.5";
 const rowShell =
   "rounded-xl border border-white/[0.08] bg-white/[0.025] p-3.5 md:rounded-none md:border-0 md:border-t md:border-white/[0.06] md:bg-transparent md:p-2.5 md:first:border-t-0 md:hover:bg-white/[0.03]";
@@ -230,9 +230,13 @@ function CreatedBountyRow({
   return (
     <div className={cn(rowShell, createdGrid)}>
       <div className="min-w-0">
-        <span className="line-clamp-2 text-sm font-black leading-snug text-ink" title={bounty.title}>
+        <Link
+          href={`/bounty/${bounty.id}`}
+          className="focus-ring line-clamp-2 text-sm font-black leading-snug text-ink underline-offset-2 transition-colors hover:text-action hover:underline"
+          title={`Open public page: ${bounty.title}`}
+        >
           {bounty.title}
-        </span>
+        </Link>
       </div>
       <div className="mt-2 md:mt-0 md:text-center">
         <span className="text-[11px] font-bold text-muted md:hidden">Reward · </span>
@@ -248,11 +252,8 @@ function CreatedBountyRow({
       </div>
       <div className="mt-3 flex flex-wrap gap-1.5 md:mt-0 md:justify-end">
         <CopyLinkButton href={publicLink} label="Copy" className={tableBtn} />
-        <Link href={`/bounty/${bounty.id}/review`} className={tableBtn} title="Review submissions">
+        <Link href={`/bounty/${bounty.id}/review`} className={tableBtn} title="Review off-chain feedback">
           Review
-        </Link>
-        <Link href={`/bounty/${bounty.id}/dashboard`} className={tableBtn} title="Open bounty dashboard">
-          Open
         </Link>
         {hasReceipts ? (
           <Link
@@ -306,8 +307,20 @@ type ActivityEvent = {
   status?: FeedbackSubmission["status"];
   title: string;
   bountyId: string;
+  submissionId?: string;
   date: string;
 };
+
+// Route founder-side activity (created bounty, submissions received on my
+// bounties) to the founder review page — never the public contributor form.
+// Focus the specific submission when we know it. The user's own contributions
+// go to the public bounty page, where they are the contributor.
+function activityHref(event: ActivityEvent) {
+  if (event.kind === "contributed") return `/bounty/${event.bountyId}`;
+  return event.submissionId
+    ? `/bounty/${event.bountyId}/review#submission-${event.submissionId}`
+    : `/bounty/${event.bountyId}/review`;
+}
 
 function activityLabel(event: ActivityEvent) {
   if (event.kind === "created") return "You created a bounty";
@@ -331,7 +344,7 @@ function ActivityItem({ event }: { event: ActivityEvent }) {
   return (
     <li>
       <Link
-        href={`/bounty/${event.bountyId}`}
+        href={activityHref(event)}
         className="focus-ring -mx-2 flex gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-white/[0.04]"
       >
         <span className={cn("mt-1.5 size-2 shrink-0 rounded-full", activityDotClass(event))} />
@@ -404,6 +417,7 @@ export default function WalletDashboardPage() {
         status: submission.status,
         title: createdById.get(submission.bountyId)?.title || "Your bounty",
         bountyId: submission.bountyId,
+        submissionId: submission.id,
         date: submission.createdAt
       });
     }
@@ -414,6 +428,7 @@ export default function WalletDashboardPage() {
         status: submission.status,
         title: bountiesById[submission.bountyId]?.title || "Feedback bounty",
         bountyId: submission.bountyId,
+        submissionId: submission.id,
         date: submission.createdAt
       });
     }
