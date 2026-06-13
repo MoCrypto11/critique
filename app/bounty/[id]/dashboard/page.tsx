@@ -27,6 +27,13 @@ import {
   updateLocalBounty
 } from "@/lib/storage";
 
+// Compact USDC label for dashboard cards (Arc testnet context lives in the
+// global network badge / footer, so cards stay clean: "12 USDC", "0 USDC").
+function usdcLabel(value: string | number | undefined) {
+  const formatted = formatUSDC(value);
+  return formatted === "Not set" ? "0 USDC" : `${formatted} USDC`;
+}
+
 export default function DashboardPage({ params }: { params: { id: string } }) {
   const { address, isConnected } = useAccount();
   const publicClient = usePublicClient();
@@ -193,9 +200,9 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
         {status ? <div className="notice mb-5 border-action/20 bg-action/10 font-semibold text-action">{status}</div> : null}
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard label="Total configured funding" value={`${formatUSDC(totalFunded)} testnet USDC`} tone="strong" />
-          <StatCard label="Total approved payouts" value={`${formatUSDC(totalPaid)} testnet USDC`} tone="strong" />
-          <StatCard label="Remaining configured balance" value={`${formatUSDC(remaining)} testnet USDC`} tone="strong" />
+          <StatCard label="Total configured funding" value={usdcLabel(totalFunded)} tone="strong" />
+          <StatCard label="Total approved payouts" value={usdcLabel(totalPaid)} tone="strong" />
+          <StatCard label="Remaining configured balance" value={usdcLabel(remaining)} tone="strong" />
           <StatCard label="Reward pools" value={rewardConfig.length} />
           <StatCard label="Slots used" value={`${submissions.length}/${bounty.maxSubmissions}`} />
           <StatCard label="Approved" value={approved.length} />
@@ -249,7 +256,7 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
                 <div key={config.feedbackType} className="surface-soft p-4">
                   <p className="text-sm font-black text-ink">{config.label || option?.label || config.feedbackType}</p>
                   <p className="mt-2 text-sm font-semibold text-action">
-                    {formatUSDC(config.rewardUSDC)} testnet USDC configured
+                    {usdcLabel(config.rewardUSDC)} configured
                   </p>
                   <p className="mt-1 text-sm text-muted">
                 {remainingForType}/{config.slots} configured slots remaining

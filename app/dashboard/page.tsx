@@ -5,7 +5,6 @@ import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react
 import { useAccount } from "wagmi";
 import { AppHeader } from "@/components/AppHeader";
 import { BountyStatusBadge } from "@/components/BountyStatusBadge";
-import { CopyLinkButton } from "@/components/CopyLinkButton";
 import { TxHashLink } from "@/components/TxHashLink";
 import { WalletConnect } from "@/components/WalletConnect";
 import {
@@ -24,7 +23,7 @@ import {
   listSubmissions,
   listSubmissionsByTester
 } from "@/lib/storage";
-import { cn } from "@/lib/utils";
+import { cn, copyText } from "@/lib/utils";
 
 function formatDate(value: string) {
   return new Date(value).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
@@ -61,9 +60,16 @@ function rewardForSubmission(submission: FeedbackSubmission, bounty?: BountyMeta
 const tableBtn =
   "focus-ring inline-flex items-center justify-center rounded-md border border-white/12 bg-white/[0.04] px-2.5 py-1 text-[11px] font-black text-ink transition-colors hover:border-action/40 hover:text-action";
 
+// Row actions: Review is the primary (mint pill); Copy + Receipts are compact
+// icon buttons — no stacked outline buttons.
+const reviewPill =
+  "focus-ring inline-flex items-center rounded-md border border-action/40 bg-action/15 px-2.5 py-1 text-[11px] font-black text-action transition-colors hover:bg-action/25";
+const iconBtn =
+  "focus-ring grid size-8 shrink-0 place-items-center rounded-md border border-white/12 bg-white/[0.04] text-muted transition-colors hover:border-action/40 hover:text-action md:size-7";
+
 // Shared grid templates so each table header lines up with its rows.
 const createdGrid =
-  "md:grid md:grid-cols-[minmax(0,1fr)_3.5rem_5rem_3rem_7rem] md:items-center md:gap-3";
+  "md:grid md:grid-cols-[minmax(0,1fr)_3.5rem_5rem_3rem_8.5rem] md:items-center md:gap-3";
 const contribGrid = "md:grid md:grid-cols-[minmax(0,1fr)_5.5rem_minmax(0,5.5rem)] md:items-center md:gap-2.5";
 const rowShell =
   "rounded-xl border border-white/[0.08] bg-white/[0.025] p-3.5 md:rounded-none md:border-0 md:border-t md:border-white/[0.06] md:bg-transparent md:p-2.5 md:first:border-t-0 md:hover:bg-white/[0.03]";
@@ -109,6 +115,50 @@ function CheckBadge() {
         <path d="m5 12 5 5L20 7" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     </span>
+  );
+}
+
+function IconCopy() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="size-4">
+      <rect x="9" y="9" width="11" height="11" rx="2" />
+      <path d="M5 15V5a2 2 0 0 1 2-2h8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+function IconReceipt() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="size-4">
+      <path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z" strokeLinejoin="round" />
+      <path d="M9 8h6M9 12h6" strokeLinecap="round" />
+    </svg>
+  );
+}
+function IconCheck2() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" className="size-4">
+      <path d="m5 12 5 5L20 7" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+// Compact copy-link icon button with a brief copied confirmation.
+function RowCopyButton({ href }: { href: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={async () => {
+        await copyText(href);
+        setCopied(true);
+        window.setTimeout(() => setCopied(false), 1600);
+      }}
+      className={cn(iconBtn, copied && "border-action/40 text-action")}
+      title="Copy public link"
+      aria-label="Copy public link"
+    >
+      {copied ? <IconCheck2 /> : <IconCopy />}
+    </button>
   );
 }
 
@@ -250,18 +300,19 @@ function CreatedBountyRow({
         <span className="text-[11px] font-bold text-muted md:hidden">Submissions · </span>
         <span className="text-xs font-black text-ink">{submissions.length}</span>
       </div>
-      <div className="mt-3 flex flex-wrap gap-1.5 md:mt-0 md:justify-end">
-        <CopyLinkButton href={publicLink} label="Copy" className={tableBtn} />
-        <Link href={`/bounty/${bounty.id}/review`} className={tableBtn} title="Review off-chain feedback">
+      <div className="mt-3 flex items-center gap-1.5 md:mt-0 md:justify-end">
+        <Link href={`/bounty/${bounty.id}/review`} className={reviewPill} title="Review off-chain feedback">
           Review
         </Link>
+        <RowCopyButton href={publicLink} />
         {hasReceipts ? (
           <Link
             href={`/bounty/${bounty.id}/dashboard#on-chain-receipts`}
-            className={tableBtn}
+            className={iconBtn}
             title="On-chain receipts"
+            aria-label="On-chain receipts"
           >
-            Receipts
+            <IconReceipt />
           </Link>
         ) : null}
       </div>
@@ -559,7 +610,7 @@ export default function WalletDashboardPage() {
             <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
               <StatTile icon={<IconChart />} label="Active bounties" value={stats.activeBounties} />
               <StatTile icon={<IconChat />} label="Total submissions" value={stats.totalSubmissions} />
-              <StatTile icon={<IconDollar />} label="Approved payouts" value={stats.approvedPayouts} unit="testnet USDC" highlight />
+              <StatTile icon={<IconDollar />} label="Approved payouts" value={stats.approvedPayouts} unit="USDC" highlight />
               <StatTile icon={<IconDoc />} label="Pending reviews" value={stats.pending} />
             </div>
 

@@ -74,7 +74,7 @@ export function OnChainReceipts({
           <p className="text-[11px] font-black uppercase tracking-[0.12em] text-muted">Approved payouts</p>
           <p className="mt-1.5 text-2xl font-black leading-none text-ink">{payouts.length}</p>
           {totalPaid > 0 ? (
-            <p className="mt-1.5 text-xs font-bold text-action">{formatUSDC(totalPaid)} testnet USDC paid</p>
+            <p className="mt-1.5 text-xs font-bold text-action">{formatUSDC(totalPaid)} USDC paid</p>
           ) : null}
         </div>
         <div className="surface-soft rounded-xl p-4">
