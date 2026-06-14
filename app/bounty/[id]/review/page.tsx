@@ -1,38 +1,70 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
-import { getAddress } from "viem";
-import { useAccount, usePublicClient, useWalletClient } from "wagmi";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
+import { BountyStatusBadge } from "@/components/BountyStatusBadge";
+import { CopyLinkButton } from "@/components/CopyLinkButton";
 import { EmptyState } from "@/components/EmptyState";
-import { MockModeBanner } from "@/components/MockModeBanner";
-import { RejectSubmissionModal } from "@/components/RejectSubmissionModal";
-import { SubmissionCard } from "@/components/SubmissionCard";
-import { CRITIQUE_DROP_CONTRACT, ENABLE_MOCK_MODE, critiqueDropBountyAbi } from "@/lib/contracts";
-import { formatUSDC, getFeedbackTypeContractId, getRewardForType, normalizeFeedbackRewards } from "@/lib/feedbackRewards";
-import {
-  approveLocalSubmission,
-  BountyMetadata,
-  FeedbackSubmission,
-  getLocalBounty,
-  listSubmissions,
-  rejectLocalSubmission,
-  addTxHashToBounty
-} from "@/lib/storage";
+import { formatUSDC, getFeedbackTypeLabel, getRewardForType, normalizeFeedbackRewards } from "@/lib/feedbackRewards";
+import { BountyMetadata, FeedbackSubmission, getLocalBounty, listSubmissions } from "@/lib/storage";
+import { cn, shortAddress } from "@/lib/utils";
+
+type Filter = "pending" | "approved" | "rejected" | "all";
+
+const PAGE = 25;
+
+const reviewGrid =
+  "md:grid md:grid-cols-[minmax(0,1.3fr)_6rem_6.5rem_6rem_5rem_5.5rem] md:items-center md:gap-3";
+
+function formatDate(value: string) {
+  return new Date(value).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+}
+
+function FilterTab({
+  value,
+  active,
+  count,
+  onClick,
+  children
+}: {
+  value: Filter;
+  active: Filter;
+  count: number;
+  onClick: (value: Filter) => void;
+  children: string;
+}) {
+  const isActive = active === value;
+  return (
+    <button
+      type="button"
+      onClick={() => onClick(value)}
+      className={cn(
+        "focus-ring inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-black transition-colors sm:flex-none",
+        isActive ? "bg-action text-white" : "text-muted hover:text-ink"
+      )}
+    >
+      {children}
+      <span
+        className={cn(
+          "rounded-full px-1.5 py-0.5 text-[10px] font-black leading-none",
+          isActive ? "bg-white/20 text-white" : "bg-white/10 text-muted"
+        )}
+      >
+        {count}
+      </span>
+    </button>
+  );
+}
 
 export default function ReviewPage({ params }: { params: { id: string } }) {
-  const { address, isConnected } = useAccount();
-  const publicClient = usePublicClient();
-  const { data: walletClient } = useWalletClient();
   const [bounty, setBounty] = useState<BountyMetadata>();
   const [submissions, setSubmissions] = useState<FeedbackSubmission[]>([]);
   const [error, setError] = useState("");
-  const [busyId, setBusyId] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
-  const [rejectTarget, setRejectTarget] = useState<FeedbackSubmission>();
-  const [rejectError, setRejectError] = useState("");
-  const [isRejecting, setIsRejecting] = useState(false);
+  const [filter, setFilter] = useState<Filter>("pending");
+  const [limit, setLimit] = useState(PAGE);
+  const [publicLink, setPublicLink] = useState("");
 
   const refresh = useCallback(async () => {
     const [nextBounty, nextSubmissions] = await Promise.all([getLocalBounty(params.id), listSubmissions(params.id)]);
@@ -48,106 +80,43 @@ export default function ReviewPage({ params }: { params: { id: string } }) {
     });
   }, [refresh]);
 
-  async function approve(submission: FeedbackSubmission) {
-    setError("");
-    setBusyId(submission.id);
+  useEffect(() => {
+    if (typeof window !== "undefined") setPublicLink(`${window.location.origin}/bounty/${params.id}`);
+  }, [params.id]);
 
-    try {
-      if (!isConnected || !address) throw new Error("Connect wallet before approving feedback.");
-      if (bounty?.founderAddress && bounty.founderAddress.toLowerCase() !== address.toLowerCase()) {
-        throw new Error("Connected wallet is not the founder for this local bounty.");
-      }
+  useEffect(() => {
+    setLimit(PAGE);
+  }, [filter]);
 
-      let payoutTxHash = `mock-${submission.submissionHash.slice(2, 12)}`;
-      if (CRITIQUE_DROP_CONTRACT) {
-        if (!walletClient || !publicClient) throw new Error("Wallet client is not ready.");
-        if (!bounty) throw new Error("Bounty is not loaded.");
-        const rewardConfig = normalizeFeedbackRewards(bounty.feedbackRewards, bounty.rewardUSDC, bounty.maxSubmissions).filter(
-          (reward) => reward.enabled !== false
-        );
-        const selectedReward = getRewardForType(rewardConfig, submission.feedbackType);
-        if (!submission.feedbackType) {
-          throw new Error("This submission is missing a feedback type.");
-        }
-        if (!bounty.contractBountyId) {
-          throw new Error("This bounty is missing a contract bounty ID.");
-        }
-        const approvedForType = submissions.filter(
-          (item) => item.status === "approved" && item.feedbackType === submission.feedbackType
-        ).length;
-        if (selectedReward && approvedForType >= selectedReward.slots) {
-          throw new Error("This feedback type has no remaining funded slots.");
-        }
+  const counts = useMemo(
+    () => ({
+      pending: submissions.filter((submission) => submission.status === "pending").length,
+      approved: submissions.filter((submission) => submission.status === "approved").length,
+      rejected: submissions.filter((submission) => submission.status === "rejected").length,
+      all: submissions.length
+    }),
+    [submissions]
+  );
 
-        const txHash = await walletClient.writeContract({
-          address: getAddress(CRITIQUE_DROP_CONTRACT),
-          abi: critiqueDropBountyAbi,
-          functionName: "approveSubmission",
-          args: [
-            BigInt(bounty.contractBountyId),
-            getFeedbackTypeContractId(submission.feedbackType),
-            getAddress(submission.testerWallet),
-            submission.submissionHash as `0x${string}`
-          ],
-          account: address
-        });
-        payoutTxHash = txHash;
-        await addTxHashToBounty(bounty.id, txHash);
-        await publicClient.waitForTransactionReceipt({ hash: txHash });
-      } else if (!ENABLE_MOCK_MODE) {
-        throw new Error("Contract is not configured.");
-      }
-
-      await approveLocalSubmission(params.id, submission.id, payoutTxHash);
-      await refresh();
-    } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "Could not approve submission.");
-    } finally {
-      setBusyId("");
-    }
-  }
-
-  function openReject(submission: FeedbackSubmission) {
-    setRejectError("");
-    setRejectTarget(submission);
-  }
-
-  function cancelReject() {
-    if (isRejecting) return;
-    setRejectTarget(undefined);
-    setRejectError("");
-  }
-
-  async function confirmReject(reason: string) {
-    if (!rejectTarget) return;
-    setRejectError("");
-    setIsRejecting(true);
-    try {
-      await rejectLocalSubmission(params.id, rejectTarget.id, reason);
-      setRejectTarget(undefined);
-      await refresh();
-    } catch (caught) {
-      setRejectError(caught instanceof Error ? caught.message : "Could not reject submission. Please try again.");
-    } finally {
-      setIsRejecting(false);
-    }
-  }
-
-  const pendingCount = submissions.filter((submission) => submission.status === "pending").length;
-  const approvedCount = submissions.filter((submission) => submission.status === "approved").length;
-  const rejectedCount = submissions.filter((submission) => submission.status === "rejected").length;
   const rewardConfig = bounty
     ? normalizeFeedbackRewards(bounty.feedbackRewards, bounty.rewardUSDC, bounty.maxSubmissions).filter(
         (reward) => reward.enabled !== false
       )
     : [];
 
-  function rewardLabelFor(submission: FeedbackSubmission) {
+  function rewardLabel(submission: FeedbackSubmission) {
     const configured = getRewardForType(rewardConfig, submission.feedbackType);
-    if (submission.expectedRewardUSDC) return `Expected reward: ${formatUSDC(submission.expectedRewardUSDC)} testnet USDC`;
-    if (!configured) return bounty ? `Configured reward: ${formatUSDC(bounty.rewardUSDC)} testnet USDC` : undefined;
-    return `Configured reward: ${formatUSDC(configured.rewardUSDC)} testnet USDC`;
+    const amount = submission.expectedRewardUSDC || configured?.rewardUSDC || bounty?.rewardUSDC;
+    const formatted = amount ? formatUSDC(amount) : "Not set";
+    return formatted === "Not set" ? "—" : `${formatted} USDC`;
   }
+
+  const visible = useMemo(() => {
+    const sorted = [...submissions].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+    return filter === "all" ? sorted : sorted.filter((submission) => submission.status === filter);
+  }, [submissions, filter]);
 
   if (isLoaded && !bounty) {
     return (
@@ -160,66 +129,150 @@ export default function ReviewPage({ params }: { params: { id: string } }) {
     );
   }
 
+  const shown = visible.slice(0, limit);
+
   return (
     <>
       <AppHeader />
       <main className="page-shell">
-        <div className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <p className="eyebrow">Founder review</p>
             <h1 className="font-display mt-3 text-3xl tracking-normal text-ink sm:text-4xl">Review submissions</h1>
             <p className="mt-3 text-base leading-7 text-muted">{bounty?.title || "Local bounty"}</p>
           </div>
-          <Link href={`/bounty/${params.id}/dashboard`} className="btn-secondary w-full sm:w-auto">
-            View Dashboard
-          </Link>
-        </div>
-        {!CRITIQUE_DROP_CONTRACT && ENABLE_MOCK_MODE ? (
-          <MockModeBanner className="mb-5" />
-        ) : null}
-        {error ? <div className="notice mb-5 border-red-400/30 bg-red-500/10 font-semibold text-red-200">{error}</div> : null}
-        {isLoaded ? (
-          <div className="mb-5 grid gap-3 sm:grid-cols-3">
-            <div className="surface-soft p-4">
-              <p className="text-xs font-black uppercase tracking-[0.14em] text-muted">Pending</p>
-              <p className="mt-2 text-2xl font-black text-ink">{pendingCount}</p>
-            </div>
-            <div className="surface-soft p-4">
-              <p className="text-xs font-black uppercase tracking-[0.14em] text-muted">Approved</p>
-              <p className="mt-2 text-2xl font-black text-action">{approvedCount}</p>
-            </div>
-            <div className="surface-soft p-4">
-              <p className="text-xs font-black uppercase tracking-[0.14em] text-muted">Rejected</p>
-              <p className="mt-2 text-2xl font-black text-ink">{rejectedCount}</p>
-            </div>
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+            {publicLink ? <CopyLinkButton href={publicLink} label="Copy public link" /> : null}
+            <Link href={`/bounty/${params.id}`} className="btn-secondary w-full sm:w-auto" title="Preview the contributor page">
+              Public page
+            </Link>
+            <Link href={`/bounty/${params.id}/dashboard`} className="btn-secondary w-full sm:w-auto">
+              Funding &amp; receipts
+            </Link>
           </div>
-        ) : null}
-        <div className="space-y-5">
+        </div>
+
+        {error ? <div className="notice mb-5 mt-6 border-red-400/30 bg-red-500/10 font-semibold text-red-200">{error}</div> : null}
+
+        <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="surface-soft p-4">
+            <p className="text-[11px] font-black uppercase tracking-[0.14em] text-muted">Pending</p>
+            <p className="mt-1.5 text-2xl font-black text-ink">{counts.pending}</p>
+          </div>
+          <div className="surface-soft p-4">
+            <p className="text-[11px] font-black uppercase tracking-[0.14em] text-muted">Approved</p>
+            <p className="mt-1.5 text-2xl font-black text-action">{counts.approved}</p>
+          </div>
+          <div className="surface-soft p-4">
+            <p className="text-[11px] font-black uppercase tracking-[0.14em] text-muted">Rejected</p>
+            <p className="mt-1.5 text-2xl font-black text-ink">{counts.rejected}</p>
+          </div>
+          <div className="surface-soft p-4">
+            <p className="text-[11px] font-black uppercase tracking-[0.14em] text-muted">Total</p>
+            <p className="mt-1.5 text-2xl font-black text-ink">{counts.all}</p>
+          </div>
+        </div>
+
+        <div className="mt-5 inline-flex w-full rounded-xl border border-white/10 bg-white/[0.04] p-1 sm:w-auto">
+          <FilterTab value="pending" active={filter} count={counts.pending} onClick={setFilter}>
+            Pending
+          </FilterTab>
+          <FilterTab value="approved" active={filter} count={counts.approved} onClick={setFilter}>
+            Approved
+          </FilterTab>
+          <FilterTab value="rejected" active={filter} count={counts.rejected} onClick={setFilter}>
+            Rejected
+          </FilterTab>
+          <FilterTab value="all" active={filter} count={counts.all} onClick={setFilter}>
+            All
+          </FilterTab>
+        </div>
+
+        <section className="surface mt-5 p-4 sm:p-5">
           {!isLoaded ? (
             <EmptyState title="Loading submissions" body="Preparing the founder review queue." />
-          ) : submissions.length ? (
-            submissions.map((submission) => (
-              <SubmissionCard
-                key={submission.id}
-                submission={submission}
-                rewardLabel={rewardLabelFor(submission)}
-                busy={busyId === submission.id}
-                onApprove={() => approve(submission)}
-                onReject={() => openReject(submission)}
-              />
-            ))
+          ) : shown.length ? (
+            <div>
+              <div
+                className={cn(
+                  "hidden px-2.5 pb-2.5 text-[10px] font-black uppercase tracking-[0.1em] text-muted",
+                  reviewGrid
+                )}
+              >
+                <span>Contributor</span>
+                <span className="text-center">Status</span>
+                <span className="text-center">Submitted</span>
+                <span className="text-center">Reward</span>
+                <span className="text-center">Payout</span>
+                <span className="text-right">Action</span>
+              </div>
+              <div className="space-y-2.5 md:space-y-0">
+                {shown.map((submission) => (
+                  <Link
+                    key={submission.id}
+                    href={`/bounty/${params.id}/review/${submission.id}`}
+                    className={cn(
+                      "focus-ring block rounded-xl border border-white/[0.08] bg-white/[0.025] p-3.5 transition-colors hover:border-action/30 hover:bg-white/[0.045] md:rounded-none md:border-0 md:border-t md:border-white/[0.06] md:bg-transparent md:p-2.5 md:first:border-t-0 md:hover:bg-white/[0.03]",
+                      reviewGrid
+                    )}
+                  >
+                    <div className="min-w-0">
+                      <p className="font-mono text-sm font-black text-ink">{shortAddress(submission.testerWallet)}</p>
+                      <p className="mt-0.5 truncate text-[11px] font-bold text-muted">
+                        {submission.feedbackTypeLabel || getFeedbackTypeLabel(submission.feedbackType)}
+                      </p>
+                    </div>
+                    <div className="mt-2 md:mt-0 md:flex md:justify-center">
+                      <BountyStatusBadge status={submission.status} />
+                    </div>
+                    <div className="mt-2 text-xs text-muted md:mt-0 md:text-center">
+                      <span className="font-bold md:hidden">Submitted · </span>
+                      {formatDate(submission.createdAt)}
+                    </div>
+                    <div className="mt-2 text-xs font-black text-action md:mt-0 md:text-center">
+                      <span className="font-bold text-muted md:hidden">Reward · </span>
+                      {rewardLabel(submission)}
+                    </div>
+                    <div className="mt-2 md:mt-0 md:text-center">
+                      <span className="text-[11px] font-bold text-muted md:hidden">Payout · </span>
+                      {submission.payoutTxHash ? (
+                        <span className="inline-flex rounded-full border border-action/25 bg-action/10 px-2 py-0.5 text-[10px] font-black text-action">
+                          Paid
+                        </span>
+                      ) : (
+                        <span className="text-xs font-bold text-muted">—</span>
+                      )}
+                    </div>
+                    <div className="mt-3 md:mt-0 md:text-right">
+                      <span className="inline-flex items-center rounded-md border border-action/40 bg-action/15 px-2.5 py-1 text-[11px] font-black text-action">
+                        Review
+                        <span aria-hidden="true" className="ml-1">→</span>
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+
+              {visible.length > limit ? (
+                <div className="mt-4 flex justify-center">
+                  <button type="button" onClick={() => setLimit((value) => value + PAGE)} className="btn-secondary">
+                    Show more ({visible.length - limit} remaining)
+                  </button>
+                </div>
+              ) : null}
+            </div>
           ) : (
-            <EmptyState title="No feedback yet" body="Share the public bounty link with contributors." />
+            <EmptyState
+              title={filter === "all" ? "No feedback yet" : `No ${filter} submissions`}
+              body={
+                filter === "all"
+                  ? "Share the public bounty link with contributors."
+                  : "Switch tabs to see submissions in other states."
+              }
+            />
           )}
-        </div>
+        </section>
       </main>
-      <RejectSubmissionModal
-        open={Boolean(rejectTarget)}
-        busy={isRejecting}
-        error={rejectError}
-        onCancel={cancelReject}
-        onConfirm={confirmReject}
-      />
     </>
   );
 }

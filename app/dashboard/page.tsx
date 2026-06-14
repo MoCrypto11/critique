@@ -281,9 +281,9 @@ function CreatedBountyRow({
     <div className={cn(rowShell, createdGrid)}>
       <div className="min-w-0">
         <Link
-          href={`/bounty/${bounty.id}`}
+          href={`/bounty/${bounty.id}/review`}
           className="focus-ring line-clamp-2 text-sm font-black leading-snug text-ink underline-offset-2 transition-colors hover:text-action hover:underline"
-          title={`Open public page: ${bounty.title}`}
+          title={`Review submissions: ${bounty.title}`}
         >
           {bounty.title}
         </Link>
@@ -369,7 +369,7 @@ type ActivityEvent = {
 function activityHref(event: ActivityEvent) {
   if (event.kind === "contributed") return `/bounty/${event.bountyId}`;
   return event.submissionId
-    ? `/bounty/${event.bountyId}/review#submission-${event.submissionId}`
+    ? `/bounty/${event.bountyId}/review/${event.submissionId}`
     : `/bounty/${event.bountyId}/review`;
 }
 
