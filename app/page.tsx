@@ -213,9 +213,9 @@ export default function HomePage() {
                   </p>
 
                   <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-white/10 pt-2.5 text-[11px] font-semibold">
-                    <span className="text-[#7fe0b6]">$5,000 USDC reward pool</span>
+                    <span className="text-[#7fe0b6]">120 USDC reward pool</span>
                     <span className="text-muted/50">·</span>
-                    <span className="text-muted">50 submissions</span>
+                    <span className="text-muted">20 submissions</span>
                     <span className="text-muted/50">·</span>
                     <span className="text-muted">3 feedback types</span>
                   </div>

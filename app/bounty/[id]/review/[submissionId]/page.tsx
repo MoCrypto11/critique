@@ -6,6 +6,7 @@ import { getAddress } from "viem";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { AppHeader } from "@/components/AppHeader";
 import { EmptyState } from "@/components/EmptyState";
+import { FounderAccess, FounderGate } from "@/components/FounderGate";
 import { MockModeBanner } from "@/components/MockModeBanner";
 import { RejectSubmissionModal } from "@/components/RejectSubmissionModal";
 import { SubmissionCard } from "@/components/SubmissionCard";
@@ -20,6 +21,7 @@ import {
   rejectLocalSubmission,
   addTxHashToBounty
 } from "@/lib/storage";
+import { isFounderWallet } from "@/lib/utils";
 
 export default function SubmissionReviewPage({ params }: { params: { id: string; submissionId: string } }) {
   const { address, isConnected } = useAccount();
@@ -34,12 +36,17 @@ export default function SubmissionReviewPage({ params }: { params: { id: string;
   const [rejectError, setRejectError] = useState("");
   const [isRejecting, setIsRejecting] = useState(false);
 
+  // Founder gate: only the founder of this bounty may load submission data.
   const refresh = useCallback(async () => {
-    const [nextBounty, nextSubmissions] = await Promise.all([getLocalBounty(params.id), listSubmissions(params.id)]);
+    const nextBounty = await getLocalBounty(params.id);
     setBounty(nextBounty);
-    setSubmissions(nextSubmissions);
+    if (nextBounty && isFounderWallet(nextBounty.founderAddress, address)) {
+      setSubmissions(await listSubmissions(params.id));
+    } else {
+      setSubmissions([]);
+    }
     setIsLoaded(true);
-  }, [params.id]);
+  }, [params.id, address]);
 
   useEffect(() => {
     void refresh().catch((caught) => {
@@ -142,6 +149,28 @@ export default function SubmissionReviewPage({ params }: { params: { id: string;
     }
   }
 
+  const walletConnected = Boolean(address) || isConnected;
+  const access: FounderAccess = !isLoaded
+    ? "loading"
+    : !bounty
+      ? "not-found"
+      : !walletConnected
+        ? "no-wallet"
+        : !isFounderWallet(bounty.founderAddress, address)
+          ? "not-founder"
+          : "authorized";
+
+  if (access !== "authorized" || !bounty) {
+    return (
+      <>
+        <AppHeader />
+        <main className="page-shell">
+          <FounderGate access={access} bountyId={params.id} />
+        </main>
+      </>
+    );
+  }
+
   return (
     <>
       <AppHeader />
@@ -153,15 +182,7 @@ export default function SubmissionReviewPage({ params }: { params: { id: string;
           <span aria-hidden="true">←</span> Back to submissions
         </Link>
 
-        {!isLoaded ? (
-          <div className="mt-6">
-            <EmptyState title="Loading submission" body="Preparing the submission details." />
-          </div>
-        ) : !bounty ? (
-          <div className="mt-6">
-            <EmptyState title="Bounty not found" body="Create a bounty or try the example bounty." />
-          </div>
-        ) : !submission ? (
+        {!submission ? (
           <div className="mt-6">
             <EmptyState title="Submission not found" body="This submission is not part of this bounty." />
           </div>

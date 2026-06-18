@@ -541,6 +541,62 @@ export async function listSubmissions(bountyId: string) {
   return getSubmissions().filter((submission) => submission.bountyId === bountyId);
 }
 
+// Content-free summary for PUBLIC consumers (the public bounty page only needs
+// status / type / wallet to compute slots and dedup). It never selects the
+// off-chain feedback answer columns, so feedback content is never sent to
+// public clients. NOTE: the real enforcement boundary is Supabase RLS — see
+// SECURITY.md. This only limits what the app fetches.
+export type SubmissionSummary = {
+  id: string;
+  bountyId: string;
+  status: FeedbackSubmission["status"];
+  feedbackType?: FeedbackType;
+  expectedRewardUSDC?: string;
+  createdAt: string;
+};
+
+export async function listSubmissionSummaries(bountyId: string): Promise<SubmissionSummary[]> {
+  if (shouldUseSupabase() && supabase && bountyId !== "demo") {
+    const client = supabase;
+    return withSupabaseErrors("list submission summaries", async () => {
+      const { data, error } = await client
+        .from("submissions")
+        .select("id, bounty_id, status, feedback_type, expected_reward_usdc, created_at")
+        .eq("bounty_id", bountyId)
+        .order("created_at", { ascending: false });
+      throwSupabaseResponseError("list submission summaries", error);
+      return (
+        data as Array<{
+          id: string;
+          bounty_id: string;
+          status: FeedbackSubmission["status"];
+          feedback_type: FeedbackType | null;
+          expected_reward_usdc: string | null;
+          created_at: string;
+        }>
+      ).map((row) => ({
+        id: row.id,
+        bountyId: row.bounty_id,
+        status: row.status,
+        feedbackType: row.feedback_type || undefined,
+        expectedRewardUSDC: row.expected_reward_usdc || undefined,
+        createdAt: row.created_at
+      }));
+    });
+  }
+
+  return getSubmissions()
+    .filter((submission) => submission.bountyId === bountyId)
+    .map((submission) => ({
+      id: submission.id,
+      bountyId: submission.bountyId,
+      status: submission.status,
+      feedbackType: submission.feedbackType,
+      expectedRewardUSDC: submission.expectedRewardUSDC,
+      createdAt: submission.createdAt
+    }));
+}
+
 export async function listSubmissionsByTester(testerWallet: string) {
   if (!testerWallet) return [];
 

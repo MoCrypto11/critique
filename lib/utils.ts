@@ -22,6 +22,12 @@ export function looksLikeAddress(value: string) {
   return /^0x[a-fA-F0-9]{40}$/.test(value);
 }
 
+// Founder-access check used to gate founder-only pages (review / dashboard).
+// Case-insensitive address match; requires a stored founder address.
+export function isFounderWallet(founderAddress?: string, address?: string) {
+  return Boolean(founderAddress && address && founderAddress.toLowerCase() === address.toLowerCase());
+}
+
 export function copyText(value: string) {
   if (typeof navigator !== "undefined" && navigator.clipboard) {
     return navigator.clipboard.writeText(value);

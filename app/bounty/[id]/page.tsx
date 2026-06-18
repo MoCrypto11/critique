@@ -22,11 +22,12 @@ import {
   FeedbackSubmission,
   getDemoBounty,
   getLocalBounty,
-  listSubmissions
+  listSubmissionSummaries,
+  SubmissionSummary
 } from "@/lib/storage";
 import { looksLikeAddress } from "@/lib/utils";
 
-function deriveStatus(bounty: BountyMetadata, submissions: FeedbackSubmission[]) {
+function deriveStatus(bounty: BountyMetadata, submissions: SubmissionSummary[]) {
   if (bounty.status === "closed") return "closed";
   if (new Date(bounty.deadline).getTime() <= Date.now()) return "expired";
   if (submissions.filter((submission) => submission.status !== "rejected").length >= bounty.maxSubmissions) return "full";
@@ -44,7 +45,7 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
   const [bounty, setBounty] = useState<BountyMetadata | undefined>(() =>
     params.id === "demo" ? getDemoBounty() : undefined
   );
-  const [submissions, setSubmissions] = useState<FeedbackSubmission[]>([]);
+  const [submissions, setSubmissions] = useState<SubmissionSummary[]>([]);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,7 +59,10 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
 
     async function loadBounty() {
       try {
-        const [nextBounty, nextSubmissions] = await Promise.all([getLocalBounty(params.id), listSubmissions(params.id)]);
+        const [nextBounty, nextSubmissions] = await Promise.all([
+          getLocalBounty(params.id),
+          listSubmissionSummaries(params.id)
+        ]);
         if (cancelled) return;
         setBounty(nextBounty);
         setSubmissions(nextSubmissions);
@@ -222,10 +226,9 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
       }
     }
 
-    if (submissions.some((submission) => submission.testerWallet.toLowerCase() === testerWallet.toLowerCase())) {
-      return setError("This wallet already submitted feedback for this bounty.");
-    }
-
+    // Duplicate-wallet prevention is enforced at the database level (a unique
+    // index on (bounty_id, lower(tester_wallet)) — see SECURITY.md) so the
+    // public page never needs to fetch contributors' wallet addresses.
     setIsSubmitting(true);
     try {
       await addSubmission({
@@ -256,7 +259,7 @@ export default function PublicBountyPage({ params }: { params: { id: string } })
         estimatedDifficulty: estimatedDifficulty || undefined,
         referenceLink: referenceLink || undefined
       });
-      setSubmissions(await listSubmissions(bounty.id));
+      setSubmissions(await listSubmissionSummaries(bounty.id));
       formElement.reset();
       // UI only: collapse auto-grown textareas back to their default height
       // after the values are cleared, so the form doesn't keep tall empty boxes.

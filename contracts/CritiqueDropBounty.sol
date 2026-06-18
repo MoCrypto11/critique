@@ -1,10 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+// ============================================================================
+// LEGACY / DEPRECATED — kept for reference and history only.
+// The application deploys and integrates with CritiqueDropBountyV2
+// (see contracts/CritiqueDropBountyV2.sol, scripts/deploy.ts, and the ABI in
+// lib/contracts.ts). Do NOT use this V1 contract for new deployments.
+// ============================================================================
+
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
+/// @dev DEPRECATED: superseded by CritiqueDropBountyV2. Reference only.
 contract CritiqueDropBounty is ReentrancyGuard {
     using SafeERC20 for IERC20;
 

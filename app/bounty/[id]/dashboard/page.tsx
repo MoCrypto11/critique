@@ -6,7 +6,7 @@ import { getAddress } from "viem";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { AppHeader } from "@/components/AppHeader";
 import { CopyLinkButton } from "@/components/CopyLinkButton";
-import { EmptyState } from "@/components/EmptyState";
+import { FounderAccess, FounderGate } from "@/components/FounderGate";
 import { MockModeBanner } from "@/components/MockModeBanner";
 import { OnChainReceipts } from "@/components/OnChainReceipts";
 import { StatCard } from "@/components/StatCard";
@@ -26,6 +26,7 @@ import {
   listSubmissions,
   updateLocalBounty
 } from "@/lib/storage";
+import { isFounderWallet } from "@/lib/utils";
 
 // Compact USDC label for dashboard cards (Arc testnet context lives in the
 // global network badge / footer, so cards stay clean: "12 USDC", "0 USDC").
@@ -67,14 +68,16 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
     );
   }
 
+  // Founder gate: only the bounty founder may load submission/management data.
   const refresh = useCallback(async () => {
     const nextBounty = await getLocalBounty(params.id);
-    const nextSubmissions = nextBounty ? await listSubmissions(nextBounty.id) : [];
+    const nextSubmissions =
+      nextBounty && isFounderWallet(nextBounty.founderAddress, address) ? await listSubmissions(nextBounty.id) : [];
     setBounty(nextBounty);
     setSubmissions(nextSubmissions);
     setPublicLink(`${window.location.origin}/bounty/${params.id}`);
     setIsLoaded(true);
-  }, [params.id]);
+  }, [params.id, address]);
 
   useEffect(() => {
     void refresh().catch((caught) => {
@@ -152,23 +155,23 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
     }
   }
 
-  if (!isLoaded) {
-    return (
-      <>
-        <AppHeader />
-        <main className="page-shell">
-          <EmptyState title="Loading dashboard" body="Preparing bounty stats and payout receipts." />
-        </main>
-      </>
-    );
-  }
+  const walletConnected = Boolean(address) || isConnected;
+  const access: FounderAccess = !isLoaded
+    ? "loading"
+    : !bounty
+      ? "not-found"
+      : !walletConnected
+        ? "no-wallet"
+        : !isFounderWallet(bounty.founderAddress, address)
+          ? "not-founder"
+          : "authorized";
 
-  if (!bounty) {
+  if (access !== "authorized" || !bounty) {
     return (
       <>
         <AppHeader />
         <main className="page-shell">
-          <EmptyState title="Bounty not found" body="Create a bounty or try the example bounty." />
+          <FounderGate access={access} bountyId={params.id} />
         </main>
       </>
     );

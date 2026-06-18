@@ -142,3 +142,6 @@ NEXT_PUBLIC_CRITIQUE_DROP_CONTRACT=0x...
   git. Only `.env.example` with placeholder values is tracked.
 - This project makes **no claims** of audits, partnerships, traction, or
   mainnet readiness.
+
+See [SECURITY.md](SECURITY.md) for the access-control model and the **required
+Supabase RLS policies** (the public anon key is safe only with RLS enabled).

@@ -2,13 +2,15 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useAccount } from "wagmi";
 import { AppHeader } from "@/components/AppHeader";
 import { BountyStatusBadge } from "@/components/BountyStatusBadge";
 import { CopyLinkButton } from "@/components/CopyLinkButton";
 import { EmptyState } from "@/components/EmptyState";
+import { FounderAccess, FounderGate } from "@/components/FounderGate";
 import { formatUSDC, getFeedbackTypeLabel, getRewardForType, normalizeFeedbackRewards } from "@/lib/feedbackRewards";
 import { BountyMetadata, FeedbackSubmission, getLocalBounty, listSubmissions } from "@/lib/storage";
-import { cn, shortAddress } from "@/lib/utils";
+import { cn, isFounderWallet, shortAddress } from "@/lib/utils";
 
 type Filter = "pending" | "approved" | "rejected" | "all";
 
@@ -58,6 +60,7 @@ function FilterTab({
 }
 
 export default function ReviewPage({ params }: { params: { id: string } }) {
+  const { address, isConnected } = useAccount();
   const [bounty, setBounty] = useState<BountyMetadata>();
   const [submissions, setSubmissions] = useState<FeedbackSubmission[]>([]);
   const [error, setError] = useState("");
@@ -66,12 +69,18 @@ export default function ReviewPage({ params }: { params: { id: string } }) {
   const [limit, setLimit] = useState(PAGE);
   const [publicLink, setPublicLink] = useState("");
 
+  // Founder gate: load the bounty first, and only fetch submissions when the
+  // connected wallet is the founder. Non-founders never receive submission data.
   const refresh = useCallback(async () => {
-    const [nextBounty, nextSubmissions] = await Promise.all([getLocalBounty(params.id), listSubmissions(params.id)]);
+    const nextBounty = await getLocalBounty(params.id);
     setBounty(nextBounty);
-    setSubmissions(nextSubmissions);
+    if (nextBounty && isFounderWallet(nextBounty.founderAddress, address)) {
+      setSubmissions(await listSubmissions(params.id));
+    } else {
+      setSubmissions([]);
+    }
     setIsLoaded(true);
-  }, [params.id]);
+  }, [params.id, address]);
 
   useEffect(() => {
     void refresh().catch((caught) => {
@@ -118,12 +127,23 @@ export default function ReviewPage({ params }: { params: { id: string } }) {
     return filter === "all" ? sorted : sorted.filter((submission) => submission.status === filter);
   }, [submissions, filter]);
 
-  if (isLoaded && !bounty) {
+  const walletConnected = Boolean(address) || isConnected;
+  const access: FounderAccess = !isLoaded
+    ? "loading"
+    : !bounty
+      ? "not-found"
+      : !walletConnected
+        ? "no-wallet"
+        : !isFounderWallet(bounty.founderAddress, address)
+          ? "not-founder"
+          : "authorized";
+
+  if (access !== "authorized") {
     return (
       <>
         <AppHeader />
         <main className="page-shell">
-          <EmptyState title="Bounty not found" body="Create a bounty or try the example bounty." />
+          <FounderGate access={access} bountyId={params.id} />
         </main>
       </>
     );
