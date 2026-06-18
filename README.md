@@ -2,6 +2,8 @@
 
 **Feedback bounties for product reviews on Arc.**
 
+_Turn product feedback into funded bounties for smarter product decisions._
+
 Critique helps founders and early teams turn product feedback into funded
 bounties. Instead of chasing scattered comments across DMs, Discord, forms, and
 group chats, a founder creates one bounty link, collects structured submissions,
