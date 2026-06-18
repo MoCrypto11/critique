@@ -2,146 +2,164 @@
 
 **Feedback bounties for product reviews on Arc.**
 
-Critique lets founders post paid bounties for structured product feedback and
-pay contributors in USDC on the [Arc](https://arc.network) testnet. Founders
-fund a bounty, share a public link, collect structured feedback, then review
-each submission and approve the useful ones for payout — with on-chain receipts
-for funding and payouts.
+Critique helps founders and early teams turn product feedback into funded
+bounties. Instead of chasing scattered comments across DMs, Discord, forms, and
+group chats, a founder creates one bounty link, collects structured submissions,
+reviews feedback one by one, and approves USDC rewards for the feedback that
+actually helps.
 
-> **Stage: Arc testnet / experimental.** This is an experimental project running
-> on the Arc **testnet**. It uses testnet USDC only — no mainnet funds are
-> involved. See [Security & disclaimers](#security--disclaimers).
-
-Live site: **https://usecritique.xyz**
+Current deployment: **Arc testnet** · Live app: **https://usecritique.xyz**
 
 ---
 
-## What it does
+## Why Critique
 
-- **Founders** create a focused feedback bounty for their product, choose
-  feedback formats and per-format rewards, and fund it with testnet USDC.
-- **Contributors** open the public bounty link and submit structured feedback
-  (no wallet connection required to submit — they just provide a payout wallet
-  address).
-- **Founders** review submissions one at a time, approve and pay the useful
-  ones, or reject with a reason.
-- Funding and approved payouts are recorded on-chain, with **Arc Explorer**
-  receipt links surfaced in the founder dashboard when available.
+Early products need feedback before they ship, but most feedback workflows are
+messy:
 
-## Who it's for
+- **Forms** collect answers, but they create no incentive to think hard.
+- **DMs** are fast, but impossible to organize or compare.
+- **Community threads** can be gold, but they get buried in minutes.
 
-- **Founders / product teams** who want honest, structured feedback and are
-  willing to pay for signal instead of noise.
-- **Contributors / testers** who want to get paid for thoughtful product
-  feedback.
+Critique turns that into a focused, incentivized loop:
 
-## How the flow works
+```
+brief → submit → review → approve → reward
+```
 
-1. **Create a bounty** — title, product URL, instructions, feedback formats,
-   per-format reward amounts, slots, and deadline.
-2. **Fund it** — approve and fund the bounty with testnet USDC (one
-   create-and-fund transaction).
-3. **Share the public link** — contributors open it and submit feedback.
-4. **Submit feedback** — contributors fill a guided form and provide a payout
-   wallet address.
-5. **Founder review** — submissions appear in a review overview (Pending /
-   Approved / Rejected / All); the founder opens one submission at a time.
-6. **Approve & pay or reject** — approving pays the configured USDC reward to
-   the contributor's payout wallet; rejecting records a reason.
-7. **On-chain receipts** — funding and approved-payout transactions are shown
-   with shortened hashes, copy, and **View on Arc Explorer** links when
-   available. Feedback content stays off-chain.
+Founders pay only for feedback they decide is useful, and contributors get paid
+for signal instead of noise.
+
+## How it works
+
+1. **Create a bounty.** Write a product brief, choose the feedback types you
+   accept, set reward amounts, and fund the bounty.
+2. **Share one link.** Send the public bounty page to users, testers,
+   contributors, or your community.
+3. **Submit feedback.** Contributors fill a guided, structured form and provide
+   a payout wallet — no wallet connection required to submit.
+4. **Review submissions.** The founder works through submissions from the
+   internal founder review page, one at a time.
+5. **Approve or reject.** Useful feedback is approved and rewarded; weak or
+   off-topic feedback is rejected with a reason.
+6. **Track receipts.** Funding and approved payouts surface as Arc Explorer
+   receipts where available.
+
+## What you can do today
+
+- Create a feedback bounty with a product brief and deadline
+- Configure accepted feedback types and per-type reward amounts
+- Share a single public bounty link
+- Submit structured product feedback as a contributor
+- Review submissions from the founder review page
+- Approve and pay, or reject with a reason
+- Track funding and payout receipts through Arc Explorer
+
+## Architecture
+
+Critique separates **feedback content** from **payment settlement**:
+
+- Feedback content is stored **off-chain** so it stays readable and easy to
+  review.
+- Approval status and payout metadata are handled by the app.
+- Funding and approved payouts settle through the bounty contract on Arc.
+- On-chain receipts make funding and payout activity easy to verify.
+
+```
+Founder creates bounty
+  → Contributor submits feedback
+    → Founder reviews submission
+      → Approved submission triggers a USDC payout
+        → Receipt appears on Arc Explorer
+```
 
 ## Tech stack
 
-- **Next.js** (App Router) + **TypeScript**
-- **Tailwind CSS** (dark glass design system)
-- **Supabase** for shared bounty/submission persistence
-- **Arc testnet** smart contract for bounty funding and payout state
-- **viem / wagmi** wallet integration and **USDC** reward flow
+- Next.js (App Router)
+- TypeScript
+- Tailwind CSS
+- Supabase
+- Arc testnet
+- viem / wagmi
+- Solidity
+- Hardhat
+- USDC reward flow
 
-## Local setup
+## Smart contracts
 
-Requirements: Node.js 18+ and npm.
+The bounty contract (`CritiqueDropBountyV2`, source in [`/contracts`](contracts))
+supports:
+
+- Creating and funding bounties in a single transaction
+- Reward amounts configured per feedback type
+- Approving submissions and paying contributors
+- Closing bounties
+- Refunding unused funds when available
+
+Contract sources are public so anyone can read and review them.
+
+## Local development
 
 ```bash
-# 1. Install dependencies
 npm install
-
-# 2. Create your local env file from the template
 cp .env.example .env.local
-# then fill in the values in .env.local (see the table below)
-
-# 3. Run the dev server
 npm run dev
 ```
 
-Then open http://localhost:3000.
+Then open:
 
-### Environment variables
+```text
+http://localhost:3000
+```
 
-Copy `.env.example` to `.env.local` and fill in your own values. **Never commit
-`.env.local`** — it is gitignored.
+The app runs in mock mode out of the box (no contract required) — set
+`NEXT_PUBLIC_ENABLE_MOCK_MODE=true` and you can explore the full flow locally.
 
-| Variable | Purpose |
-| --- | --- |
-| `NEXT_PUBLIC_ARC_RPC_URL` | Arc testnet RPC endpoint |
-| `NEXT_PUBLIC_ARC_CHAIN_ID` | Arc testnet chain id |
-| `NEXT_PUBLIC_ARC_EXPLORER_URL` | Arc Explorer base URL (for receipt links) |
-| `NEXT_PUBLIC_USDC_ADDRESS` | Testnet USDC token address |
-| `NEXT_PUBLIC_CRITIQUE_DROP_CONTRACT` | Deployed bounty contract address (leave empty to run in mock mode) |
-| `NEXT_PUBLIC_ENABLE_MOCK_MODE` | `true` to run the UI without a contract |
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon (public) key |
-| `PRIVATE_KEY` | **Local only.** Deployer key for contract scripts. Never commit this. |
+## Environment variables
 
-The `NEXT_PUBLIC_*` values are inlined into the client bundle by design (the
-Supabase **anon** key is public and protected by row-level security). `PRIVATE_KEY`
-is used only by local deployment scripts (`hardhat.config.ts`) and is read from
-your environment — it is never referenced in app/frontend code.
+| Variable                             | Purpose                                                |
+| ------------------------------------ | ------------------------------------------------------ |
+| `NEXT_PUBLIC_ARC_RPC_URL`            | Arc RPC endpoint                                       |
+| `NEXT_PUBLIC_ARC_CHAIN_ID`           | Arc chain id                                           |
+| `NEXT_PUBLIC_ARC_EXPLORER_URL`       | Arc Explorer base URL                                  |
+| `NEXT_PUBLIC_USDC_ADDRESS`           | USDC token address                                     |
+| `NEXT_PUBLIC_CRITIQUE_DROP_CONTRACT` | Deployed bounty contract address                       |
+| `NEXT_PUBLIC_ENABLE_MOCK_MODE`       | Enables local mock mode when no contract is configured |
+| `NEXT_PUBLIC_SUPABASE_URL`           | Supabase project URL                                   |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY`      | Supabase anon key                                      |
+| `PRIVATE_KEY`                        | Local deployer key for scripts only                    |
 
-### Build & lint
+`NEXT_PUBLIC_*` variables are exposed to the browser by design — do not put
+private secrets in them. `.env.local` should stay local and must not be
+committed.
+
+## Available scripts
 
 ```bash
-npm run build
-npm run lint
+npm run dev         # start the Next.js dev server
+npm run build       # production build
+npm run lint        # lint the project
+npm run compile     # compile the smart contracts (Hardhat)
+npm run test        # run the contract test suite
+npm run deploy:arc  # deploy the bounty contract to Arc testnet
 ```
 
-### Smart contract (optional)
+## Status and security
 
-The app runs without a contract in mock mode (`NEXT_PUBLIC_ENABLE_MOCK_MODE=true`).
-To work with the on-chain bounty contract:
+Critique is currently deployed on **Arc testnet**. The contracts are public for
+testing and review, and should not be treated as audited production contracts.
 
-```bash
-npx hardhat compile                                   # compile
-npx hardhat test                                      # run contract tests
-npx hardhat run scripts/deploy.ts --network arcTestnet # deploy (needs PRIVATE_KEY in env)
-```
+- Feedback content is stored off-chain; funding and payout receipts are recorded
+  on-chain where available.
+- `.env.local` and private keys must never be committed.
+- Supabase service role keys must never reach the client.
 
-After deploying, set the deployed address in `.env.local`:
+See [SECURITY.md](SECURITY.md) for the access-control model and the required
+Supabase row-level security policies.
 
-```env
-NEXT_PUBLIC_CRITIQUE_DROP_CONTRACT=0x...
-```
+## Links
 
-## Notes
-
-- Feedback content is stored **off-chain** (Supabase); the contract handles
-  bounty funding and payout state only.
-- Approved submissions are paid the reward configured for the selected feedback
-  format.
-- Arc testnet uses USDC as native gas; the ERC-20 USDC interface for approvals
-  and payouts uses 6 decimals.
-
-## Security & disclaimers
-
-- **Experimental, Arc testnet only.** No mainnet funds are involved; rewards use
-  testnet USDC.
-- **Smart contracts are not audited.** Use at your own risk.
-- **Never commit secrets.** `.env.local` (and any real keys) must stay out of
-  git. Only `.env.example` with placeholder values is tracked.
-- This project makes **no claims** of audits, partnerships, traction, or
-  mainnet readiness.
-
-See [SECURITY.md](SECURITY.md) for the access-control model and the **required
-Supabase RLS policies** (the public anon key is safe only with RLS enabled).
+- **Live app** — https://usecritique.xyz
+- **Repository** — https://github.com/MoCrypto11/critique
+- **Arc** — https://arc.network
+- **Arc Explorer** — https://testnet.arcscan.app
