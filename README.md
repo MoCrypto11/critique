@@ -127,6 +127,8 @@ The app runs in mock mode out of the box (no contract required) — set
 | `NEXT_PUBLIC_USDC_ADDRESS`           | USDC token address                                     |
 | `NEXT_PUBLIC_CRITIQUE_DROP_CONTRACT` | Deployed bounty contract address                       |
 | `NEXT_PUBLIC_ENABLE_MOCK_MODE`       | Enables local mock mode when no contract is configured |
+| `NEXT_PUBLIC_ENABLE_ARC_MEMOS`       | Enables Arc transaction memos on approvals (off by default) |
+| `NEXT_PUBLIC_ARC_MEMO_CONTRACT`      | Arc Memo contract address                              |
 | `NEXT_PUBLIC_SUPABASE_URL`           | Supabase project URL                                   |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY`      | Supabase anon key                                      |
 | `PRIVATE_KEY`                        | Local deployer key for scripts only                    |
@@ -153,6 +155,9 @@ testing and review, and should not be treated as audited production contracts.
 
 - Feedback content is stored off-chain; funding and payout receipts are recorded
   on-chain where available.
+- Arc transaction memo support is prepared behind a feature flag
+  (`NEXT_PUBLIC_ENABLE_ARC_MEMOS`) to attach bounty and submission context to
+  approved payouts for cleaner reconciliation.
 - `.env.local` and private keys must never be committed.
 - Supabase service role keys must never reach the client.
 

@@ -110,7 +110,9 @@ export function OnChainReceipts({
                 <HashRow
                   key={submission.id}
                   hash={submission.payoutTxHash as string}
-                  sub={`To ${shortAddress(submission.testerWallet)} · ${formatUSDC(rewardFor(submission))} USDC`}
+                  sub={`To ${shortAddress(submission.testerWallet)} · ${formatUSDC(rewardFor(submission))} USDC${
+                    submission.memoStatus === "attached" ? " · Arc memo" : ""
+                  }`}
                 />
               ))}
               {payouts.length > PAYOUT_PAGE ? (

@@ -71,6 +71,20 @@ create unique index if not exists submissions_unique_wallet_per_bounty
   on public.submissions (bounty_id, lower(tester_wallet));
 ```
 
+### Optional: Arc memo columns
+
+If you enable Arc transaction memos (`NEXT_PUBLIC_ENABLE_ARC_MEMOS=true`), apply
+this migration so approved submissions can store their memo reference. Until it
+is applied, memo writes fail silently (best-effort) and the payout is
+unaffected:
+
+```sql
+alter table public.submissions
+  add column if not exists memo_id     text,
+  add column if not exists memo_tx_hash text,
+  add column if not exists memo_status  text;
+```
+
 ## Known limitation — founder-only reads
 
 **Goal:** only a bounty's founder should read that bounty's submission feedback.

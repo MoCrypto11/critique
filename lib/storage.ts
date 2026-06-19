@@ -57,6 +57,11 @@ export type FeedbackSubmission = {
   submissionHash: string;
   payoutTxHash?: string;
   createdAt: string;
+  // Arc transaction memo (optional; populated only when memos are enabled and
+  // the companion memo tx is sent). Requires the migration in SECURITY.md.
+  memoId?: string;
+  memoTxHash?: string;
+  memoStatus?: "attached" | "sent" | "failed";
 };
 
 export class SharedDatabaseSaveError extends Error {
@@ -295,7 +300,11 @@ function toSubmission(row: SubmissionRow): FeedbackSubmission {
     rejectionReason: row.rejection_reason || undefined,
     submissionHash: row.submission_hash,
     payoutTxHash: row.payout_tx_hash || undefined,
-    createdAt: row.created_at
+    createdAt: row.created_at,
+    // Optional memo columns — present only after the SECURITY.md migration.
+    memoId: (row as { memo_id?: string }).memo_id || undefined,
+    memoTxHash: (row as { memo_tx_hash?: string }).memo_tx_hash || undefined,
+    memoStatus: (row as { memo_status?: FeedbackSubmission["memoStatus"] }).memo_status || undefined
   };
 }
 
@@ -664,6 +673,39 @@ export async function rejectLocalSubmission(bountyId: string, submissionId: stri
   const next = submissions.map((submission) =>
     submission.bountyId === bountyId && submission.id === submissionId
       ? { ...submission, status: "rejected" as const, rejectionReason }
+      : submission
+  );
+  saveSubmissions(next);
+  return next.find((submission) => submission.id === submissionId);
+}
+
+// Best-effort memo annotation. Writes the optional memo columns; if the
+// migration in SECURITY.md has not been applied, the Supabase update throws and
+// the caller is expected to swallow it (the payout has already settled).
+export async function attachSubmissionMemo(
+  bountyId: string,
+  submissionId: string,
+  memo: { memoId: string; memoTxHash: string; memoStatus: NonNullable<FeedbackSubmission["memoStatus"]> }
+) {
+  if (shouldUseSupabase() && supabase && bountyId !== "demo") {
+    const client = supabase;
+    return withSupabaseErrors("attach submission memo", async () => {
+      const { data, error } = await client
+        .from("submissions")
+        .update({ memo_id: memo.memoId, memo_tx_hash: memo.memoTxHash, memo_status: memo.memoStatus })
+        .eq("bounty_id", bountyId)
+        .eq("id", submissionId)
+        .select("*")
+        .maybeSingle();
+      throwSupabaseResponseError("attach submission memo", error);
+      return data ? toSubmission(data as SubmissionRow) : undefined;
+    });
+  }
+
+  const submissions = getSubmissions();
+  const next = submissions.map((submission) =>
+    submission.bountyId === bountyId && submission.id === submissionId
+      ? { ...submission, memoId: memo.memoId, memoTxHash: memo.memoTxHash, memoStatus: memo.memoStatus }
       : submission
   );
   saveSubmissions(next);

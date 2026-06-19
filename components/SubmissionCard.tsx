@@ -1,5 +1,6 @@
 import { FeedbackSubmission } from "@/lib/storage";
 import { getFeedbackTypeLabel } from "@/lib/feedbackRewards";
+import { shortAddress } from "@/lib/utils";
 import { BountyStatusBadge } from "./BountyStatusBadge";
 import { TxHashLink } from "./TxHashLink";
 
@@ -132,6 +133,52 @@ export function SubmissionCard({
           <p className="rounded-lg border border-action/20 bg-action/10 p-3 font-semibold text-action">
             Receipt: <TxHashLink hash={submission.payoutTxHash} />
           </p>
+        ) : null}
+
+        {submission.status === "approved" ? (
+          submission.memoStatus === "attached" || submission.memoStatus === "sent" ? (
+            <div className="rounded-lg border border-action/20 bg-action/10 p-3">
+              <p className="text-sm font-semibold text-action">Arc memo attached for payout reconciliation.</p>
+              <dl className="mt-2.5 grid gap-1.5 text-xs">
+                <div className="flex flex-wrap gap-x-2">
+                  <dt className="font-bold text-ink">Memo id</dt>
+                  <dd className="font-mono text-muted">{shortAddress(submission.memoId)}</dd>
+                </div>
+                {submission.memoTxHash ? (
+                  <div className="flex flex-wrap gap-x-2">
+                    <dt className="font-bold text-ink">Memo tx</dt>
+                    <dd><TxHashLink hash={submission.memoTxHash} /></dd>
+                  </div>
+                ) : null}
+                <div className="flex flex-wrap gap-x-2">
+                  <dt className="font-bold text-ink">Bounty</dt>
+                  <dd className="break-all font-mono text-muted">{submission.bountyId}</dd>
+                </div>
+                <div className="flex flex-wrap gap-x-2">
+                  <dt className="font-bold text-ink">Submission</dt>
+                  <dd className="break-all font-mono text-muted">{submission.id}</dd>
+                </div>
+                <div className="flex flex-wrap gap-x-2">
+                  <dt className="font-bold text-ink">Feedback type</dt>
+                  <dd className="text-muted">{getFeedbackTypeLabel(submission.feedbackType)}</dd>
+                </div>
+                {rewardLabel ? (
+                  <div className="flex flex-wrap gap-x-2">
+                    <dt className="font-bold text-ink">Reward</dt>
+                    <dd className="text-muted">{rewardLabel}</dd>
+                  </div>
+                ) : null}
+                <div className="flex flex-wrap gap-x-2">
+                  <dt className="font-bold text-ink">Payout wallet</dt>
+                  <dd className="font-mono text-muted">{shortAddress(submission.testerWallet)}</dd>
+                </div>
+              </dl>
+            </div>
+          ) : (
+            <p className="rounded-lg border border-white/10 bg-white/[0.03] p-3 text-xs text-muted">
+              No Arc memo attached for this payout.
+            </p>
+          )
         ) : null}
       </div>
 

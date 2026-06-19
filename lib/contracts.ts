@@ -1,6 +1,29 @@
 export const CRITIQUE_DROP_CONTRACT = process.env.NEXT_PUBLIC_CRITIQUE_DROP_CONTRACT || "";
 export const ENABLE_MOCK_MODE = process.env.NEXT_PUBLIC_ENABLE_MOCK_MODE !== "false";
 
+// Arc transaction memos (feature-flagged, off by default). When enabled, a
+// successful direct approveSubmission payout is followed by a best-effort
+// companion transaction to the Arc Memo contract that records reconciliation
+// metadata. It never blocks or reverts the payout. See SECURITY.md / README.
+export const ENABLE_ARC_MEMOS = process.env.NEXT_PUBLIC_ENABLE_ARC_MEMOS === "true";
+export const ARC_MEMO_CONTRACT =
+  process.env.NEXT_PUBLIC_ARC_MEMO_CONTRACT || "0x5294E9927c3306DcBaDb03fe70b92e01cCede505";
+
+export const arcMemoAbi = [
+  {
+    type: "function",
+    name: "memo",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "target", type: "address" },
+      { name: "data", type: "bytes" },
+      { name: "memoId", type: "bytes32" },
+      { name: "memoData", type: "bytes" }
+    ],
+    outputs: []
+  }
+] as const;
+
 export const critiqueDropBountyAbi = [
   {
     type: "event",
