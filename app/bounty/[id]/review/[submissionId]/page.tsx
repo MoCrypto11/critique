@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { getAddress } from "viem";
+import { decodeEventLog, getAddress } from "viem";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { AppHeader } from "@/components/AppHeader";
 import { EmptyState } from "@/components/EmptyState";
@@ -44,6 +44,7 @@ export default function SubmissionReviewPage({ params }: { params: { id: string;
   const [rejectOpen, setRejectOpen] = useState(false);
   const [rejectError, setRejectError] = useState("");
   const [isRejecting, setIsRejecting] = useState(false);
+  const [memoFailed, setMemoFailed] = useState(false);
 
   // Founder gate: only the founder of this bounty may load submission data.
   const refresh = useCallback(async () => {
@@ -82,106 +83,132 @@ export default function SubmissionReviewPage({ params }: { params: { id: string;
     return `Configured reward: ${formatUSDC(configured.rewardUSDC)} USDC`;
   }
 
-  // Approve + pay — identical contract/payout flow to the previous review page,
-  // operating on this one submission. (Backend/contract/payout logic unchanged.)
-  async function approve(target: FeedbackSubmission) {
+  // Approve + pay one submission. When Arc memos are enabled, the approval is a
+  // TRUE memo-wrapped transaction: Memo.memo(target = bounty contract, data =
+  // approveSubmission(...), memoId, memoData) — one tx where Arc's CallFrom
+  // precompile preserves the founder as msg.sender, so approveSubmission runs,
+  // the contributor is paid, and the Memo event is emitted together. The
+  // memo-wrapped tx hash is saved as the approval/payout hash. If the memo tx
+  // reverts (or the payout event is missing) the submission stays pending and
+  // the founder can retry with memos disabled (forceDirect).
+  async function approve(target: FeedbackSubmission, options?: { forceDirect?: boolean }) {
     setError("");
     setBusy(true);
+    setMemoFailed(false);
+
+    const useMemo = ENABLE_ARC_MEMOS && !options?.forceDirect;
 
     try {
       if (!isConnected || !address) throw new Error("Connect wallet before approving feedback.");
       if (bounty?.founderAddress && bounty.founderAddress.toLowerCase() !== address.toLowerCase()) {
-        throw new Error("Connected wallet is not the founder for this local bounty.");
+        throw new Error("Connected wallet is not the founder for this bounty.");
       }
 
-      let payoutTxHash = `mock-${target.submissionHash.slice(2, 12)}`;
-      if (CRITIQUE_DROP_CONTRACT) {
-        if (!walletClient || !publicClient) throw new Error("Wallet client is not ready.");
-        if (!bounty) throw new Error("Bounty is not loaded.");
-        const config = normalizeFeedbackRewards(bounty.feedbackRewards, bounty.rewardUSDC, bounty.maxSubmissions).filter(
-          (reward) => reward.enabled !== false
-        );
-        const selectedReward = getRewardForType(config, target.feedbackType);
-        if (!target.feedbackType) {
-          throw new Error("This submission is missing a feedback type.");
-        }
-        if (!bounty.contractBountyId) {
-          throw new Error("This bounty is missing a contract bounty ID.");
-        }
-        const approvedForType = submissions.filter(
-          (item) => item.status === "approved" && item.feedbackType === target.feedbackType
-        ).length;
-        if (selectedReward && approvedForType >= selectedReward.slots) {
-          throw new Error("This feedback type has no remaining funded slots.");
-        }
-
-        const txHash = await walletClient.writeContract({
-          address: getAddress(CRITIQUE_DROP_CONTRACT),
-          abi: critiqueDropBountyAbi,
-          functionName: "approveSubmission",
-          args: [
-            BigInt(bounty.contractBountyId),
-            getFeedbackTypeContractId(target.feedbackType),
-            getAddress(target.testerWallet),
-            target.submissionHash as `0x${string}`
-          ],
-          account: address
-        });
-        payoutTxHash = txHash;
-        await addTxHashToBounty(bounty.id, txHash);
-        const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
-        if (receipt.status !== "success") {
-          throw new Error("Approval transaction reverted on-chain. The submission was not approved.");
-        }
-      } else if (!ENABLE_MOCK_MODE) {
-        throw new Error("Contract is not configured.");
+      // Mock mode (no contract configured): approve locally only.
+      if (!CRITIQUE_DROP_CONTRACT) {
+        if (!ENABLE_MOCK_MODE) throw new Error("Contract is not configured.");
+        await approveLocalSubmission(params.id, target.id, `mock-${target.submissionHash.slice(2, 12)}`);
+        await refresh();
+        return;
       }
 
-      await approveLocalSubmission(params.id, target.id, payoutTxHash);
+      if (!walletClient || !publicClient) throw new Error("Wallet client is not ready.");
+      if (!bounty) throw new Error("Bounty is not loaded.");
+      if (!target.feedbackType) throw new Error("This submission is missing a feedback type.");
+      if (!bounty.contractBountyId) throw new Error("This bounty is missing a contract bounty ID.");
 
-      // Companion Arc memo (best-effort). The payout above has already settled,
-      // so a memo failure NEVER un-approves the submission — it only records
-      // memoStatus. Real-contract mode only.
-      if (
-        ENABLE_ARC_MEMOS &&
-        CRITIQUE_DROP_CONTRACT &&
-        ARC_MEMO_CONTRACT &&
-        bounty &&
-        bounty.contractBountyId &&
-        walletClient &&
-        publicClient
-      ) {
-        const rewardUSDC =
-          target.expectedRewardUSDC ||
-          getRewardForType(rewardConfig, target.feedbackType)?.rewardUSDC ||
-          bounty.rewardUSDC ||
-          "0";
+      const config = normalizeFeedbackRewards(bounty.feedbackRewards, bounty.rewardUSDC, bounty.maxSubmissions).filter(
+        (reward) => reward.enabled !== false
+      );
+      const selectedReward = getRewardForType(config, target.feedbackType);
+      const approvedForType = submissions.filter(
+        (item) => item.status === "approved" && item.feedbackType === target.feedbackType
+      ).length;
+      if (selectedReward && approvedForType >= selectedReward.slots) {
+        throw new Error("This feedback type has no remaining funded slots.");
+      }
+
+      const rewardUSDC = target.expectedRewardUSDC || selectedReward?.rewardUSDC || bounty.rewardUSDC || "0";
+
+      if (useMemo && ARC_MEMO_CONTRACT) {
         const { memoId, memoData, innerData } = buildApprovalMemo({ bounty, submission: target, rewardUSDC });
+
+        let memoTxHash: `0x${string}`;
         try {
-          const memoTxHash = await walletClient.writeContract({
+          memoTxHash = await walletClient.writeContract({
             address: getAddress(ARC_MEMO_CONTRACT),
             abi: arcMemoAbi,
             functionName: "memo",
             args: [getAddress(CRITIQUE_DROP_CONTRACT), innerData, memoId, memoData],
             account: address
           });
-          const memoReceipt = await publicClient.waitForTransactionReceipt({ hash: memoTxHash });
-          const memoEmitted =
-            memoReceipt.status === "success" &&
-            memoReceipt.logs.some((log) => log.address.toLowerCase() === ARC_MEMO_CONTRACT.toLowerCase());
-          await attachSubmissionMemo(params.id, target.id, {
-            memoId,
-            memoTxHash,
-            memoStatus: memoEmitted ? "attached" : "sent"
-          }).catch(() => undefined);
-        } catch (memoError) {
-          console.error("[Critique Arc memo] companion memo failed", memoError);
-          await attachSubmissionMemo(params.id, target.id, { memoId, memoTxHash: "", memoStatus: "failed" }).catch(
-            () => undefined
+        } catch (sendError) {
+          setMemoFailed(true);
+          throw new Error(
+            `Arc memo transaction was not sent: ${
+              sendError instanceof Error ? sendError.message : "the wallet rejected or failed the request"
+            }`
           );
         }
+
+        await addTxHashToBounty(bounty.id, memoTxHash);
+        const receipt = await publicClient.waitForTransactionReceipt({ hash: memoTxHash });
+
+        // Approve locally ONLY with proof the inner approveSubmission executed:
+        // tx success + a SubmissionApproved event from the bounty contract.
+        const approvedEmitted =
+          receipt.status === "success" &&
+          receipt.logs.some((log) => {
+            if (log.address.toLowerCase() !== CRITIQUE_DROP_CONTRACT.toLowerCase()) return false;
+            try {
+              return (
+                decodeEventLog({ abi: critiqueDropBountyAbi, data: log.data, topics: log.topics }).eventName ===
+                "SubmissionApproved"
+              );
+            } catch {
+              return false;
+            }
+          });
+
+        if (!approvedEmitted) {
+          setMemoFailed(true);
+          throw new Error(
+            "Arc memo transaction did not complete the approval (no payout event in the receipt). The submission was not approved. You can retry without Arc memos."
+          );
+        }
+
+        const memoEmitted = receipt.logs.some(
+          (log) => log.address.toLowerCase() === ARC_MEMO_CONTRACT.toLowerCase()
+        );
+        await approveLocalSubmission(params.id, target.id, memoTxHash);
+        await attachSubmissionMemo(params.id, target.id, {
+          memoId,
+          memoTxHash,
+          memoStatus: memoEmitted ? "attached" : "sent"
+        }).catch(() => undefined);
+        await refresh();
+        return;
       }
 
+      // Direct approval (memos disabled or retry-without-memo).
+      const txHash = await walletClient.writeContract({
+        address: getAddress(CRITIQUE_DROP_CONTRACT),
+        abi: critiqueDropBountyAbi,
+        functionName: "approveSubmission",
+        args: [
+          BigInt(bounty.contractBountyId),
+          getFeedbackTypeContractId(target.feedbackType),
+          getAddress(target.testerWallet),
+          target.submissionHash as `0x${string}`
+        ],
+        account: address
+      });
+      await addTxHashToBounty(bounty.id, txHash);
+      const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
+      if (receipt.status !== "success") {
+        throw new Error("Approval transaction reverted on-chain. The submission was not approved.");
+      }
+      await approveLocalSubmission(params.id, target.id, txHash);
       await refresh();
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Could not approve submission.");
@@ -253,7 +280,21 @@ export default function SubmissionReviewPage({ params }: { params: { id: string;
             </div>
 
             {!CRITIQUE_DROP_CONTRACT && ENABLE_MOCK_MODE ? <MockModeBanner className="mb-5" /> : null}
-            {error ? <div className="notice mb-5 border-red-400/30 bg-red-500/10 font-semibold text-red-200">{error}</div> : null}
+            {error ? (
+              <div className="notice mb-5 flex flex-col gap-3 border-red-400/30 bg-red-500/10 font-semibold text-red-200 sm:flex-row sm:items-center sm:justify-between">
+                <span>{error}</span>
+                {memoFailed && submission ? (
+                  <button
+                    type="button"
+                    onClick={() => approve(submission, { forceDirect: true })}
+                    disabled={busy}
+                    className="btn-secondary shrink-0"
+                  >
+                    Retry without Arc memo
+                  </button>
+                ) : null}
+              </div>
+            ) : null}
 
             <SubmissionCard
               submission={submission}

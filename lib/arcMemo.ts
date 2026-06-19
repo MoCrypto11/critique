@@ -1,15 +1,15 @@
-import { encodeFunctionData, keccak256, stringToHex } from "viem";
+import { encodeFunctionData, getAddress, keccak256, stringToHex } from "viem";
 import { critiqueDropBountyAbi } from "@/lib/contracts";
+import { getFeedbackTypeContractId } from "@/lib/feedbackRewards";
 import { BountyMetadata, FeedbackSubmission } from "@/lib/storage";
 
-// Builds the Arc memo arguments for an approval.
+// Builds the arguments for a TRUE memo-wrapped approval:
+//   Memo.memo(target = bounty contract, data = approveSubmission(...), memoId, memoData)
 //
-// Design note: approveSubmission on CritiqueDropBountyV2 is founder-gated
-// (msg.sender must be the founder), so the memo contract cannot call it without
-// reverting. The real payout therefore happens in a direct approveSubmission
-// transaction; this memo is a *companion* record. The inner call points at a
-// harmless view (getBounty) purely so the memo contract has a valid target to
-// execute while it emits the memo with our reconciliation metadata.
+// On Arc the Memo contract forwards the inner call via the CallFrom precompile,
+// so the bounty contract sees the original founder EOA as msg.sender and the
+// onlyFounder check passes. The approval, USDC payout, and Memo event all land
+// in the same transaction.
 export function buildApprovalMemo({
   bounty,
   submission,
@@ -19,6 +19,9 @@ export function buildApprovalMemo({
   submission: FeedbackSubmission;
   rewardUSDC: string;
 }) {
+  if (!bounty.contractBountyId) throw new Error("Bounty is missing a contract bounty id.");
+  if (!submission.feedbackType) throw new Error("Submission is missing a feedback type.");
+
   const memoIdSource = `critique:${bounty.id}:${submission.id}:approve`;
   const memoId = keccak256(stringToHex(memoIdSource));
 
@@ -29,7 +32,6 @@ export function buildApprovalMemo({
     contractBountyId: bounty.contractBountyId,
     submissionId: submission.id,
     feedbackType: submission.feedbackType,
-    feedbackTypeLabel: submission.feedbackTypeLabel,
     rewardUSDC,
     payoutWallet: submission.testerWallet,
     submissionHash: submission.submissionHash
@@ -38,8 +40,13 @@ export function buildApprovalMemo({
 
   const innerData = encodeFunctionData({
     abi: critiqueDropBountyAbi,
-    functionName: "getBounty",
-    args: [BigInt(bounty.contractBountyId as string)]
+    functionName: "approveSubmission",
+    args: [
+      BigInt(bounty.contractBountyId),
+      getFeedbackTypeContractId(submission.feedbackType),
+      getAddress(submission.testerWallet),
+      submission.submissionHash as `0x${string}`
+    ]
   });
 
   return { memoId, memoIdSource, memoData, memoPayload, innerData };

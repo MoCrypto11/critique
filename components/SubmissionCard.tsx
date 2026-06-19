@@ -138,18 +138,16 @@ export function SubmissionCard({
         {submission.status === "approved" ? (
           submission.memoStatus === "attached" || submission.memoStatus === "sent" ? (
             <div className="rounded-lg border border-action/20 bg-action/10 p-3">
-              <p className="text-sm font-semibold text-action">Arc memo attached for payout reconciliation.</p>
+              <p className="text-sm font-semibold text-action">Arc memo attached to payout transaction.</p>
               <dl className="mt-2.5 grid gap-1.5 text-xs">
                 <div className="flex flex-wrap gap-x-2">
                   <dt className="font-bold text-ink">Memo id</dt>
                   <dd className="font-mono text-muted">{shortAddress(submission.memoId)}</dd>
                 </div>
-                {submission.memoTxHash ? (
-                  <div className="flex flex-wrap gap-x-2">
-                    <dt className="font-bold text-ink">Memo tx</dt>
-                    <dd><TxHashLink hash={submission.memoTxHash} /></dd>
-                  </div>
-                ) : null}
+                <div className="flex flex-wrap gap-x-2">
+                  <dt className="font-bold text-ink">Memo status</dt>
+                  <dd className="text-muted">{submission.memoStatus}</dd>
+                </div>
                 <div className="flex flex-wrap gap-x-2">
                   <dt className="font-bold text-ink">Bounty</dt>
                   <dd className="break-all font-mono text-muted">{submission.bountyId}</dd>
