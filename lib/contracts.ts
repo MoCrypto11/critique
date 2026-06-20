@@ -132,5 +132,20 @@ export const critiqueDropBountyAbi = [
         ]
       }
     ]
-  }
+  },
+  // Custom errors — so viem can decode approval reverts into named errors.
+  { type: "error", name: "BountyNotFound", inputs: [] },
+  { type: "error", name: "InvalidAmount", inputs: [] },
+  { type: "error", name: "InvalidDeadline", inputs: [] },
+  { type: "error", name: "InvalidTester", inputs: [] },
+  { type: "error", name: "InvalidFeedbackType", inputs: [] },
+  { type: "error", name: "InvalidArrayLength", inputs: [] },
+  { type: "error", name: "DuplicateFeedbackType", inputs: [] },
+  { type: "error", name: "OnlyFounder", inputs: [] },
+  { type: "error", name: "BountyClosedError", inputs: [] },
+  { type: "error", name: "MaxSubmissionsReached", inputs: [] },
+  { type: "error", name: "TesterAlreadyPaid", inputs: [] },
+  { type: "error", name: "SubmissionHashAlreadyUsed", inputs: [] },
+  { type: "error", name: "InsufficientBountyFunds", inputs: [] },
+  { type: "error", name: "RefundUnavailable", inputs: [] }
 ] as const;

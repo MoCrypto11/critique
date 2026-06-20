@@ -19,6 +19,7 @@ import {
   critiqueDropBountyAbi
 } from "@/lib/contracts";
 import { buildApprovalMemo } from "@/lib/arcMemo";
+import { parseApprovalError, type ApprovalErrorInfo } from "@/lib/approvalErrors";
 import { formatUSDC, getFeedbackTypeContractId, getRewardForType, normalizeFeedbackRewards } from "@/lib/feedbackRewards";
 import {
   approveLocalSubmission,
@@ -137,6 +138,39 @@ export default function SubmissionReviewPage({ params }: { params: { id: string;
 
       const rewardUSDC = target.expectedRewardUSDC || selectedReward?.rewardUSDC || bounty.rewardUSDC || "0";
 
+      const contractBountyId = bounty.contractBountyId;
+      const feedbackTypeId = getFeedbackTypeContractId(target.feedbackType);
+
+      // Read-only simulation of the inner approveSubmission from the founder. Arc's
+      // Memo contract preserves the founder as msg.sender (CallFrom), so this
+      // accurately predicts whether the on-chain approval will succeed and decodes
+      // any contract custom-error (e.g. TesterAlreadyPaid). Used both as a preflight
+      // and to diagnose a post-send revert.
+      const simulateApproval = async (): Promise<ApprovalErrorInfo | null> => {
+        try {
+          await publicClient.simulateContract({
+            address: getAddress(CRITIQUE_DROP_CONTRACT),
+            abi: critiqueDropBountyAbi,
+            functionName: "approveSubmission",
+            args: [BigInt(contractBountyId), feedbackTypeId, getAddress(target.testerWallet), target.submissionHash as `0x${string}`],
+            account: address
+          });
+          return null;
+        } catch (simError) {
+          return parseApprovalError(simError);
+        }
+      };
+
+      // Preflight: block doomed approvals before broadcasting any transaction.
+      // Business-rule reverts (TesterAlreadyPaid, MaxSubmissionsReached,
+      // InvalidFeedbackType, SubmissionHashAlreadyUsed, InsufficientBountyFunds, …)
+      // would hit a direct approve identically, so these are never offered a
+      // "retry without Arc memo".
+      const preflight = await simulateApproval();
+      if (preflight) {
+        throw new Error(preflight.message);
+      }
+
       if (useMemo && ARC_MEMO_CONTRACT) {
         const { memoId, memoData, innerData } = buildApprovalMemo({ bounty, submission: target, rewardUSDC });
 
@@ -178,6 +212,13 @@ export default function SubmissionReviewPage({ params }: { params: { id: string;
           });
 
         if (!approvedEmitted) {
+          // Diagnose: if the contract now rejects it on a business rule (e.g. state
+          // changed since the preflight), show that exact reason and do NOT offer a
+          // direct retry (it would fail the same way).
+          const reason = await simulateApproval();
+          if (reason?.isBusinessRule) {
+            throw new Error(reason.message);
+          }
           setMemoFailed(true);
           throw new Error(
             "Arc memo transaction did not complete the approval (no payout event in the receipt). The submission was not approved. You can retry without Arc memos."
