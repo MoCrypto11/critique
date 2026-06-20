@@ -155,9 +155,10 @@ testing and review, and should not be treated as audited production contracts.
 
 - Feedback content is stored off-chain; funding and payout receipts are recorded
   on-chain where available.
-- Arc transaction memo support is prepared behind a feature flag
-  (`NEXT_PUBLIC_ENABLE_ARC_MEMOS`) to attach bounty and submission context to
-  approved payouts for cleaner reconciliation.
+- Critique approves payouts as Arc memo-wrapped transactions: each approval is a
+  single Arc Memo transaction that runs the on-chain payout and attaches
+  bounty/submission context for clean reconciliation. (Toggle with
+  `NEXT_PUBLIC_ENABLE_ARC_MEMOS`.)
 - `.env.local` and private keys must never be committed.
 - Supabase service role keys must never reach the client.
 
