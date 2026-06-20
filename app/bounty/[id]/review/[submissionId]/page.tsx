@@ -83,6 +83,13 @@ export default function SubmissionReviewPage({ params }: { params: { id: string;
     return `Configured reward: ${formatUSDC(configured.rewardUSDC)} USDC`;
   }
 
+  // Plain reward amount (e.g. "0.1 USDC") for the approved payout receipt.
+  function paidRewardFor(target: FeedbackSubmission) {
+    const configured = getRewardForType(rewardConfig, target.feedbackType);
+    const amount = target.expectedRewardUSDC || configured?.rewardUSDC || bounty?.rewardUSDC;
+    return amount ? `${formatUSDC(amount)} USDC` : undefined;
+  }
+
   // Approve + pay one submission. When Arc memos are enabled, the approval is a
   // TRUE memo-wrapped transaction: Memo.memo(target = bounty contract, data =
   // approveSubmission(...), memoId, memoData) — one tx where Arc's CallFrom
@@ -299,6 +306,8 @@ export default function SubmissionReviewPage({ params }: { params: { id: string;
             <SubmissionCard
               submission={submission}
               rewardLabel={rewardLabelFor(submission)}
+              bountyTitle={bounty.title}
+              paidReward={paidRewardFor(submission)}
               busy={busy}
               onApprove={() => approve(submission)}
               onReject={() => {
