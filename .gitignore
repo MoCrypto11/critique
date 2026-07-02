@@ -12,3 +12,6 @@ typechain-types
 
 # QA run artifacts (test data records, not source)
 scripts/qa/qa-results.json
+
+.vercel
+.env*
