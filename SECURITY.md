@@ -85,6 +85,15 @@ alter table public.submissions
   add column if not exists memo_status  text;
 ```
 
+### Campaign tables (beta)
+
+The feedback-campaign tables (`campaigns`, `campaign_tasks`,
+`campaign_submissions` — see `supabase/migrations/20260702_campaigns.sql`)
+follow the same client-side anon-key posture and share the same known
+limitation below. The money-side guarantees for campaigns do NOT depend on
+Supabase: budgets, payout limits, the allowed agent, dispute windows, and
+refunds are enforced by the `CritiqueCampaignEscrowV1` contract on-chain.
+
 ## Known limitation — founder-only reads
 
 **Goal:** only a bounty's founder should read that bounty's submission feedback.

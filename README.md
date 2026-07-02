@@ -75,6 +75,47 @@ Founder creates bounty
         → Receipt appears on Arc Explorer
 ```
 
+## Feedback campaigns (beta, behind a flag)
+
+Campaigns upgrade the single-bounty flow into a funded feedback program with
+AI-assisted operations, off by default via `NEXT_PUBLIC_ENABLE_CAMPAIGNS`.
+
+- **Founder** creates a campaign (goal, budget, max reward per task, deadline,
+  acceptance criteria, spam rules), funds it in USDC into the
+  `CritiqueCampaignEscrowV1` contract, and publishes feedback tasks.
+- **AI Campaign Builder** drafts a task plan from the campaign goal; the
+  founder edits, approves, and publishes tasks. AI also evaluates submissions
+  (summary, quality score, criteria match, spam/duplicate risk, suggested
+  action).
+- **Contributors** submit structured feedback to a task and get paid in USDC
+  when approved.
+- **Two payout modes:** Founder Approval (founder clicks approve & pay), and
+  Agent-Managed Queued Payout (experimental) — an authorized AI agent address
+  may queue payouts that pass the criteria; queued payouts sit in a dispute
+  window the founder can cancel in, then become executable.
+
+The agent operates the workflow. The contract protects the money: the escrow
+enforces the budget, max reward per task, deadline, pause/close state, the
+allowed agent, reserved-funds accounting, the dispute window, and
+no-double-payout. The agent cannot withdraw campaign funds or exceed payout
+limits. Feedback content and AI evaluations stay off-chain (hashes/URIs are
+stored on-chain for auditability).
+
+Enable it with:
+
+```env
+NEXT_PUBLIC_ENABLE_CAMPAIGNS=true
+NEXT_PUBLIC_CRITIQUE_CAMPAIGN_CONTRACT=0x...   # deploy with npm run deploy:campaign
+ANTHROPIC_API_KEY=...                          # server-side only, for the AI endpoints
+```
+
+Deploy the campaign escrow to Arc testnet with `npm run deploy:campaign`
+(needs `PRIVATE_KEY` in your local env), and apply the Supabase migration in
+[`supabase/migrations/20260702_campaigns.sql`](supabase/migrations/20260702_campaigns.sql).
+Without a contract address the campaign pages run in local mock mode; without
+an Anthropic key the AI endpoints return a clear "not configured" error and
+tasks can be created manually.
+
 ## Tech stack
 
 - Next.js (App Router)
@@ -131,6 +172,9 @@ The app runs in mock mode out of the box (no contract required) — set
 | `NEXT_PUBLIC_ARC_MEMO_CONTRACT`      | Arc Memo contract address                              |
 | `NEXT_PUBLIC_SUPABASE_URL`           | Supabase project URL                                   |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY`      | Supabase anon key                                      |
+| `NEXT_PUBLIC_ENABLE_CAMPAIGNS`       | Enables the feedback-campaign surface (off by default) |
+| `NEXT_PUBLIC_CRITIQUE_CAMPAIGN_CONTRACT` | Deployed campaign escrow address (empty = mock mode) |
+| `ANTHROPIC_API_KEY`                  | Server-side key for the AI campaign builder/evaluator  |
 | `PRIVATE_KEY`                        | Local deployer key for scripts only                    |
 
 `NEXT_PUBLIC_*` variables are exposed to the browser by design — do not put
@@ -146,6 +190,7 @@ npm run lint        # lint the project
 npm run compile     # compile the smart contracts (Hardhat)
 npm run test        # run the contract test suite
 npm run deploy:arc  # deploy the bounty contract to Arc testnet
+npm run deploy:campaign  # deploy the campaign escrow contract to Arc testnet
 ```
 
 ## Status and security

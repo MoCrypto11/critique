@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAccount } from "wagmi";
+import { ENABLE_CAMPAIGNS } from "@/lib/campaigns";
 import { WalletConnect } from "./WalletConnect";
 
 export function AppHeader() {
@@ -21,7 +22,8 @@ export function AppHeader() {
         { href: "/create", label: "Create" },
         { href: "/#faq", label: "FAQ" }
       ];
-  const navLinks = walletConnected ? [...baseNavLinks, { href: "/dashboard", label: "Dashboard" }] : baseNavLinks;
+  const withCampaigns = ENABLE_CAMPAIGNS ? [...baseNavLinks, { href: "/campaigns/new", label: "Campaigns" }] : baseNavLinks;
+  const navLinks = walletConnected ? [...withCampaigns, { href: "/dashboard", label: "Dashboard" }] : withCampaigns;
 
   return (
     <header className="bg-transparent">
