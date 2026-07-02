@@ -480,7 +480,7 @@ export default function CampaignDashboardPage({ params }: { params: { id: string
           ].map(([label, value]) => (
             <div key={label} className="surface p-4">
               <p className="text-[10px] font-black uppercase tracking-[0.14em] text-muted">{label}</p>
-              <p className="mt-1.5 text-xl font-black text-ink">{formatUSDC(value)} USDC</p>
+              <p className="mt-1.5 text-xl font-black text-ink">{value || "0"} USDC</p>
             </div>
           ))}
         </div>
